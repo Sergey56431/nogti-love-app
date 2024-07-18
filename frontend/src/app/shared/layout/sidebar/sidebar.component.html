@@ -1,0 +1,52 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <a routerLink="/main" class="sidebar-logo">
+      <img src="/assets/images/logo-sidebar.png" alt="логотип">
+    </a>
+  </div>
+  <div class="sidebar-body">
+    <nav class="menu">
+      <ul class="menu-items">
+        <li class="menu-item" routerLinkActive="active">
+          <a routerLink="/main">Главная</a>
+        </li>
+        <li class="menu-item" routerLinkActive="active">
+          <a routerLink="/clients" >База клиентов</a>
+        </li>
+        <li class="menu-item" routerLinkActive="active">
+          <a>Главная</a>
+        </li>
+        <li class="menu-item" routerLinkActive="active">
+          <a>Главная</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <div class="sidebar-footer">
+    <a href="" class="profile">
+      <div class="profile-icon">
+        <img src="/assets/images/profile-non-icon.png" alt="Профиль">
+      </div>
+      <div class="profile-info">
+        <p class="profile-name" (click)="logout()">{{this.username?.name}}</p>
+      </div>
+<!--      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">-->
+<!--        <mat-icon>more_vert</mat-icon>-->
+<!--      </button>-->
+<!--      <mat-menu #menu="matMenu">-->
+<!--        <button mat-menu-item>-->
+<!--          <mat-icon>dialpad</mat-icon>-->
+<!--          <span>Redial</span>-->
+<!--        </button>-->
+<!--        <button mat-menu-item disabled>-->
+<!--          <mat-icon>voicemail</mat-icon>-->
+<!--          <span>Check voice mail</span>-->
+<!--        </button>-->
+<!--        <button mat-menu-item>-->
+<!--          <mat-icon>notifications_off</mat-icon>-->
+<!--          <span>Disable alerts</span>-->
+<!--        </button>-->
+<!--      </mat-menu>-->
+    </a>
+  </div>
+</aside>
