@@ -8,9 +8,9 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import {MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBar, MatSnackBarModule} from "@angular/material/snack-bar";
 import { HttpClientModule} from "@angular/common/http";
 import {SharedModule} from "./shared/shared.module";
-import { ClientsComponent } from './veiws/page/clients/clients.component';
-// import {AuthInterceptor} from "./core/auth/auth.interceptor";
+import {ClientsComponent} from "./views/page/clients/clients.component";
 
+// import {AuthInterceptor} from "./core/auth/auth.interceptor"
 
 @NgModule({
   declarations: [
