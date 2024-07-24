@@ -1,0 +1,83 @@
+<section class="forms" >
+  <div class="user-logo">
+    <img src="/images/logo.png" alt="Логотип">
+  </div>
+  <form class="form" [formGroup]="signupForm">
+    <input class="input" formControlName="username"
+           [ngStyle]="{'border-color': username?.invalid && (username?.dirty) ? 'red' : '' }"
+           type="text" placeholder="Имя" >
+    <div class="input-error">
+
+      <div *ngIf="username?.invalid && (username?.dirty)">
+        <div class="text-danger" *ngIf="username?.errors?.['required']">
+          Заполните Имя
+        </div>
+        <div class="text-danger" *ngIf="username?.errors?.['pattern']">
+          Неверное имя
+        </div>
+      </div>
+
+    </div>
+    <input class="input" formControlName="password"
+           [ngStyle]="{'border-color': password?.invalid && (password?.dirty) ? 'red' : '' }"
+           type="password" placeholder="Пароль">
+
+    <div *ngIf="password?.invalid && (password?.dirty)">
+      <div class="text-danger" *ngIf="password?.errors?.['required']">
+        Введите пароль
+      </div>
+      <div class="text-danger" *ngIf="password?.errors?.['pattern']">
+        Пароль должен содержать ...
+      </div>
+    </div>
+
+    <input class="input" formControlName="phone"
+           [ngStyle]="{'border-color': phone?.invalid && (phone?.dirty) ? 'red' : '' }"
+           type="text" placeholder="Телефон">
+
+    <div *ngIf="phone?.invalid && (phone?.dirty)">
+      <div class="text-danger" *ngIf="phone?.errors?.['required']">
+        Введите телефон
+      </div>
+      <div class="text-danger" *ngIf="phone?.errors?.['pattern']">
+        Неверно введён телефон
+      </div>
+    </div>
+
+    <input class="input" formControlName="email"
+           [ngStyle]="{'border-color': email?.invalid && (email?.dirty) ? 'red' : '' }"
+           type="text" placeholder="Email">
+
+    <div *ngIf="email?.invalid && (email?.dirty)">
+      <div class="text-danger" *ngIf="email?.errors?.['required']">
+        Введите email.
+      </div>
+      <div class="text-danger" *ngIf="email?.errors?.['pattern']">
+        Неверно  введён email
+      </div>
+    </div>
+
+    <input class="input" formControlName="birth_day"
+           [ngStyle]="{'border-color': birth_day?.invalid && (birth_day?.dirty) ? 'red' : '' }"
+           type="text" placeholder="Дата рождения">
+
+    <div *ngIf="birth_day?.invalid && (birth_day?.dirty)">
+<!--      <div class="text-danger" *ngIf="birth_day?.errors?.['required']">-->
+<!--        Введите email.-->
+<!--      </div>-->
+      <div class="text-danger" *ngIf="birth_day?.errors?.['pattern']">
+        Неверно  введён email
+      </div>
+    </div>
+
+    <div class="access">
+      <input type="checkbox" id="access" formControlName="accept">
+      <label for="access">Я ознакомлен(а) с </label>
+      <a>политикой конфиденциальности</a>
+    </div>
+    <div class="loginRef">
+      <span>У меня уже есть страница. </span><a routerLink="/login">Войти</a>
+    </div>
+    <button class="formBtn" [disabled]="signupForm.invalid" (click)="signup()">Зарегистрироваться</button>
+  </form>
+</section>

@@ -1,0 +1,42 @@
+<section class="forms" >
+  <div class="user-logo">
+    <img src="/images/logo.png" alt="Логотип">
+  </div>
+  <form class="form" [formGroup]="loginForm">
+
+    <input class="input" formControlName="phone"
+           [ngStyle]="{'border-color': phone?.invalid && (phone?.dirty ) ? 'red' : '' }"
+           type="text" placeholder="Ваш телефон">
+
+    <div *ngIf="phone?.invalid && (phone?.dirty)">
+      <div class="text-danger" *ngIf="phone?.errors?.['required']">
+        Введите телефон
+      </div>
+      <div class="text-danger" *ngIf="phone?.errors?.['pattern']">
+        Введите корректный номер телефона
+      </div>
+    </div>
+
+    <input class="input" formControlName="password"
+           [ngStyle]="{'border-color': password?.invalid && (password?.dirty) ? 'red' : '' }"
+           type="password" placeholder="Пароль">
+
+    <div *ngIf="password?.invalid && (password?.dirty)">
+      <div class="text-danger" *ngIf="password?.errors?.['required']">
+        Введите пароль
+      </div>
+      <div class="text-danger" *ngIf="password?.errors?.['pattern']">
+        Пароль должен содержать латинские буквы в верхнем регистре и цифры
+      </div>
+    </div>
+
+    <div class="access">
+      <input type="checkbox" id="rememberMe" formControlName="rememberMe">
+      <label for="rememberMe">Запомнить меня</label>
+    </div>
+    <div class="loginRef">
+      <span>Ещё нет аккаунта? </span><a routerLink="/registration">Зарегистрировать</a>
+    </div>
+    <button class="formBtn" [disabled]="loginForm.invalid" (click)="login()">Войти</button>
+  </form>
+</section>

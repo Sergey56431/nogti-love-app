@@ -1,0 +1,39 @@
+@import "fonts";
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body, html {
+  font-family: 'Comfortaa', sans-serif;
+}
+
+a {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.container {
+  margin: 0 auto;
+  max-width: 1280px;
+}
+
+.page {
+  display: flex;
+}
+
+.button {
+  cursor: pointer;
+}
+
+.text-danger {
+  color: red;
+  font-size: 12px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+
+.page-content {
+  margin-top: 100px;
+}
