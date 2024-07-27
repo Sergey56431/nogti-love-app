@@ -4,16 +4,16 @@
   </div>
   <form class="form" [formGroup]="loginForm">
 
-    <input class="input" formControlName="phone"
-           [ngStyle]="{'border-color': phone?.invalid && (phone?.dirty ) ? 'red' : '' }"
-           type="text" placeholder="Ваш телефон">
+    <input class="input" formControlName="username"
+           [ngStyle]="{'border-color': username?.invalid && (username?.dirty ) ? 'red' : '' }"
+           type="text" placeholder="Имя">
 
-    <div *ngIf="phone?.invalid && (phone?.dirty)">
-      <div class="text-danger" *ngIf="phone?.errors?.['required']">
-        Введите телефон
+    <div *ngIf="username?.invalid && (username?.dirty)">
+      <div class="text-danger" *ngIf="username?.errors?.['required']">
+        Введите имя
       </div>
-      <div class="text-danger" *ngIf="phone?.errors?.['pattern']">
-        Введите корректный номер телефона
+      <div class="text-danger" *ngIf="username?.errors?.['pattern']">
+        Неверно введено имя
       </div>
     </div>
 

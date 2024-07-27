@@ -57,18 +57,18 @@
       </div>
     </div>
 
-    <input class="input" formControlName="birth_day"
-           [ngStyle]="{'border-color': birth_day?.invalid && (birth_day?.dirty) ? 'red' : '' }"
-           type="text" placeholder="Дата рождения">
+<!--    <input class="input" formControlName="birth_day"-->
+<!--           [ngStyle]="{'border-color': birth_day?.invalid && (birth_day?.dirty) ? 'red' : '' }"-->
+<!--           type="text" placeholder="Дата рождения">-->
 
-    <div *ngIf="birth_day?.invalid && (birth_day?.dirty)">
-<!--      <div class="text-danger" *ngIf="birth_day?.errors?.['required']">-->
-<!--        Введите email.-->
+<!--    <div *ngIf="birth_day?.invalid && (birth_day?.dirty)">-->
+<!--&lt;!&ndash;      <div class="text-danger" *ngIf="birth_day?.errors?.['required']">&ndash;&gt;-->
+<!--&lt;!&ndash;        Введите email.&ndash;&gt;-->
+<!--&lt;!&ndash;      </div>&ndash;&gt;-->
+<!--      <div class="text-danger" *ngIf="birth_day?.errors?.['pattern']">-->
+<!--        Неверно  введён email-->
 <!--      </div>-->
-      <div class="text-danger" *ngIf="birth_day?.errors?.['pattern']">
-        Неверно  введён email
-      </div>
-    </div>
+<!--    </div>-->
 
     <div class="access">
       <input type="checkbox" id="access" formControlName="accept">

@@ -24,7 +24,7 @@ export class LoginPageComponent {
 
   isLogged: boolean = false;
   loginForm = this.fb.group({
-    phone: ['', [Validators.pattern('^((\\+7|7|8)+([0-9]){10})$'), Validators.required]],
+    username: ['', [ Validators.required]],
     password: ['', [Validators.pattern('(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,12})$'), Validators.required]],
     rememberMe: false
   })
@@ -35,8 +35,8 @@ export class LoginPageComponent {
               private _snackBar: MatSnackBar) {
   }
 
-  get phone() {
-    return this.loginForm.get('phone');
+  get username() {
+    return this.loginForm.get('username');
   }
 
   get password() {
@@ -44,8 +44,8 @@ export class LoginPageComponent {
   }
 
   login() {
-    if (this.loginForm.valid && this.loginForm.value.phone && this.loginForm.value.password) {
-      this.authService.login(this.loginForm.value.phone, this.loginForm.value.password)
+    if (this.loginForm.valid && this.loginForm.value.username && this.loginForm.value.password) {
+      this.authService.login(this.loginForm.value.username, this.loginForm.value.password)
         .subscribe({
           next: (data: LoginResponseType | DefaultResponseType) => {
             if (!(data as LoginResponseType).accessToken) {
@@ -53,7 +53,7 @@ export class LoginPageComponent {
               throw new Error(data.message ? data.message : 'Error with data on login')
             }
             this.authService.setUserInfo({
-              name: this.loginForm.value.phone,
+              name: this.loginForm.value.username,
 
             })
             if (data && (data as LoginResponseType).accessToken){

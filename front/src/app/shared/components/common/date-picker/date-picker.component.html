@@ -1,0 +1,13 @@
+<div class="date-picker">
+  <h2 class="date-picker-title">Моё расписание</h2>
+  <div class="date-picker-content">
+    <div class="calendar">
+      <h3 class="calendar-title">Март</h3>
+      <div class="calendar-date-items">
+        @for (item of dateCount; track item; ){
+          <div class="date-item" disabled="item < 27">{{item}}</div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

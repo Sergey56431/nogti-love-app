@@ -3,6 +3,6 @@ export type UserInfoType = {
   // lastName: string,
   // phoneNumber: string,
   // balance: number,
-  birthDay: string
+  // birthDay: string
   // image: string,
 }

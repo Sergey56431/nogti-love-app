@@ -43,9 +43,9 @@ export class AuthService {
       )
   }
 
-  signup(email: string, password: string, phone: string, username: string, birth_date?: string): Observable<SignupResponseType> {
+  signup(email: string, password: string, phone: string, username: string): Observable<SignupResponseType> {
     return this.http.post<SignupResponseType>(environment.api + 'register', {
-      username, password, phone, email, birth_date
+      username, password, phone, email
     })
   }
 
@@ -75,8 +75,9 @@ export class AuthService {
   public removeTokens() {
     this.cookieService.delete(this.accessTokenKey);
     // this.cookieService.delete(this.refreshTokenKey);
-    this.isLogged = true;
-    this.isLogged$.next(true)
+    this.isLogged = false;
+    this.isLogged$.next(false)
+    console.log(this.cookieService.get(this.accessTokenKey))
   }
 
   public removeUserInfo(): void {
