@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgIf, NgStyle} from "@angular/common";
 import {Router, RouterLink} from "@angular/router";
@@ -21,7 +21,7 @@ import {LoginResponseType} from "../../../shared/types/login-response.type";
   ],
   templateUrl: './registration-page.component.html'
 })
-export class RegistrationPageComponent {
+export class RegistrationPageComponent implements OnInit {
 
   signupForm = this.fb.group({
     email: ['', [Validators.email, Validators.required]],
@@ -30,7 +30,7 @@ export class RegistrationPageComponent {
     phone: ['', [Validators.pattern('^((8|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$'), Validators.required]],
     // birth_day: ['', [Validators.pattern('^(?:0[1-9]|[12]\\d|3[01])([\\/.-])(?:0[1-9]|1[012])\\1(?:19|20)\\d\\d$')]],
     accept: [false, [Validators.requiredTrue]]
-  })
+  });
 
   // private birthDay: string[] = [];
 
@@ -88,25 +88,25 @@ export class RegistrationPageComponent {
                   if ((data as DefaultResponseType).error ||
                     !(data as LoginResponseType).accessToken || !(data as LoginResponseType).username) {
                     this._snackBar.open('Ошибка при авторизации');
-                    throw new Error(data.message ? data.message : 'Error with data on login')
+                    throw new Error(data.message ? data.message : 'Error with data on login');
                   }
                   this.router.navigate(['/main']);
                 },
                 error: (error: HttpErrorResponse) => {
                   this._snackBar.open('Ошибка при авторизации');
-                  throw new Error(error.error.message)
+                  throw new Error(error.error.message);
                 }
-              })
+              });
 
           },
           error: (errorResponse: HttpErrorResponse) => {
             if (errorResponse.error && errorResponse.message) {
-              this._snackBar.open(errorResponse.message)
+              this._snackBar.open(errorResponse.message);
             } else {
-              this._snackBar.open('Ошибка регистрации')
+              this._snackBar.open('Ошибка регистрации');
             }
           }
-        })
+        });
     }
   }
 }

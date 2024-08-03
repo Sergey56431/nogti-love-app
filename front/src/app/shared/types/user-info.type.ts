@@ -1,4 +1,4 @@
-export type UserInfoType = {
+export interface UserInfoType {
   name: string,
   // lastName: string,
   // phoneNumber: string,

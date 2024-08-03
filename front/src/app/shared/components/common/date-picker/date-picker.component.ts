@@ -1,18 +1,39 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {NgForOf} from "@angular/common";
-import {max} from "rxjs";
+import {ItemChangerDirective} from "../../../directives/item-changer.directive";
 
 @Component({
   selector: 'app-date-picker',
   standalone: true,
   imports: [
-    NgForOf
+    NgForOf,
+    ItemChangerDirective,
   ],
   templateUrl: './date-picker.component.html',
   styleUrl: './date-picker.component.scss'
-})
-export class DatePickerComponent {
 
-  protected dateCount = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
-  protected readonly max = max;
+})
+export class DatePickerComponent implements OnInit{
+
+  protected month = '';
+  protected day = '';
+  protected isChecked: number | null = null;
+  protected dateCount = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
+  private date = new Date();
+  directs = 5;
+
+  ngOnInit() {
+    this.month = this.date.toLocaleDateString('default', {month: "long"});
+    this.month = this.month.charAt(0).toUpperCase() + this.month.slice(1);
+  }
+
+  onChange(e: number) {
+    this.isChecked = e;
+  }
+
+  choiceDay(item: number) {
+    this.day = item + ' ' + this.month;
+  }
+
+  protected readonly ItemChangerDirective = ItemChangerDirective;
 }

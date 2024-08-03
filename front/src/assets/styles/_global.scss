@@ -6,11 +6,15 @@
 }
 
 body, html {
-  font-family: 'Comfortaa', sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 a {
   text-decoration: none;
+  cursor: pointer;
+}
+
+button {
   cursor: pointer;
 }
 

@@ -8,6 +8,6 @@ import { Component } from '@angular/core';
   styleUrl: './clients-page.component.scss'
 })
 export class ClientsPageComponent {
-  title: string = 'Клиенты';
+  title = 'Клиенты';
 
 }

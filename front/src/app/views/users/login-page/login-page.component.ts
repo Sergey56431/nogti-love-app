@@ -22,12 +22,12 @@ import {DefaultResponseType} from "../../../shared/types/default-response.type";
 })
 export class LoginPageComponent {
 
-  isLogged: boolean = false;
+  isLogged = false;
   loginForm = this.fb.group({
     username: ['', [ Validators.required]],
     password: ['', [Validators.pattern('(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,12})$'), Validators.required]],
     rememberMe: false
-  })
+  });
 
   constructor(private fb: FormBuilder,
               private authService: AuthService,
@@ -50,12 +50,12 @@ export class LoginPageComponent {
           next: (data: LoginResponseType | DefaultResponseType) => {
             if (!(data as LoginResponseType).accessToken) {
               this._snackBar.open('Ошибка при авторизации');
-              throw new Error(data.message ? data.message : 'Error with data on login')
+              throw new Error(data.message ? data.message : 'Error with data on login');
             }
             this.authService.setUserInfo({
               name: this.loginForm.value.username,
 
-            })
+            });
             if (data && (data as LoginResponseType).accessToken){
               this.authService.setTokens((data as LoginResponseType).accessToken);
               this.router.navigate(['/main']);
@@ -66,9 +66,9 @@ export class LoginPageComponent {
           },
           error: (error: HttpErrorResponse) => {
             this._snackBar.open('Ошибка при авторизации');
-            throw new Error(error.error.message)
+            throw new Error(error.error.message);
           }
-        })
+        });
     }
   }
 }

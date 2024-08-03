@@ -15,12 +15,12 @@ import {environment} from "../../../environments/environment";
 })
 
 export class AuthService {
-  public accessTokenKey: string = 'accessToken';
-  public refreshTokenKey: string = 'refreshToken';
-  private userInfoKey: string = 'userInfo';
+  public accessTokenKey = 'accessToken';
+  public refreshTokenKey = 'refreshToken';
+  private userInfoKey = 'userInfo';
 
-  public isLogged: boolean = false;
-  public isLogged$: Subject<boolean> = new Subject<boolean>()
+  public isLogged = false;
+  public isLogged$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private http: HttpClient, private cookieService: CookieService) {
     this.isLogged = !!this.cookieService.get(this.accessTokenKey);
@@ -36,21 +36,21 @@ export class AuthService {
           if (data.username && data.accessToken) {
             this.setUserInfo({
               name: data.username
-            })
+            });
             this.setTokens(data.accessToken);
           }
         })
-      )
+      );
   }
 
   signup(email: string, password: string, phone: string, username: string): Observable<SignupResponseType> {
     return this.http.post<SignupResponseType>(environment.api + 'register', {
       username, password, phone, email
-    })
+    });
   }
 
   logout(): Observable<DefaultResponseType> {
-    return this.http.get<DefaultResponseType>(environment.api + 'logout')
+    return this.http.get<DefaultResponseType>(environment.api + 'logout');
 
   }
 
@@ -58,7 +58,7 @@ export class AuthService {
     const refreshToken: string | null = localStorage.getItem(this.refreshTokenKey);
     return this.http.post<RefreshResponseType>(environment.api + 'refresh', {
       refreshToken
-    })
+    });
   }
 
   public getIsLoggedIn() {
@@ -69,19 +69,19 @@ export class AuthService {
     this.cookieService.set(this.accessTokenKey, accessToken);
     // this.cookieService.set(this.refreshTokenKey, refreshToken);
     this.isLogged = true;
-    this.isLogged$.next(true)
+    this.isLogged$.next(true);
   }
 
   public removeTokens() {
     this.cookieService.delete(this.accessTokenKey);
     // this.cookieService.delete(this.refreshTokenKey);
     this.isLogged = false;
-    this.isLogged$.next(false)
-    console.log(this.cookieService.get(this.accessTokenKey))
+    this.isLogged$.next(false);
+    console.log(this.cookieService.get(this.accessTokenKey));
   }
 
   public removeUserInfo(): void {
-    localStorage.removeItem(this.userInfoKey)
+    localStorage.removeItem(this.userInfoKey);
   }
 
   public getUserInfo(): UserInfoType | null {
@@ -94,13 +94,13 @@ export class AuthService {
   }
 
   public setUserInfo(info: {}) {
-    localStorage.setItem(this.userInfoKey, JSON.stringify(info))
+    localStorage.setItem(this.userInfoKey, JSON.stringify(info));
   }
 
   public getTokens(): { accessToken: string | null, refreshToken: string | null }{
     return {
       accessToken: this.cookieService.get(this.accessTokenKey),
       refreshToken: this.cookieService.get(this.refreshTokenKey)
-    }
+    };
   }
 }

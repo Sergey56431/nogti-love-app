@@ -21,13 +21,13 @@ export class ChartComponent {
     },
     responsive: false,
   };
-  protected pieChartLabels = ['Даходы', 'Расходы'];
+  protected pieChartLabels = {
+    labels: ['Даходы', 'Расходы'],
+};
   protected pieChartDatasets = [{
     data: [235, 765],
     backgroundColor: ['#dfc49c', '#00379e'],
     hoverBackgroundColor: ['#f3cd8e', '#0649c5'],
-
-
   }];
   protected pieChartLegend = true;
   protected pieChartPlugins = {
@@ -35,6 +35,6 @@ export class ChartComponent {
       anchor: 'end',
       align: 'end',
     }
-  }
+  };
 
 }

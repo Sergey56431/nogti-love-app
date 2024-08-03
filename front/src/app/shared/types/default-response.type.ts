@@ -1,4 +1,4 @@
-export type DefaultResponseType = {
+export interface DefaultResponseType {
   error: boolean,
   message: string
 }

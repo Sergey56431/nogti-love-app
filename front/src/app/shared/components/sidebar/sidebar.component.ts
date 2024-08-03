@@ -27,8 +27,8 @@ import {AuthService} from "../../../core/auth/auth.service";
 })
 export class SidebarComponent implements OnInit{
 
-  isLogged: boolean = false;
-  user = this.authService.getUserInfo()
+  isLogged = false;
+  user = this.authService.getUserInfo();
   constructor(private authService: AuthService,
               private router: Router,
               private _snackBar: MatSnackBar) { }
@@ -36,20 +36,20 @@ export class SidebarComponent implements OnInit{
   ngOnInit(): void {
     this.authService.isLogged$.subscribe((isLoggedIn: boolean) => {
       this.isLogged = isLoggedIn;
-    })
+    });
   }
 
   logout(){{
     this.authService.logout()
       .subscribe({
         next: () => {
-          ``
+          ``;
           this.doLogout();
         },
         error: () => {
           this.doLogout();
         }
-      })
+      });
   }
   }
 

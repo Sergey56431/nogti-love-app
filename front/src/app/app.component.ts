@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {ActivatedRouteSnapshot, RouterLink, RouterOutlet} from '@angular/router';
 import {routes} from "./app.routes";
 

@@ -1,4 +1,4 @@
-export type SignupResponseType = {
+export interface SignupResponseType {
   username: string,
   password: string,
   phone: string,
