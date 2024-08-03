@@ -1,6 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {NgForOf} from "@angular/common";
 import {ItemChangerDirective} from "../../../directives/item-changer.directive";
+import {MatIcon} from "@angular/material/icon";
+import {MatIconButton} from "@angular/material/button";
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 
 @Component({
   selector: 'app-date-picker',
@@ -8,6 +11,11 @@ import {ItemChangerDirective} from "../../../directives/item-changer.directive";
   imports: [
     NgForOf,
     ItemChangerDirective,
+    MatIcon,
+    MatIconButton,
+    MatMenu,
+    MatMenuItem,
+    MatMenuTrigger,
   ],
   templateUrl: './date-picker.component.html',
   styleUrl: './date-picker.component.scss'

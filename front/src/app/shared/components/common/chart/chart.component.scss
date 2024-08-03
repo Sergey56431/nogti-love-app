@@ -1,9 +1,17 @@
 .chart-content {
   text-align: center;
 
-  .chart-title {
-    font-size: 30px;
-    font-family: 'Montserrat-Bold',sans-serif;
+  .chart-title-and-option {
     margin-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+
+    .chart-title {
+      font-size: 30px;
+      font-family: 'Montserrat-Bold',sans-serif;
+    }
   }
+
+
 }

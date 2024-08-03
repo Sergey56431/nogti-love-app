@@ -7,6 +7,7 @@ import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatButtonModule} from "@angular/material/button";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {AuthService} from "../../../core/auth/auth.service";
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 
 @Component({
   selector: 'app-sidebar',
@@ -20,7 +21,10 @@ import {AuthService} from "../../../core/auth/auth.service";
     MatButtonModule,
     RouterLink,
     RouterLink,
-    RouterLinkActive
+    RouterLinkActive,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss'

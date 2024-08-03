@@ -1,13 +1,14 @@
 <div class="date-picker">
   <div class="date-picker-title">
     <h2>Моё расписание</h2>
-    <button>
-      <svg width="6" height="21" viewBox="0 0 6 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ellipse cx="3" cy="2.5" rx="3" ry="2.5" fill="black"/>
-        <ellipse cx="3" cy="10.5" rx="3" ry="2.5" fill="black"/>
-        <ellipse cx="3" cy="18.5" rx="3" ry="2.5" fill="black"/>
-      </svg>
+    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+      <mat-icon>more_vert</mat-icon>
     </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item>Редактировать расписание</button>
+      <button mat-menu-item>Список всех записей</button>
+      <button mat-menu-item>Обновить</button>
+    </mat-menu>
   </div>
 
   <div class="date-picker-content">
