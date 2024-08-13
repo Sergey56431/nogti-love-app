@@ -1,0 +1,96 @@
+@import "variables";
+
+.forms {
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: $bg-color;
+
+  .user-logo {
+    margin-bottom: 50px;
+  }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .input {
+      width: 450px;
+      height: 45px;
+      font-family: 'Comfortaa', sans-serif;
+      padding: 15px 24px 14px 25px;
+      background: $white-color;
+      border: 1px solid $blue-color;
+      margin-bottom: 20px;
+      color: $blue-color;
+      font-size: 14px;
+      outline: none;
+      box-sizing: border-box;
+      transition: .2s ease-in;
+
+      &:focus {
+        box-shadow: 0 0 6px 6px rgba(14, 85, 221, 0.25);
+      }
+
+      &::placeholder {
+        color: rgba(14, 85, 221, 0.5);
+        font-size: 14px;
+        font-family: 'Comfortaa', sans-serif;
+      }
+    }
+
+    .access {
+      display: flex;
+      align-items: center;
+      margin-bottom: 22px;
+      font-size: 14px;
+
+      input {
+        width: 15px;
+        height: 15px;
+        margin-right: 10px;
+      }
+
+      label {
+        color: $white-color;
+        margin-right: 5px;
+      }
+
+      a {
+        color: $blue-color;
+      }
+    }
+
+    .loginRef {
+      margin-bottom: 22px;
+
+      span {
+        color: $white-color;
+      }
+
+      a {
+        color: $blue-color;
+        text-decoration: none;
+      }
+    }
+
+    .formBtn {
+      cursor: pointer;
+      background: $white-color;
+      color: $blue-color;
+      font-size: 14px;
+      padding: 11px 30px;
+      text-decoration: none;
+      border: 1px solid $blue-color;
+
+      &:disabled {
+        color: #D9D9D9;
+        border-color: #7ea9ff;
+        cursor: not-allowed;
+      }
+    }
+  }
+}

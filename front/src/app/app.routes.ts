@@ -13,12 +13,12 @@ export const routes: Routes = [
     children: [
       {
         path: 'main',
-        loadComponent:() => import('./views/page/main/main.component').then(c => c.MainComponent),
+        loadComponent:() => import('./views/page').then(c => c.MainComponent),
         title: 'Главная'
       },
       {
         path: 'clients',
-        loadComponent:() => import('./views/page/clients-page/clients-page.component').then(c => c.ClientsPageComponent),
+        loadComponent:() => import('./views/page').then(c => c.ClientsPageComponent),
         title: 'Клиенты'
       },
     ]

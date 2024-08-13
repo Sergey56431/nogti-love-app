@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { State, Action, Selector, StateContext } from '@ngxs/store';
 import { Forms } from './forms.actions';
 import FormsAction = Forms.FormsAction;
+import {UserInfoType} from "../../../shared/types/user-info.type";
 
 export interface FormsStateModel {
-  user?: string[];
+  user?: UserInfoType[];
 }
 
 @State<FormsStateModel>({
