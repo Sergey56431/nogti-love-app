@@ -1,0 +1,48 @@
+@import "fonts";
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body, html {
+  font-family: 'Montserrat', sans-serif;
+}
+
+a {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+button {
+  cursor: pointer;
+}
+
+.container {
+  margin: 0 auto;
+  max-width: 1280px;
+}
+
+.page {
+  display: flex;
+}
+
+.button {
+  cursor: pointer;
+}
+
+.text-danger {
+  color: red;
+  font-size: 12px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+
+.page-content{
+  padding-top: 30px;
+  .page-title {
+    font-size: 70px;
+    font-family: 'Montserrat-Bold', sans-serif;
+    margin-bottom: 58px;
+  }
+}

@@ -1,0 +1,58 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <a routerLink="/main" class="sidebar-logo">
+      <img src="/images/logo-sidebar.png" alt="логотип">
+    </a>
+  </div>
+  <div class="sidebar-body">
+    <nav class="menu">
+      <ul class="menu-items">
+        <li class="menu-item active" routerLink="/main" routerLinkActive="active">
+          <mat-icon>home</mat-icon>
+          <a>Главная</a>
+        </li>
+        <li class="menu-item" routerLink="/clients" routerLinkActive="active">
+          <mat-icon>apps</mat-icon>
+          <a>База клиентов</a>
+        </li>
+        <li class="menu-item" routerLinkActive="active">
+          <mat-icon>event_note</mat-icon>
+          <a>Расписание</a>
+        </li>
+        <li class="menu-item" routerLinkActive="active">
+          <mat-icon>group</mat-icon>
+          <a>Мой персонал</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <div class="sidebar-footer">
+    @if (user) {
+      <a [matMenuTriggerFor]="menu" class="profile">
+        <div class="profile-icon">
+          <img src="/images/profile-non-icon.png" alt="Профиль">
+        </div>
+        <div class="profile-info">
+
+          <p class="profile-name">{{ this.user?.name }}</p>
+
+        </div>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item>
+            <mat-icon>settings</mat-icon>
+            <span>Настройки</span>
+          </button>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Выход </span>
+          </button>
+        </mat-menu>
+      </a>
+    } @else {
+      <a routerLink="/login" class="login-ref">
+        <mat-icon>login</mat-icon>
+        <span>Войти</span>
+      </a>
+    }
+  </div>
+</aside>
