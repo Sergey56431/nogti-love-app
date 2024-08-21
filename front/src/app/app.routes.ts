@@ -5,6 +5,7 @@ import {AuthForvardGuard} from "./core/auth/auth-forvard.guard";
 
 export const routes: Routes = [
   {path: '', redirectTo: 'main', pathMatch: 'full'},
+  // {path: '**' , redirectTo: '', pathMatch: 'full'},
 
   {
     path: '',

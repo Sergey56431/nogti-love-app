@@ -1,32 +1,22 @@
 import { Injectable } from '@angular/core';
 import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { SetAuthData } from './auth.actions';
+import {UserInfoType} from "../../../shared/types/user-info.type";
 
 export interface AuthenticationStateModel {
-  id: string;
-  firstName: string;
-  lastName: string;
-  fullName: string;
-  email: string;
-  roles: string[];
+  user: UserInfoType[]
 }
 
 @State<AuthenticationStateModel>({
   name: 'authState',
-  defaults: {
-    id: '',
-    firstName: '',
-    lastName: '',
-    fullName: '',
-    email: '',
-    roles: []
-  }
+  defaults: {}
 })
 @Injectable()
 export class AuthState {
+
   @Selector()
   static getAuthData(state: AuthenticationStateModel): AuthenticationStateModel {
-    return AuthState.getInstanceState(state);
+    return state.user;
   }
 
   private static setInstanceState(state: AuthenticationStateModel): AuthenticationStateModel {

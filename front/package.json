@@ -23,7 +23,7 @@
     "@angular/router": "^18.0.0",
     "@ngxs/devtools-plugin": "^18.1.1-dev.master-d756c2a",
     "@ngxs/logger-plugin": "^18.1.1-dev.master-d756c2a",
-    "@ngxs/store": "^18.1.0",
+    "@ngxs/store": "^18.1.1-dev.master-d756c2a",
     "chart.js": "^4.3.0",
     "ng2-charts": "^6.0.1",
     "ngx-cookie-service": "^18.0.0",

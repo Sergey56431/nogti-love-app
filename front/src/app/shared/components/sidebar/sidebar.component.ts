@@ -8,6 +8,7 @@ import {MatButtonModule} from "@angular/material/button";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {AuthService} from "../../../core/auth/auth.service";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
+import {AdminsRoute} from "../../utils/admins-route";
 
 @Component({
   selector: 'app-sidebar',
@@ -29,13 +30,15 @@ import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss'
 })
-export class SidebarComponent implements OnInit{
+export class SidebarComponent implements OnInit {
 
   isLogged = false;
   user = this.authService.getUserInfo();
+
   constructor(private authService: AuthService,
               private router: Router,
-              private _snackBar: MatSnackBar) { }
+              private _snackBar: MatSnackBar) {
+  }
 
   ngOnInit(): void {
     this.authService.isLogged$.subscribe((isLoggedIn: boolean) => {
@@ -43,18 +46,23 @@ export class SidebarComponent implements OnInit{
     });
   }
 
-  logout(){{
+  protected _menuAdminItems = [
+    {route: AdminsRoute.main, icon: 'home', routeName: 'Главная'},
+    {route: AdminsRoute.clients, icon: 'apps', routeName: 'База клиентов'},
+    {route: AdminsRoute.directs, icon: 'event_note', routeName: 'Расписание'},
+    {route: AdminsRoute.employs, icon: 'group', routeName: 'Персонал'},
+  ];
+
+  logout() {
     this.authService.logout()
       .subscribe({
         next: () => {
-          ``;
           this.doLogout();
         },
         error: () => {
           this.doLogout();
         }
       });
-  }
   }
 
   doLogout() {

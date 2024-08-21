@@ -7,22 +7,12 @@
   <div class="sidebar-body">
     <nav class="menu">
       <ul class="menu-items">
-        <li class="menu-item active" routerLink="/main" routerLinkActive="active">
-          <mat-icon>home</mat-icon>
-          <a>Главная</a>
-        </li>
-        <li class="menu-item" routerLink="/clients" routerLinkActive="active">
-          <mat-icon>apps</mat-icon>
-          <a>База клиентов</a>
-        </li>
-        <li class="menu-item" routerLinkActive="active">
-          <mat-icon>event_note</mat-icon>
-          <a>Расписание</a>
-        </li>
-        <li class="menu-item" routerLinkActive="active">
-          <mat-icon>group</mat-icon>
-          <a>Мой персонал</a>
-        </li>
+        @for(item of _menuAdminItems; track item) {
+          <li class="menu-item" routerLink="{{item.route}}" routerLinkActive="active">
+            <mat-icon>{{item.icon}}</mat-icon>
+            <a>{{item.routeName}}</a>
+          </li>
+        }
       </ul>
     </nav>
   </div>
@@ -34,7 +24,7 @@
         </div>
         <div class="profile-info">
 
-          <p class="profile-name">{{ this.user?.name }}</p>
+          <p class="profile-name">{{ this.user!.name }}</p>
 
         </div>
         <mat-menu #menu="matMenu">
