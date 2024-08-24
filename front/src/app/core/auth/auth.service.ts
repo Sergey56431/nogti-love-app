@@ -2,11 +2,13 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {CookieService} from "ngx-cookie-service";
 import {Observable, Subject, tap} from "rxjs";
-import {LoginResponseType} from "../../shared/types/login-response.type";
-import {SignupResponseType} from "../../shared/types/signup-response.type";
-import {DefaultResponseType} from "../../shared/types/default-response.type";
-import {RefreshResponseType} from "../../shared/types/refresh-response.type";
-import {UserInfoType} from "../../shared/types/user-info.type";
+import {
+  DefaultResponseType,
+  LoginResponseType,
+  RefreshResponseType,
+  SignupResponseType,
+  UserInfoType
+} from "@shared/types";
 import {environment} from "../../../environments/environment";
 
 

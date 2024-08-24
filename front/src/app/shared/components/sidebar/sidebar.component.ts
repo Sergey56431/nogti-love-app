@@ -6,9 +6,9 @@ import {MatIconModule} from "@angular/material/icon";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatButtonModule} from "@angular/material/button";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {AuthService} from "../../../core/auth/auth.service";
+import {AuthService} from "@core/auth";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
-import {AdminsRoute} from "../../utils/admins-route";
+import {AdminsRoute} from "@shared/utils";
 
 @Component({
   selector: 'app-sidebar',
@@ -32,17 +32,17 @@ import {AdminsRoute} from "../../utils/admins-route";
 })
 export class SidebarComponent implements OnInit {
 
-  isLogged = false;
-  user = this.authService.getUserInfo();
+  private _isLogged = false;
+  public user = this._authService.getUserInfo();
 
-  constructor(private authService: AuthService,
-              private router: Router,
+  constructor(private _authService: AuthService,
+              private _router: Router,
               private _snackBar: MatSnackBar) {
   }
 
   ngOnInit(): void {
-    this.authService.isLogged$.subscribe((isLoggedIn: boolean) => {
-      this.isLogged = isLoggedIn;
+    this._authService.isLogged$.subscribe((isLoggedIn: boolean) => {
+      this._isLogged = isLoggedIn;
     });
   }
 
@@ -54,7 +54,7 @@ export class SidebarComponent implements OnInit {
   ];
 
   logout() {
-    this.authService.logout()
+    this._authService.logout()
       .subscribe({
         next: () => {
           this.doLogout();
@@ -66,9 +66,9 @@ export class SidebarComponent implements OnInit {
   }
 
   doLogout() {
-    this.authService.removeTokens();
+    this._authService.removeTokens();
     // this.authService.userId = null;
     this._snackBar.open('Вы успешно вышли из системы');
-    this.router.navigate(['/']);
+    this._router.navigate(['/']);
   }
 }

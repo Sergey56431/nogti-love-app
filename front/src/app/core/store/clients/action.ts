@@ -1,4 +1,4 @@
-import {ClientType} from "../../../shared/types/client-type";
+import {ClientType} from "@shared/types";
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace ClientsAction {

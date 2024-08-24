@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {NgForOf} from "@angular/common";
-import {ItemChangerDirective} from "../../../directives/item-changer.directive";
+import {ItemChangerDirective} from "@shared/directives";
 import {MatIcon} from "@angular/material/icon";
 import {MatIconButton} from "@angular/material/button";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";

@@ -1,7 +1,7 @@
 import {Action, Selector, State, StateContext} from "@ngxs/store";
 import {Inject, Injectable} from "@angular/core";
 import {ClientsAction} from "./action";
-import {ClientsService} from "../../../shared/services/clients.service"; //переделать импорты
+import {ClientsService} from "@shared/services"; //переделать импорты
 import {patch} from "@ngxs/store/operators";
 
 export interface ClientsStateModel {
