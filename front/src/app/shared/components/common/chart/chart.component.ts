@@ -22,7 +22,7 @@ import {MatIcon} from '@angular/material/icon';
 })
 export class ChartComponent {
 
-  protected pieChartOptions: ChartOptions<'pie'> = {
+  protected pieChartOptions: ChartOptions<'doughnut'> = {
     plugins: {
       colors: {
         enabled: true,

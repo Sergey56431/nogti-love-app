@@ -2,20 +2,22 @@
 @import "../../../../../assets/styles/mixins";
 
 .date-picker {
-  width: 881px;
-  height: 513px;
+  border-radius: 10px;
+  width: 790px;
+  height: 432px;
   border: 1px solid #ccc;
 
   .date-picker-title {
+    border-radius: 7px 7px 0 0;
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: center;
     background-color: #cccccc;
     padding: 0 7px;
 
     h2 {
-      font-size: 30px;
-      margin-right: 10px;
+      font-size: 24px;
+      margin-right: 5px;
     }
 
     button {
@@ -32,23 +34,24 @@
     .calendar {
       padding-right: 38px;
       border-right: 1px solid #D9D9D9;
-      padding-bottom: 107px;
+      padding-bottom: 82px;
 
       .calendar-title {
-        font-size: 30px;
+        font-size: 24px;
         text-align: center;
         margin-bottom: 24px;
       }
 
       .calendar-date-items {
+        border-radius: 8px;
         padding: 3px;
         box-sizing: border-box;
         display: grid;
-        grid-template-columns: repeat(7, 44px);
-        grid-template-rows: repeat(5, 42px);
+        grid-template-columns: repeat(7, 34px);
+        grid-template-rows: repeat(5, 32px);
         gap: 4px;
-        width: 339px;
-        height: 233px;
+        width: 268px;
+        height: 183px;
         background-color: #D9D9D9;
         transition: .15s all ease-in-out;
 
@@ -74,7 +77,7 @@
             .checkbox-count {
               z-index: 5;
               position: relative;
-              font-size: 24px;
+              font-size: 18px;
               font-weight: bold;
 
             }
@@ -83,8 +86,9 @@
               content: "";
               position: absolute;
               display: inline-block;
-              width: 42px;
-              height: 42px;
+              border-radius: 5px;
+              width: 32px;
+              height: 32px;
               flex-shrink: 0;
               flex-grow: 0;
               background: white no-repeat center center;
@@ -182,7 +186,7 @@
     }
 
     .no-content {
-      font-size: 30px;
+      font-size: 26px;
       font-family: 'Montserrat SemiBold', sans-serif;
       margin: auto auto;
     }
@@ -192,15 +196,14 @@
 
       .timetable-day {
         font-family: 'Montserrat-SemiBold', sans-serif;
-        font-size: 30px;
+        font-size: 24px;
         margin-bottom: 23px;
-
       }
 
       .timetable-items {
         position: relative;
         list-style: none;
-        padding-bottom: 61px;
+        padding-bottom: 40px;
         border-bottom: 1px solid #cccccc;
 
         .loadElseDirect {
@@ -209,6 +212,10 @@
           bottom: 5px;
           left: calc(50% - 25px);
           @include transition;
+
+          svg {
+            border-radius: 3px;
+          }
 
           &:hover {
             svg {
@@ -247,14 +254,15 @@
             }
 
             .item-profile-img {
-              width: 42px;
-              height: 42px;
+              border-radius: 5px;
+              width: 32px;
+              height: 32px;
               background-color: $busy-color;
               margin-right: 20px;
             }
 
             .item-profile-name {
-              font-size: 16px;
+              font-size: 14px;
               width: 138px;
               margin-right: 16px;
             }
@@ -268,23 +276,26 @@
       }
 
       button {
+        border-radius: 10px;
         box-sizing: border-box;
         display: flex;
         align-items: center;
         border: none;
         padding: 7px 23px 7px 8px;
         background-color: transparent;
-        margin-top: 21px;
+        margin-top: 10px;
         @include transition;
 
         .button-icon {
+          border-radius: 5px;
           padding: 8px;
           background: #D9D9D9;
           margin-right: 15px;
+          @include transition;
         }
 
         span {
-          font-size: 20px;
+          font-size: 18px;
         }
 
         &:hover {
@@ -327,6 +338,7 @@
     }
 
     .squire {
+      border-radius: 3px;
       box-sizing: border-box;
       width: 15px;
       height: 15px;
