@@ -1,6 +1,6 @@
 import {Routes} from '@angular/router';
-import {LayoutComponent} from "@shared/layout/layout.component";
-import {AuthForvardGuard, AuthGuard} from "@core/auth";
+import {LayoutComponent} from '@shared/layout/layout.component';
+import {AuthForvardGuard, AuthGuard} from '@core/auth';
 
 
 export const routes: Routes = [

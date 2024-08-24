@@ -16,7 +16,6 @@
       <h3 class="calendar-title">{{ month }}</h3>
       <div class="calendar-date-items">
         @for (item of dateCount; track item) {
-
           <input class="custom-checkbox"
                  (change)="onChange(item)"
                  [checked]="item === isChecked"
@@ -30,6 +29,8 @@
               {{ item }}
             </div>
           </label>
+        } @empty {
+          <div class="date-error">Ошибка загрузки календаря!!!</div>
         }
 
       </div>
@@ -82,7 +83,7 @@
             </div>
           }
         </ul>
-        <button type="button">
+        <button type="button" (click)="newDirect()">
           <div class="button-icon">
             <svg width="27" height="28" viewBox="0 0 27 28" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M13.5 0V28M0 13.5H26.5" stroke="white" stroke-opacity="0.44" stroke-width="3"/>
@@ -96,21 +97,21 @@
     }
   </div>
 </div>
-<div class="data-picker-annotation">
-  <div class="choiceDay">
-    <div class="squire"></div>
-    <span></span>
+<div class="date-picker-annotation">
+  <div class="item">
+    <div class="squire choiceDay"></div>
+    <span>Выбранный день</span>
   </div>
-  <div class="no-work-day">
-    <div class="squire"></div>
-    <span></span>
+  <div class="item ">
+    <div class="squire no-work-day"></div>
+    <span>Нерабочий день</span>
   </div>
-  <div class="busy-day">
-    <div class="squire"></div>
-    <span></span>
+  <div class="item">
+    <div class="squire busy-day"></div>
+    <span>Записей нет</span>
   </div>
-  <div class="free-day">
-    <div class="squire"></div>
-    <span></span>
+  <div class="item">
+    <div class="squire free-day"></div>
+    <span>Свободные окна</span>
   </div>
 </div>

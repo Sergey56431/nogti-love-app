@@ -97,7 +97,7 @@
             + label {
               &::before {
                 box-shadow: 0 0 4px inset rgba(0, 0, 0, 0.3);
-                background-color: #00379e;
+                background-color: $blue-color;
               }
 
               .checkbox-count {
@@ -173,7 +173,7 @@
           }
 
           &.active {
-            background-color: #00379e;
+            background-color: $blue-color;
             color: #fff;
             box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
           }
@@ -213,7 +213,7 @@
           &:hover {
             svg {
               path {
-                fill: #00379e;
+                fill: $blue-color;
                 box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
               }
             }
@@ -230,11 +230,11 @@
             transition: .2s all ease-in-out;
 
             &:hover {
-              background-color: #00379e;
+              background-color: $blue-color;
               box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
 
               .item-profile-phone, .item-profile-name, .item-time-direct {
-                color: #DEBBA2;
+                color: $busy-color;
               }
             }
 
@@ -249,7 +249,7 @@
             .item-profile-img {
               width: 42px;
               height: 42px;
-              background-color: #DEBBA2;
+              background-color: $busy-color;
               margin-right: 20px;
             }
 
@@ -288,7 +288,7 @@
         }
 
         &:hover {
-          background-color: #00379e;
+          background-color: $blue-color;
 
           .button-icon {
             background-color:transparent;
@@ -300,9 +300,55 @@
           }
 
           span {
-            color: #DEBBA2;
+            color: $busy-color;
           }
         }
+      }
+    }
+  }
+}
+
+.date-picker-annotation {
+  margin-left: 15px;
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+
+  .item {
+    display: flex;
+    align-items: center;
+
+    span {
+      margin-left: 8px;
+    }
+
+    &:not(:first-child) {
+      margin-left: 10px;
+    }
+
+    .squire {
+      box-sizing: border-box;
+      width: 15px;
+      height: 15px;
+
+      &.choiceDay {
+        border: 1px solid $white-color;
+        background-color: $blue-color;
+        padding: 1px;
+        outline: 1px solid $blue-color;
+      }
+
+      &.busy-day {
+        background-color: $busy-color;
+      }
+
+      &.no-work-day {
+        background-color: $grey-color;
+      }
+
+      &.free-day {
+        background-color: $white-color;
+        border: 1px solid $blue-color;
       }
     }
   }

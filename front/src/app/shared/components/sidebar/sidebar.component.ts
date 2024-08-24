@@ -1,14 +1,14 @@
 import {Component, OnInit} from '@angular/core';
-import {MatSidenavModule} from "@angular/material/sidenav";
-import {MatListModule} from "@angular/material/list";
-import {Router, RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
-import {MatIconModule} from "@angular/material/icon";
-import {MatToolbarModule} from "@angular/material/toolbar";
-import {MatButtonModule} from "@angular/material/button";
-import {MatSnackBar} from "@angular/material/snack-bar";
-import {AuthService} from "@core/auth";
-import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
-import {AdminsRoute} from "@shared/utils";
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatListModule} from '@angular/material/list';
+import {Router, RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
+import {MatIconModule} from '@angular/material/icon';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatButtonModule} from '@angular/material/button';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {AuthService} from '@core/auth';
+import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
+import {AdminsRoute} from '@shared/utils';
 
 @Component({
   selector: 'app-sidebar',

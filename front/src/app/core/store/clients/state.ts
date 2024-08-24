@@ -1,17 +1,18 @@
-import {Action, Selector, State, StateContext} from "@ngxs/store";
-import {Inject, Injectable} from "@angular/core";
-import {ClientsAction} from "./action";
-import {ClientsService} from "@shared/services"; //переделать импорты
-import {patch} from "@ngxs/store/operators";
+import {Action, Selector, State, StateContext} from '@ngxs/store';
+import {Inject, Injectable} from '@angular/core';
+import {ClientsAction} from './action';
+import {ClientsService} from '@shared/services'; //переделать импорты
+import {patch} from '@ngxs/store/operators';
+import {ClientType} from '@shared/types';
 
 export interface ClientsStateModel {
-  clients?: []
+  clients?: ClientType[]
 }
 
 @State<ClientsStateModel>({
   name: 'clients',
   defaults: {
-    clients: [],
+    clients: []
   }
 })
 
@@ -31,7 +32,7 @@ export class ClientsState {
       return;
     }
     this._service.getClients()
-      .subscribe(clients => {
+      .subscribe((clients: ClientType[] )=> {
         ctx.setState(patch({
           clients: clients
         }));

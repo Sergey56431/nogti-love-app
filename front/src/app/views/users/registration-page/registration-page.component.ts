@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
-import {NgIf, NgStyle} from "@angular/common";
-import {Router, RouterLink} from "@angular/router";
-import {HttpErrorResponse} from "@angular/common/http";
-import {MatSnackBar} from "@angular/material/snack-bar";
-import {AuthService} from "@core/auth";
-import {DefaultResponseType, LoginResponseType, SignupResponseType} from "@shared/types";
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {NgIf, NgStyle} from '@angular/common';
+import {Router, RouterLink} from '@angular/router';
+import {HttpErrorResponse} from '@angular/common/http';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {AuthService} from '@core/auth';
+import {DefaultResponseType, LoginResponseType, SignupResponseType} from '@shared/types';
 
 
 @Component({

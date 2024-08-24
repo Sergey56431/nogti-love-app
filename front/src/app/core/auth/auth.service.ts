@@ -1,15 +1,15 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {CookieService} from "ngx-cookie-service";
-import {Observable, Subject, tap} from "rxjs";
+import {HttpClient} from '@angular/common/http';
+import {CookieService} from 'ngx-cookie-service';
+import {Observable, Subject, tap} from 'rxjs';
 import {
   DefaultResponseType,
   LoginResponseType,
   RefreshResponseType,
   SignupResponseType,
   UserInfoType
-} from "@shared/types";
-import {environment} from "../../../environments/environment";
+} from '@shared/types';
+import {environment} from '../../../environments/environment';
 
 
 @Injectable({

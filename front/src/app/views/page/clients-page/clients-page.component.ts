@@ -9,7 +9,7 @@ import {
   MatRow, MatRowDef, MatTable,
   MatTableDataSource,
 } from '@angular/material/table';
-import {MatPaginator} from "@angular/material/paginator";
+import {MatPaginator} from '@angular/material/paginator';
 
 export interface PeriodicElement {
   name: string;
