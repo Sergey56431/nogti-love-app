@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { SetAuthData } from './auth.actions';
-import {UserInfoType} from "../../../shared/types/user-info.type";
+import {UserInfoType} from '../../../shared/types/user-info.type';
 
 export interface AuthenticationStateModel {
   user: UserInfoType[]

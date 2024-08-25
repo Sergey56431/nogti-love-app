@@ -1,13 +1,12 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
-import {NgIf, NgStyle} from "@angular/common";
-import {Router, RouterLink} from "@angular/router";
-import {HttpErrorResponse} from "@angular/common/http";
-import {AuthService} from "../../../core/auth/auth.service";
-import {MatSnackBar} from "@angular/material/snack-bar";
-import {DefaultResponseType} from "../../../shared/types/default-response.type";
-import {SignupResponseType} from "../../../shared/types/signup-response.type";
-import {LoginResponseType} from "../../../shared/types/login-response.type";
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {NgIf, NgStyle} from '@angular/common';
+import {Router, RouterLink} from '@angular/router';
+import {HttpErrorResponse} from '@angular/common/http';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {AuthService} from '@core/auth';
+import {DefaultResponseType, LoginResponseType, SignupResponseType} from '@shared/types';
+
 
 @Component({
   selector: 'app-registration-page',

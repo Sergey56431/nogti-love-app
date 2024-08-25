@@ -1,9 +1,10 @@
-import {Component, OnInit} from '@angular/core';
-import {NgForOf} from "@angular/common";
-import {ItemChangerDirective} from "../../../directives/item-changer.directive";
-import {MatIcon} from "@angular/material/icon";
-import {MatIconButton} from "@angular/material/button";
-import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {NgForOf} from '@angular/common';
+import {ItemChangerDirective} from '@shared/directives';
+import {MatIcon} from '@angular/material/icon';
+import {MatIconButton} from '@angular/material/button';
+import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
+import {DialogOpenService} from '@shared/services';
 
 @Component({
   selector: 'app-date-picker',
@@ -18,10 +19,14 @@ import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
     MatMenuTrigger,
   ],
   templateUrl: './date-picker.component.html',
-  styleUrl: './date-picker.component.scss'
-
+  styleUrl: './date-picker.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatePickerComponent implements OnInit{
+
+  constructor(private _dialogOpen: DialogOpenService){
+
+  };
 
   protected month = '';
   protected day = '';
@@ -31,7 +36,7 @@ export class DatePickerComponent implements OnInit{
   directs = 5;
 
   ngOnInit() {
-    this.month = this.date.toLocaleDateString('default', {month: "long"});
+    this.month = this.date.toLocaleDateString('default', {month: 'long'});
     this.month = this.month.charAt(0).toUpperCase() + this.month.slice(1);
   }
 
@@ -41,6 +46,10 @@ export class DatePickerComponent implements OnInit{
 
   choiceDay(item: number) {
     this.day = item + ' ' + this.month;
+  }
+
+  newDirect(){
+    this._dialogOpen.openWindow();
   }
 
   protected readonly ItemChangerDirective = ItemChangerDirective;

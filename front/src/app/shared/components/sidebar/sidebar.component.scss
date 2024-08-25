@@ -1,24 +1,15 @@
 @import "../../../../assets/styles/variables";
+@import "../../../../assets/styles/mixins";
 
 .sidebar {
   height: 100vh;
+  width: 200px;
   display: flex;
   flex-direction: column;
+  border-radius: 0 20px 20px 0;
   background-color: #D9D9D9;
-  border-right: 1px solid $half-blue-color;
   margin-right: 60px;
-
-  .sidebar-header {
-    .sidebar-logo {
-
-      border-bottom: 1px solid $half-blue-color;
-
-      img {
-        width: 200px;
-        padding: 20px 10px;
-      }
-    }
-  }
+  @include transition;
 
   .sidebar-body {
     padding: 20px 10px;
@@ -32,6 +23,8 @@
           box-sizing: border-box;
           padding: 10px 8px;
           display: flex;
+          font-size: 14px;
+          border-radius: 10px;
           cursor: pointer;
           align-items: center;
           margin-bottom: 5px;
@@ -41,68 +34,41 @@
              box-shadow: inset 0 4px 4px 0 rgba(0, 0, 0, 0.25);
              background: $blue-color;
 
-             a, .mat-icon {
-               color: white;
+             span, .mat-icon {
+               color: $white-color;
              }
            }
 
           &:hover:not(.active) {
             box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
-            border-color:$blue-color;
+
             background: white;
 
-            a, .mat-icon {
+            span, .mat-icon {
               color: $blue-color;
             }
           }
 
-          a {
+          span {
             margin-left: 10px;
             color: #202020;
           }
         }
       }
-
     }
   }
 
-  .sidebar-footer {
-
-    border-top: 1px solid $half-blue-color;
-    padding-top: 20px;
-    position: fixed;
-    bottom: 20px;
-    padding-left: 20px;
-    width: 100%;
-    max-width: 200px;
-
-    .login-ref {
-      display: flex;
-      align-items: center;
-      color: black;
-
-      .mat-icon {
-        margin-right: 10px;
-      }
-    }
-
-    .profile {
-      display: flex;
-      align-items: center;
-      text-decoration: none;
-
-      .profile-icon {
-        height: 34px;
-        width: 35px;
-      }
-
-      .profile-info {
-        margin-left: 10px;
-
-        .profile-name {
-          color: $blue-color;
+  &.close {
+      width: 62px;
+      .sidebar-body {
+        .menu-items {
+          .menu-item {
+            span {
+              display: none;
+            }
+          }
         }
       }
-    }
+
   }
 }

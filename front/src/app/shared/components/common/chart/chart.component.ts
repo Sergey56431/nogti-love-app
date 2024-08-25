@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import {BaseChartDirective} from "ng2-charts";
-import {ChartOptions} from "chart.js";
-import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
-import {MatButton, MatIconButton} from "@angular/material/button";
-import {MatIcon} from "@angular/material/icon";
+import {BaseChartDirective} from 'ng2-charts';
+import {ChartOptions} from 'chart.js';
+import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
+import {MatButton, MatIconButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
   selector: 'app-chart',
@@ -22,7 +22,7 @@ import {MatIcon} from "@angular/material/icon";
 })
 export class ChartComponent {
 
-  protected pieChartOptions: ChartOptions<'pie'> = {
+  protected pieChartOptions: ChartOptions<'doughnut'> = {
     plugins: {
       colors: {
         enabled: true,
@@ -35,8 +35,8 @@ export class ChartComponent {
 };
   protected pieChartDatasets = [{
     data: [235, 765],
-    backgroundColor: ['#dfc49c', '#00379e'],
-    hoverBackgroundColor: ['#f3cd8e', '#0649c5'],
+    backgroundColor: ['#dfc49c', '#0E55DD'],
+    hoverBackgroundColor: ['#f3cd8e', '#003381'],
   }];
   protected pieChartLegend = true;
   protected pieChartPlugins = {
@@ -45,5 +45,8 @@ export class ChartComponent {
       align: 'end',
     }
   };
+
+
+
 
 }

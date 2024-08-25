@@ -16,6 +16,7 @@ module.exports = tseslint.config(
     rules: {
       // "quotes": ["error", "always"],
       "semi": ["error", "always"],
+      "quotes": ["error", "single"],
       "@angular-eslint/directive-selector": [
         "error",
         {
@@ -34,12 +35,12 @@ module.exports = tseslint.config(
       ],
     },
   },
-  {
-    files: ["**/*.html"],
-    extends: [
-      ...angular.configs.templateRecommended,
-      ...angular.configs.templateAccessibility,
-    ],
-    rules: {},
-  }
+  // {
+  //   files: ["**/*.html"],
+  //   extends: [
+  //     ...angular.configs.templateRecommended,
+  //     ...angular.configs.templateAccessibility,
+  //   ],
+  //   rules: {},
+  // }
   );

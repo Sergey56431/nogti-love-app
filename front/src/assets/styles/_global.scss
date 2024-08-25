@@ -6,6 +6,7 @@
 }
 
 body, html {
+  height: 100vh;
   font-family: 'Montserrat', sans-serif;
 }
 
@@ -41,8 +42,8 @@ button {
 .page-content{
   padding-top: 30px;
   .page-title {
-    font-size: 70px;
+    font-size: 40px;
     font-family: 'Montserrat-Bold', sans-serif;
-    margin-bottom: 58px;
+    margin-bottom: 40px;
   }
 }
