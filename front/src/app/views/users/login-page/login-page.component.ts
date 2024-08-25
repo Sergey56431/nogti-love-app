@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
-import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
-import {NgIf, NgStyle} from "@angular/common";
-import {Router, RouterLink} from "@angular/router";
-import {AuthService} from "../../../core/auth/auth.service";
-import {MatSnackBar} from "@angular/material/snack-bar";
-import {LoginResponseType} from "../../../shared/types/login-response.type";
-import {HttpErrorResponse} from "@angular/common/http";
-import {DefaultResponseType} from "../../../shared/types/default-response.type";
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {NgIf, NgStyle} from '@angular/common';
+import {Router, RouterLink} from '@angular/router';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {HttpErrorResponse} from '@angular/common/http';
+import {AuthService} from '@core/auth';
+import {DefaultResponseType, LoginResponseType} from '@shared/types';
 
 @Component({
   selector: 'app-login-page',

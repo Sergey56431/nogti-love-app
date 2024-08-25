@@ -3,7 +3,7 @@ import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { DictionaryReset, SetDictionaryData } from './dictionary.actions';
 
 export interface DictionaryStateModel {
-  content: any[];
+  content: unknown[];
   page: number;
   size: number;
   totalPages: number;

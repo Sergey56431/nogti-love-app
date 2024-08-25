@@ -1,7 +1,7 @@
 import {Routes} from '@angular/router';
-import {LayoutComponent} from "./shared/layout/layout.component";
-import {AuthGuard} from "./core/auth/auth.guard";
-import {AuthForvardGuard} from "./core/auth/auth-forvard.guard";
+import {LayoutComponent} from '@shared/layout/layout.component';
+import {AuthForvardGuard, AuthGuard} from '@core/auth';
+
 
 export const routes: Routes = [
   {path: '', redirectTo: 'main', pathMatch: 'full'},
