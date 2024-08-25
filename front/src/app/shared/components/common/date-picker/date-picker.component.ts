@@ -28,7 +28,6 @@ export class DatePickerComponent implements OnInit{
 
   };
 
-
   protected month = '';
   protected day = '';
   protected isChecked: number | null = null;
