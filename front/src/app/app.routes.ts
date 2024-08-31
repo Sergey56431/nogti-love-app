@@ -10,7 +10,7 @@ export const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
     children: [
       {
         path: 'main',
@@ -20,6 +20,11 @@ export const routes: Routes = [
       {
         path: 'clients',
         loadComponent:() => import('./views/page').then(c => c.ClientsPageComponent),
+        title: 'Клиенты'
+      },
+      {
+        path: 'schedule',
+        loadComponent:() => import('./views/page').then(c => c.SchedulePageComponent),
         title: 'Клиенты'
       },
     ]

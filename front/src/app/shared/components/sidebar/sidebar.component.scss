@@ -2,12 +2,15 @@
 @import "../../../../assets/styles/mixins";
 
 .sidebar {
-  height: 100vh;
+  height: 92vh;
   width: 200px;
+  position: fixed;
+  left: 0;
+  top: 70px;
   display: flex;
   flex-direction: column;
   border-radius: 0 20px 20px 0;
-  background-color: #D9D9D9;
+  background-color: $bg-color;
   margin-right: 60px;
   @include transition;
 
@@ -69,6 +72,5 @@
           }
         }
       }
-
   }
 }

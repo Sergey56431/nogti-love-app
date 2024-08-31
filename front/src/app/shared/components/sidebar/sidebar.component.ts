@@ -1,4 +1,4 @@
-import {Component, computed, signal} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatListModule} from '@angular/material/list';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
@@ -40,10 +40,7 @@ export class SidebarComponent {
   protected _menuAdminItems = [
     {route: AdminsRoute.main, icon: 'home', routeName: 'Главная'},
     {route: AdminsRoute.clients, icon: 'apps', routeName: 'База клиентов'},
-    {route: AdminsRoute.directs, icon: 'event_note', routeName: 'Расписание'},
+    {route: AdminsRoute.schedule, icon: 'event_note', routeName: 'Расписание'},
     {route: AdminsRoute.employs, icon: 'group', routeName: 'Персонал'},
   ];
-
-
-
 }

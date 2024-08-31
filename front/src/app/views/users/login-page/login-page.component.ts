@@ -22,42 +22,42 @@ import {DefaultResponseType, LoginResponseType} from '@shared/types';
 export class LoginPageComponent {
 
   isLogged = false;
-  loginForm = this.fb.group({
+  protected _loginForm = this._fb.group({
     username: ['', [ Validators.required]],
     password: ['', [Validators.pattern('(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,12})$'), Validators.required]],
     rememberMe: false
   });
 
-  constructor(private fb: FormBuilder,
-              private authService: AuthService,
-              private router: Router,
+  constructor(private _fb: FormBuilder,
+              private _authService: AuthService,
+              private _router: Router,
               private _snackBar: MatSnackBar) {
   }
 
   get username() {
-    return this.loginForm.get('username');
+    return this._loginForm.get('username');
   }
 
   get password() {
-    return this.loginForm.get('password');
+    return this._loginForm.get('password');
   }
 
   login() {
-    if (this.loginForm.valid && this.loginForm.value.username && this.loginForm.value.password) {
-      this.authService.login(this.loginForm.value.username, this.loginForm.value.password)
+    if (this._loginForm.valid && this._loginForm.value.username && this._loginForm.value.password) {
+      this._authService.login(this._loginForm.value.username, this._loginForm.value.password)
         .subscribe({
           next: (data: LoginResponseType | DefaultResponseType) => {
             if (!(data as LoginResponseType).accessToken) {
               this._snackBar.open('Ошибка при авторизации');
               throw new Error(data.message ? data.message : 'Error with data on login');
             }
-            this.authService.setUserInfo({
-              name: this.loginForm.value.username,
+            this._authService.setUserInfo({
+              name: this._loginForm.value.username,
 
             });
             if (data && (data as LoginResponseType).accessToken){
-              this.authService.setTokens((data as LoginResponseType).accessToken);
-              this.router.navigate(['/main']);
+              this._authService.setTokens((data as LoginResponseType).accessToken);
+              this._router.navigate(['/main']);
             }
 
 

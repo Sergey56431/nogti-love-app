@@ -1,5 +1,5 @@
 <section class="forms" >
-  <form class="form" [formGroup]="signupForm">
+  <form class="form" [formGroup]="_signupForm">
     <div class="user-logo">
       <img src="/images/logo.png" alt="Логотип">
     </div>
@@ -78,6 +78,6 @@
     <div class="loginRef">
       <span>У меня уже есть страница. </span><a routerLink="/login">Войти</a>
     </div>
-    <button class="formBtn" [disabled]="signupForm.invalid" (click)="signup()">Зарегистрироваться</button>
+    <button class="formBtn" [disabled]="_signupForm.invalid" (click)="signup()">Зарегистрироваться</button>
   </form>
 </section>

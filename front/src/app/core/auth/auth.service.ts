@@ -95,7 +95,7 @@ export class AuthService {
     return null;
   }
 
-  public setUserInfo(info: {}) {
+  public setUserInfo(info: object) {
     localStorage.setItem(this.userInfoKey, JSON.stringify(info));
   }
 

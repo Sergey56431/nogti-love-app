@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 import {MatIcon} from '@angular/material/icon';

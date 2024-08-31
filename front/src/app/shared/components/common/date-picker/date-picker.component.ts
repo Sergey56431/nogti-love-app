@@ -52,9 +52,9 @@ export class DatePickerComponent implements OnInit{
     this._dialogOpen.openWindow();
   }
 
-  protected _getDirects() {
-
-  }
+  // protected _getDirects() {
+  //
+  // }
 
   protected readonly ItemChangerDirective = ItemChangerDirective;
 }

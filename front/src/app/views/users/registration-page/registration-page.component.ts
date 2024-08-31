@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NgIf, NgStyle} from '@angular/common';
 import {Router, RouterLink} from '@angular/router';
@@ -20,9 +20,9 @@ import {DefaultResponseType, LoginResponseType, SignupResponseType} from '@share
   ],
   templateUrl: './registration-page.component.html'
 })
-export class RegistrationPageComponent implements OnInit {
+export class RegistrationPageComponent {
 
-  signupForm = this.fb.group({
+  protected _signupForm = this._fb.group({
     email: ['', [Validators.email, Validators.required]],
     password: ['', [Validators.pattern('^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,12})$'), Validators.required]],
     username: ['', [Validators.required]],
@@ -33,29 +33,26 @@ export class RegistrationPageComponent implements OnInit {
 
   // private birthDay: string[] = [];
 
-  constructor(private authService: AuthService,
-              private router: Router,
-              private fb: FormBuilder,
+  constructor(private _authService: AuthService,
+              private _router: Router,
+              private _fb: FormBuilder,
               private _snackBar: MatSnackBar) {
   }
 
-  ngOnInit(): void {
-  }
-
   get username() {
-    return this.signupForm.get('username');
+    return this._signupForm.get('username');
   }
 
   get email() {
-    return this.signupForm.get('email');
+    return this._signupForm.get('email');
   }
 
   get password() {
-    return this.signupForm.get('password');
+    return this._signupForm.get('password');
   }
 
   get phone() {
-    return this.signupForm.get('phone');
+    return this._signupForm.get('phone');
   }
 
   // get birth_day() {
@@ -63,25 +60,26 @@ export class RegistrationPageComponent implements OnInit {
   // }
 
   signup() {
-    if (this.signupForm.valid && this.signupForm.value.email && this.signupForm.value.password
-      && this.signupForm.value.phone && this.signupForm.value.username
+    if (this._signupForm.valid && this._signupForm.value.email && this._signupForm.value.password
+      && this._signupForm.value.phone && this._signupForm.value.username
       //&& this.signupForm.value.birth_day
     ) {
 
       // this.birthDay = this.signupForm.value.birth_day.split('.');
       // let sendBirthDay = this.birthDay[2] + '-' + this.birthDay[1] + '-' + this.birthDay[0]
 
-      this.authService.signup(this.signupForm.value.email, this.signupForm.value.password,
-        this.signupForm.value.phone, this.signupForm.value.username)
+      this._authService.signup(this._signupForm.value.email, this._signupForm.value.password,
+        this._signupForm.value.phone, this._signupForm.value.username)
         .subscribe({
           next: (data: DefaultResponseType | SignupResponseType) => {
 
             let error = null;
             if ((data as DefaultResponseType).error !== undefined) {
               error = (data as DefaultResponseType).message;
+              console.log(error);
             }
 
-            this.authService.login(this.signupForm.value.phone!, this.signupForm.value.password!)
+            this._authService.login(this._signupForm.value.username!, this._signupForm.value.password!)
               .subscribe({
                 next: (data: LoginResponseType | DefaultResponseType) => {
                   if ((data as DefaultResponseType).error ||
@@ -89,7 +87,7 @@ export class RegistrationPageComponent implements OnInit {
                     this._snackBar.open('Ошибка при авторизации');
                     throw new Error(data.message ? data.message : 'Error with data on login');
                   }
-                  this.router.navigate(['/main']);
+                  this._router.navigate(['/main']);
                 },
                 error: (error: HttpErrorResponse) => {
                   this._snackBar.open('Ошибка при авторизации');

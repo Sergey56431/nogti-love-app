@@ -1,6 +1,6 @@
 <section class="forms" >
 
-  <form class="form" [formGroup]="loginForm">
+  <form class="form" [formGroup]="_loginForm">
     <div class="user-logo">
       <img src="/images/logo.png" alt="Логотип">
     </div>
@@ -37,6 +37,6 @@
     <div class="loginRef">
       <span>Ещё нет аккаунта? </span><a routerLink="/registration">Зарегистрировать</a>
     </div>
-    <button class="formBtn" [disabled]="loginForm.invalid" (click)="login()">Войти</button>
+    <button class="formBtn" [disabled]="_loginForm.invalid" (click)="login()">Войти</button>
   </form>
 </section>
