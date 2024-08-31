@@ -1,0 +1,50 @@
+<h2 mat-dialog-title>Новая запись</h2>
+<mat-dialog-content>
+  <form class="visit-form" [formGroup]="_newVisitor">
+    <mat-form-field class="visit-form-input">
+      <mat-label>Имя</mat-label>
+      <input type="text"
+             matInput
+             formControlName="name"
+             placeholder="Введите имя">
+      @if (_name?.errors?.['required'] && (_name?.touched || _name?.dirty)) {
+        <mat-error>Введите <strong>имя</strong> клиента</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field class="visit-form-input">
+      <mat-label>Телефон</mat-label>
+      <input type="text"
+             matInput
+             formControlName="phone"
+             placeholder="Введите телефон">
+      @if (_phone?.errors?.['required'] && (_phone?.touched || _phone?.dirty)) {
+        <mat-error>Введите <strong>телефон</strong> клиента</mat-error>
+      }
+      @if (_phone?.errors?.['pattern'] && !_phone?.errors?.['required']) {
+        <mat-error>Введите <strong>телефон</strong> клиента</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field class="visit-form-input">
+      <mat-label>Выберите время</mat-label>
+      <mat-select formControlName="dateVisit">
+        <mat-option value="option">09:00 - 11:00</mat-option>
+        <mat-option value="option">11:00 - 13:00</mat-option>
+        <mat-option value="option">14:00 - 17:00</mat-option>
+      </mat-select>
+      @if (_dateVisit?.errors?.['required'] || _dateVisit?.touched || _dateVisit?.dirty) {
+        <mat-error>Введите <strong>телефон</strong> клиента</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field class="visit-form-input">
+      <mat-label>Коментарий</mat-label>
+      <input type="text"
+             matInput
+             formControlName="comment"
+             placeholder="Комментарий">
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-flat-button [disabled]="_newVisitor.invalid" [mat-dialog-close]="true">Записать</button>
+  <button class="mat-warn" mat-flat-button mat-dialog-close>Отмена</button>
+</mat-dialog-actions>

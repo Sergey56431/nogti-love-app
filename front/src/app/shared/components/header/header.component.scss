@@ -1,0 +1,59 @@
+@import "../../../../assets/styles/variables";
+
+.header {
+  display: flex;
+  flex-grow: 1;
+  padding: 10px;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #D9D9D9;
+  border-radius: 0 0 20px 20px;
+  margin-bottom: 8px;
+
+  .header-left-content,
+  .header-right-content {
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .header-logo {
+    margin-left: 15px;
+
+    img {
+      width: 160px;
+    }
+  }
+
+  .header-profile-content {
+    margin-left: 15px;
+    margin-right: 10px;
+
+    .login-ref {
+      display: flex;
+      align-items: center;
+
+      .mat-icon {
+        margin-right: 10px;
+      }
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+
+      .profile-icon {
+        height: 34px;
+        width: 35px;
+      }
+
+      .profile-info {
+        margin-left: 10px;
+
+        .profile-name {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}

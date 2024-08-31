@@ -1,9 +1,9 @@
 <section class="forms" >
-  <div class="user-logo">
-    <img src="/images/logo.png" alt="Логотип">
-  </div>
-  <form class="form" [formGroup]="loginForm">
 
+  <form class="form" [formGroup]="loginForm">
+    <div class="user-logo">
+      <img src="/images/logo.png" alt="Логотип">
+    </div>
     <input class="input" formControlName="username"
            [ngStyle]="{'border-color': username?.invalid && (username?.dirty ) ? 'red' : '' }"
            type="text" placeholder="Имя">

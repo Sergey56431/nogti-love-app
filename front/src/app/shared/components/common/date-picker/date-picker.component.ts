@@ -24,8 +24,8 @@ import {DialogOpenService} from '@shared/services';
 })
 export class DatePickerComponent implements OnInit{
 
-  constructor(private _dialogOpen: DialogOpenService){
 
+  constructor(private _dialogOpen: DialogOpenService){
   };
 
   protected month = '';
@@ -50,6 +50,10 @@ export class DatePickerComponent implements OnInit{
 
   newDirect(){
     this._dialogOpen.openWindow();
+  }
+
+  protected _getDirects() {
+
   }
 
   protected readonly ItemChangerDirective = ItemChangerDirective;
