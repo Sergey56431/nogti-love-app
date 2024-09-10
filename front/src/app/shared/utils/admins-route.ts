@@ -3,4 +3,5 @@ export enum AdminsRoute {
   clients = '/clients',
   schedule = '/schedule',
   employs = '/employs',
+  operations = '/operations',
 }

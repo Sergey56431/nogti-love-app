@@ -1,4 +1,4 @@
-import {Component, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatListModule} from '@angular/material/list';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
@@ -28,7 +28,8 @@ import {MatTooltip} from '@angular/material/tooltip';
     MatTooltip
   ],
   templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.scss'
+  styleUrl: './sidebar.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SidebarComponent {
 
@@ -42,5 +43,6 @@ export class SidebarComponent {
     {route: AdminsRoute.clients, icon: 'apps', routeName: 'База клиентов'},
     {route: AdminsRoute.schedule, icon: 'event_note', routeName: 'Расписание'},
     {route: AdminsRoute.employs, icon: 'group', routeName: 'Персонал'},
+    {route: AdminsRoute.operations, icon: 'currency_ruble', routeName: 'Операции'},
   ];
 }

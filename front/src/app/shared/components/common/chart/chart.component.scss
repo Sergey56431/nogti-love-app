@@ -1,5 +1,14 @@
 .chart-content {
+  height: 432px;
+  padding: 30px;
+  border-radius: 20px;
+  box-sizing: border-box;
+  box-shadow: 0 0 20px 4px #3d3d3d33;
   text-align: center;
+
+  .chart-head {
+   margin-bottom: 10px;
+  }
 
   .chart-title-and-option {
     margin-top: 16px;

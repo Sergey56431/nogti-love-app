@@ -48,7 +48,7 @@ export class DirectVisitComponent {
   protected get _dateVisit() {
     return this._newVisitor.get('dateVisit');
   }
-  //
+
   // protected _sendNewDirect(){
   //
   // }

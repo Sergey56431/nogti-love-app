@@ -15,7 +15,7 @@
     <div class="calendar">
       <h3 class="calendar-title">{{ month }}</h3>
       <div class="calendar-date-items">
-        @for (item of dateCount; track item) {
+        @for (item of _dateCount(); track item) {
           <input class="custom-checkbox"
                  (change)="onChange(item)"
                  [checked]="item === isChecked"
@@ -30,7 +30,7 @@
             </div>
           </label>
         } @empty {
-          <div class="date-error">Ошибка загрузки календаря!!!</div>
+          <div class="date-error">Ошибка загрузки календаря</div>
         }
 
       </div>

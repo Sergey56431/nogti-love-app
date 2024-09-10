@@ -5,7 +5,7 @@
   border-radius: 10px;
   width: 790px;
   height: 432px;
-  border: 1px solid #ccc;
+  box-shadow: 0 0 20px 4px #3d3d3d33;
 
   .date-picker-title {
     border-radius: 7px 7px 0 0;
@@ -131,20 +131,13 @@
             background-color: #b3d7ff;
           }
 
-          &:focus + label::before {
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-          }
-
-          &:focus:not(:checked) + label::before {
-
-          }
-
           &:disabled {
+            color: white;
             + label {
               cursor: not-allowed;
 
               &::before {
-                background-color: #e9ecef;
+                background-color: $busy-color;
               }
 
               .checkbox-count {
@@ -170,7 +163,7 @@
           }
 
           &.disabled {
-            background: #aaa;
+            background: $busy-color;
             color: rgba(0, 0, 0, 0.38);
             cursor: not-allowed;
 

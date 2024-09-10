@@ -1,5 +1,5 @@
-import {Component} from '@angular/core';
-import {BaseChartDirective, ThemeService} from 'ng2-charts';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {BaseChartDirective} from 'ng2-charts';
 import {ChartComponent, DatePickerComponent} from '@shared/components';
 
 @Component({
@@ -7,12 +7,14 @@ import {ChartComponent, DatePickerComponent} from '@shared/components';
   standalone: true,
   imports: [BaseChartDirective, ChartComponent, DatePickerComponent],
   templateUrl: './main.component.html',
-  styleUrl: './main.component.scss'
+  styleUrl: './main.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MainComponent {
   title = 'Главная';
 
-  constructor(private pieService: ThemeService,) {
+  constructor() {
+
   }
 
 
