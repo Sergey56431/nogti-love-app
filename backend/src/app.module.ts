@@ -10,7 +10,7 @@ import cookieParser from "cookie-parser";
         UsersModule,
         AuthModule,
         MongooseModule.forRoot(
-            'mongodb+srv://fignya2605:gDzVhUKp1WBhB7fF@cluster0.kornc6n.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
+            'mongodb+srv://fignya2605:260520Zz_@cluster0.kornc6n.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
         ),
         ConfigModule.forRoot({
             envFilePath: '.env',
