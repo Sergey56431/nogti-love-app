@@ -1,60 +1,56 @@
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
-import {CreateUserDto} from "./dto/createUser.dto";
-import {UserEntity} from "./users.entity";
-import {InjectModel} from "@nestjs/mongoose";
-import {Model} from "mongoose";
-import {UserResponseType} from "./types/usersResponse.type";
-import {compare} from 'bcrypt';
-import {LoginDto} from "./dto/login.dto";
-import {sign} from 'jsonwebtoken';
-
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import {FilterQuery, Model} from 'mongoose';
+import { User, UserDocument } from './schemas/user.schema';
+import * as bcrypt from 'bcrypt';
+import {UpdateUserDto} from "./dto/update-user.dto";
+import {CreateUserDto} from "./dto/create-user.dto";
+import {ConfigService} from "@nestjs/config";
 
 @Injectable()
 export class UsersService {
-    constructor(@InjectModel(UserEntity.name) private userModel: Model<UserEntity>) {}
+    constructor(
+        @InjectModel(User.name)
+        private userModel: Model<UserDocument>,
+        private configService: ConfigService,
+        ) {}
 
-    async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
-        const user = await this.userModel.findOne({username: createUserDto.username})
-
-        if (user) {
-            throw new HttpException('Имя пользователя уже используется', HttpStatus.UNPROCESSABLE_ENTITY)
-        }
-
-        const createdUser = new this.userModel(createUserDto)
-        return createdUser.save()
+    async create(user: CreateUserDto): Promise<User> {
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(user.password, saltRounds);
+        const defaultPoints = parseInt(
+            this.configService.get<string>('DEFAULT_POINTS') || '0',
+            10,
+        );
+        return this.userModel.create({
+            ...user,
+            password: hashedPassword,
+            points: defaultPoints,
+            role: 'user'
+        });
     }
 
-    async loginUser(loginDto: LoginDto): Promise<UserEntity> {
-        const user = await this.findByUsername(loginDto.username);
-
-        if (!user) {
-            throw new HttpException('Пользователь не найден', HttpStatus.UNPROCESSABLE_ENTITY)
-        }
-
-        const isPasswordCorrect = await compare(loginDto.password, user.password)
-
-        if (!isPasswordCorrect) {
-            throw new HttpException('Неверный пароль', HttpStatus.UNPROCESSABLE_ENTITY)
-        }
-
-        return user
+    async findOne(userFilterQuery: FilterQuery<User>): Promise<User | undefined> {
+        return this.userModel.findOne(userFilterQuery).exec();
     }
 
-     findByUsername(username: string) : Promise<UserEntity>{
-        return this.userModel.findOne({username: username}).select('+password');
-     }
-
-    buildUserResponse(userEntity: UserEntity): UserResponseType {
-        return {
-            token: this.generateJwt(userEntity),
-            role: userEntity.role,
-            username: userEntity.username,
-            points: userEntity.points
-        }
-    }
-    generateJwt(userEntity: UserEntity): string {
-        return sign({username: userEntity.username}, 'JWT_SECRET')
+    async findByUsername(username: string): Promise<User | undefined> {
+        return this.userModel.findOne({ username }).exec();
     }
 
+    async findById(id: string): Promise<User | undefined> {
+        return this.userModel.findById(id).select(['-password', '-__v', '-refreshToken']).exec();
+    }
 
+    async findAll(): Promise<User[]> {
+        return this.userModel.find().select(['-password', '-__v', '-refreshToken']).exec();
+    }
+
+    async update(id: string, user: UpdateUserDto): Promise<User> {
+        return this.userModel.findByIdAndUpdate(id, user, { new: true }).select(['-password', '-__v', '-refreshToken']).exec();
+    }
+
+    async remove(id: string): Promise<User> {
+        return this.userModel.findByIdAndDelete(id).select(['-password', '-__v', '-refreshToken']).exec();
+    }
 }
