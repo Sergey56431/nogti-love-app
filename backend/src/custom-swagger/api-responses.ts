@@ -1,7 +1,9 @@
-import {ApiResponse} from "@nestjs/swagger";
+import {ApiParam, ApiParamOptions, ApiResponse} from "@nestjs/swagger";
 
-export function FindCalendarOrArchiveCelendarByIdApiResponse(options?: object): MethodDecorator {
-    return ApiResponse(options || {status:200, example:[{
+export function ApiResponseFindCalendarOrArchiveCelendarById(options?: object): MethodDecorator {
+    return ApiResponse(options || {
+        status:200,
+        example:[{
             _id: "66e1ef6a86a281d9dccd70b9",
             day: "2024-09-01T18:00:00.000Z",
             state: "Рабочий день",
@@ -22,8 +24,10 @@ export function FindCalendarOrArchiveCelendarByIdApiResponse(options?: object): 
     });
 }
 
-export function UpdateCelendarByIdApiResponse(options?: object): MethodDecorator {
-    return ApiResponse(options || {status:200, example:{
+export function ApiResponseUpdateCelendarById(options?: object): MethodDecorator {
+    return ApiResponse(options || {
+        status:200,
+        example:{
             _id: "66e1ef6a86a281d9dccd70b9",
             day: "2024-09-01T18:00:00.000Z",
             state: "Не рабочий день",
@@ -32,8 +36,10 @@ export function UpdateCelendarByIdApiResponse(options?: object): MethodDecorator
     });
 }
 
-export function CreateCelendarApiResponse(options?: object): MethodDecorator {
-    return ApiResponse(options || {status:201, example:[{
+export function ApiResponseCreateCelendar(options?: object): MethodDecorator {
+    return ApiResponse(options || {
+        status:201,
+        example:[{
             _id: "66e1ef6a86a281d9dccd70b9",
             day: "2024-09-01T18:00:00.000Z",
             state: "Рабочий день",
@@ -54,10 +60,23 @@ export function CreateCelendarApiResponse(options?: object): MethodDecorator {
     });
 }
 
-export function DeleteCalendarOrArchiveCalendarApiResponse(options?: object): MethodDecorator {
-    return ApiResponse(options || {status:200, example:{
+export function ApiResponseDeleteCalendarOrArchiveCalendar(options?: object): MethodDecorator {
+    return ApiResponse(options || {
+        status:200,
+        example: {
             acknowledged: true,
             deletedCount: 90
         }
     });
 }
+
+export function ApiParamUserId(options?: ApiParamOptions): MethodDecorator {
+    return ApiParam(options || {
+        description: 'ID пользователя',
+        name: 'id',
+        example: '66c23742a5e4374202602bf9'
+    });
+}
+
+
+

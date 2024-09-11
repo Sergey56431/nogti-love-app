@@ -9,8 +9,8 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import {CreateUserDto} from "../users/dto/create-user.dto";
-import {User} from "../users/schemas/user.schema";
 import {UpdateUserDto} from "../users/dto/update-user.dto";
+import {TokenException, UserAlreadyException, UserNotFoundException} from "../custom-exceptions/custom-exceptions";
 
 @Injectable()
 export class AuthService {
@@ -32,7 +32,7 @@ export class AuthService {
         return null;
     }
 
-    async signIn(username: string, pass: string, res: any): Promise<any> {
+    async signIn(username: string, pass: string, res: any): Promise<Object> {
         const user = await this.usersService.findByUsername(username);
         if (
             user &&
@@ -49,14 +49,13 @@ export class AuthService {
             await this.usersService.update(user.id, <UpdateUserDto>{ refreshToken: refeshToken});
             res.cookie('refreshToken', refeshToken, {
                 httpOnly: true,
-                secure: false,
+                secure: true,
                 maxAge: 60 * 60 * 24 * 14 * 1000,
                 sameSite: 'none'
             });
-
-            return {accessToken: await this.generateAccessToken(payload), ref:refeshToken}; // ВРЕМЕННО В ТЕЛЕ ПОТОМ УБРАТЬ!!!!
+            return {accessToken: await this.generateAccessToken(payload), ref:refeshToken, id:user.id}; // ВРЕМЕННО В ТЕЛЕ ПОТОМ УБРАТЬ!!!!
         }
-        throw new UnauthorizedException();
+        throw new UserNotFoundException();
     }
 
     async logout(userId: string, res: any): Promise<any> {
@@ -69,10 +68,7 @@ export class AuthService {
             userDto.username,
         );
         if (existingUser) {
-            throw new HttpException(
-                'Username already exists',
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new UserAlreadyException();
         }
 
         const createdUser = await this.usersService.create(userDto);
@@ -88,7 +84,7 @@ export class AuthService {
     async refreshToken(refreshToken: string): Promise<any> {
         const user = await this.usersService.findOne({ refreshToken });
         if (!user) {
-            throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
+            throw new TokenException();
         }
 
         const payload = {
