@@ -23,15 +23,14 @@ import {DefaultResponseType, LoginResponseType, SignupResponseType} from '@share
 export class RegistrationPageComponent {
 
   protected _signupForm = this._fb.group({
-    email: ['', [Validators.email, Validators.required]],
     password: ['', [Validators.pattern('^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,12})$'), Validators.required]],
     username: ['', [Validators.required]],
-    phone: ['', [Validators.pattern('^((8|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$'), Validators.required]],
-    // birth_day: ['', [Validators.pattern('^(?:0[1-9]|[12]\\d|3[01])([\\/.-])(?:0[1-9]|1[012])\\1(?:19|20)\\d\\d$')]],
+    phone: ['', [Validators.pattern('^((8|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$')]],
+    birth_day: ['', [Validators.pattern('^(?:0[1-9]|[12]\\d|3[01])([\\/.-])(?:0[1-9]|1[012])\\1(?:19|20)\\d\\d$')]],
     accept: [false, [Validators.requiredTrue]]
   });
 
-  // private birthDay: string[] = [];
+  private _birthDay = '';
 
   constructor(private _authService: AuthService,
               private _router: Router,
@@ -43,10 +42,6 @@ export class RegistrationPageComponent {
     return this._signupForm.get('username');
   }
 
-  get email() {
-    return this._signupForm.get('email');
-  }
-
   get password() {
     return this._signupForm.get('password');
   }
@@ -55,21 +50,18 @@ export class RegistrationPageComponent {
     return this._signupForm.get('phone');
   }
 
-  // get birth_day() {
-  //   return this.signupForm.get('birth_day');
-  // }
+  get birth_day() {
+    return this._signupForm.get('birth_day');
+  }
 
   signup() {
-    if (this._signupForm.valid && this._signupForm.value.email && this._signupForm.value.password
-      && this._signupForm.value.phone && this._signupForm.value.username
-      //&& this.signupForm.value.birth_day
-    ) {
-
-      // this.birthDay = this.signupForm.value.birth_day.split('.');
-      // let sendBirthDay = this.birthDay[2] + '-' + this.birthDay[1] + '-' + this.birthDay[0]
-
-      this._authService.signup(this._signupForm.value.email, this._signupForm.value.password,
-        this._signupForm.value.phone, this._signupForm.value.username)
+    if (this._signupForm.valid && this._signupForm.value) {
+      if (this._signupForm.value.birth_day) {
+        this._birthDay = this._signupForm.value.birth_day.split('.').reverse().join('.');
+      }
+      this._authService.signup(this._signupForm.value.username!, this._signupForm.value.password!.toString(),
+        this._signupForm.value.phone?.toString(), this._signupForm.value.birth_day?.toString(),
+      )
         .subscribe({
           next: (data: DefaultResponseType | SignupResponseType) => {
 
@@ -82,19 +74,29 @@ export class RegistrationPageComponent {
             this._authService.login(this._signupForm.value.username!, this._signupForm.value.password!)
               .subscribe({
                 next: (data: LoginResponseType | DefaultResponseType) => {
-                  if ((data as DefaultResponseType).error ||
-                    !(data as LoginResponseType).accessToken || !(data as LoginResponseType).username) {
+                  if ((data as DefaultResponseType).error !== undefined) {
                     this._snackBar.open('Ошибка при авторизации');
                     throw new Error(data.message ? data.message : 'Error with data on login');
                   }
-                  this._router.navigate(['/main']);
+                  this._authService.setUserInfo({
+                    name: this._signupForm.value.username,
+
+                  });
+                  if (data as LoginResponseType) {
+                    const loginResponse = data as LoginResponseType;
+                    if (!loginResponse.accessToken || loginResponse.error) {
+                      this._snackBar.open('Что-то пошло не так');
+                    } else {
+                      this._authService.setTokens(loginResponse.accessToken);
+                      this._router.navigate(['/main']);
+                    }
+                  }
                 },
                 error: (error: HttpErrorResponse) => {
                   this._snackBar.open('Ошибка при авторизации');
                   throw new Error(error.error.message);
                 }
               });
-
           },
           error: (errorResponse: HttpErrorResponse) => {
             if (errorResponse.error && errorResponse.message) {

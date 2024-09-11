@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
 import {MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 import {MatIcon} from '@angular/material/icon';
@@ -32,7 +32,7 @@ import {MatBadge} from '@angular/material/badge';
 })
 export class HeaderComponent implements OnInit{
 
-  private _isLogged = false;
+  protected _isLogged = signal<boolean>(false);
   public user = this._authService.getUserInfo();
 
   constructor(private _authService: AuthService,
@@ -41,9 +41,8 @@ export class HeaderComponent implements OnInit{
   }
 
   ngOnInit() {
-    this._authService.isLogged$.subscribe((isLoggedIn: boolean) => {
-      this._isLogged = isLoggedIn;
-    });
+      this._isLogged.set(this._authService.isLogged());
+      console.log(this._isLogged());
   }
 
   logout() {
@@ -62,6 +61,6 @@ export class HeaderComponent implements OnInit{
     this._authService.removeTokens();
     // this.authService.userId = null;
     this._snackBar.open('Вы успешно вышли из системы');
-    this._router.navigate(['/']);
+    window.location.reload();
   }
 }

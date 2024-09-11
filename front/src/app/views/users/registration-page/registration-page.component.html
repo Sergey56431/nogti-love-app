@@ -44,31 +44,15 @@
       </div>
     </div>
 
-    <input class="input" formControlName="email"
-           [ngStyle]="{'border-color': email?.invalid && (email?.dirty) ? 'red' : '' }"
-           type="text" placeholder="Email">
+    <input class="input" formControlName="birth_day"
+           [ngStyle]="{'border-color': birth_day?.invalid && (birth_day?.dirty) ? 'red' : '' }"
+           type="text" placeholder="Дата рождения">
 
-    <div *ngIf="email?.invalid && (email?.dirty)">
-      <div class="text-danger" *ngIf="email?.errors?.['required']">
-        Введите email.
-      </div>
-      <div class="text-danger" *ngIf="email?.errors?.['pattern']">
-        Неверно  введён email
+    <div *ngIf="birth_day?.invalid && (birth_day?.dirty)">
+      <div class="text-danger" *ngIf="birth_day?.errors?.['pattern']">
+        Неверно введён день рождения
       </div>
     </div>
-
-<!--    <input class="input" formControlName="birth_day"-->
-<!--           [ngStyle]="{'border-color': birth_day?.invalid && (birth_day?.dirty) ? 'red' : '' }"-->
-<!--           type="text" placeholder="Дата рождения">-->
-
-<!--    <div *ngIf="birth_day?.invalid && (birth_day?.dirty)">-->
-<!--&lt;!&ndash;      <div class="text-danger" *ngIf="birth_day?.errors?.['required']">&ndash;&gt;-->
-<!--&lt;!&ndash;        Введите email.&ndash;&gt;-->
-<!--&lt;!&ndash;      </div>&ndash;&gt;-->
-<!--      <div class="text-danger" *ngIf="birth_day?.errors?.['pattern']">-->
-<!--        Неверно  введён email-->
-<!--      </div>-->
-<!--    </div>-->
 
     <div class="access">
       <input type="checkbox" id="access" formControlName="accept">

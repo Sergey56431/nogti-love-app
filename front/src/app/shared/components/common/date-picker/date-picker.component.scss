@@ -2,13 +2,13 @@
 @import "../../../../../assets/styles/mixins";
 
 .date-picker {
-  border-radius: 10px;
+  border-radius: 20px;
   width: 790px;
   height: 432px;
   box-shadow: 0 0 20px 4px #3d3d3d33;
 
   .date-picker-title {
-    border-radius: 7px 7px 0 0;
+    border-radius: 20px 20px 0 0;
     display: flex;
     align-items: center;
     justify-content: center;

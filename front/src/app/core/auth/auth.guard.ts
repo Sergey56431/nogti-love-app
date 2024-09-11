@@ -19,7 +19,6 @@ export class AuthGuard implements CanActivate {
       this.router.navigate(['/login']);
       this._snackBar.open('Для доступа необходимо авторизоваться');
     }
-
     return isLoggedIn;
   }
 

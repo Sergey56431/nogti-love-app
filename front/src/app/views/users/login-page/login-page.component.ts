@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NgIf, NgStyle} from '@angular/common';
 import {Router, RouterLink} from '@angular/router';
@@ -23,7 +23,7 @@ export class LoginPageComponent {
 
   isLogged = false;
   protected _loginForm = this._fb.group({
-    username: ['', [ Validators.required]],
+    username: ['', [Validators.required]],
     password: ['', [Validators.pattern('(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,12})$'), Validators.required]],
     rememberMe: false
   });
@@ -47,7 +47,7 @@ export class LoginPageComponent {
       this._authService.login(this._loginForm.value.username, this._loginForm.value.password)
         .subscribe({
           next: (data: LoginResponseType | DefaultResponseType) => {
-            if (!(data as LoginResponseType).accessToken) {
+            if ((data as DefaultResponseType).error !== undefined) {
               this._snackBar.open('Ошибка при авторизации');
               throw new Error(data.message ? data.message : 'Error with data on login');
             }
@@ -55,13 +55,15 @@ export class LoginPageComponent {
               name: this._loginForm.value.username,
 
             });
-            if (data && (data as LoginResponseType).accessToken){
-              this._authService.setTokens((data as LoginResponseType).accessToken);
-              this._router.navigate(['/main']);
+            if (data as LoginResponseType) {
+              const loginResponse = data as LoginResponseType;
+              if (!loginResponse.accessToken || loginResponse.error) {
+                this._snackBar.open('Что-то пошло не так');
+              } else {
+                this._authService.setTokens(loginResponse.accessToken);
+                this._router.navigate(['/main']);
+              }
             }
-
-
-
           },
           error: (error: HttpErrorResponse) => {
             this._snackBar.open('Ошибка при авторизации');
