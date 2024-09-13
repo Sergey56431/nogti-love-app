@@ -2,18 +2,17 @@ import {Inject, Injectable} from '@angular/core';
 import {Action, Selector, State, StateContext} from '@ngxs/store';
 import {AuthData} from '@core/store/auth/auth.actions';
 import {AuthService} from '@core/auth';
-import {tap} from 'rxjs';
+import {CookieService} from "ngx-cookie-service";
 
 export interface AuthenticationStateModel {
-  username: string | null
+  userInfo: []
   authToken: string | null
 }
 
 @State<AuthenticationStateModel>({
   name: 'authState',
   defaults: {
-    username: null,
-    authToken: null
+
   }
 })
 
@@ -31,16 +30,10 @@ export class AuthState {
   }
 
   private _authService = Inject(AuthService);
+  private _cookiesService = Inject(CookieService);
 
   @Action(AuthData.login)
-  login(ctx: StateContext<AuthenticationStateModel>, action: AuthData.login) {
-    return this._authService.login(action.payload).pipe(
-      tap((result: {token: string}) =>{
-        ctx.patchState({
-          authToken: result.token,
-          username: action.payload.username
-        });
-      })
-    );
+  _login(ctx: StateContext<AuthenticationStateModel>, action: AuthData.login) {
+    const state =
   }
 }

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, OnInit, signal} from '@angular/core';
 import {MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 import {MatIcon} from '@angular/material/icon';
@@ -38,13 +38,14 @@ export class HeaderComponent implements OnInit{
   protected _user = signal<UserInfoType | null>(null);
 
   constructor(private _authService: AuthService,
-              private _snackBar: MatSnackBar,) {
-
+              private _snackBar: MatSnackBar,
+              private _cdr: ChangeDetectorRef,) {
   }
 
   ngOnInit() {
     this._isLogged.set(this._authService.isLogged());
     this._user.set(this._authService.getUserInfo());
+    this._cdr.detectChanges();
   }
 
   logout() {
