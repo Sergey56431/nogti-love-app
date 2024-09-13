@@ -14,14 +14,14 @@
     </div>
 
     <div class="header-profile-content">
-      @if (user) {
+      @if (_isLogged()) {
         <a [matMenuTriggerFor]="menu" class="profile">
           <div class="profile-icon">
             <img src="/images/profile-non-icon.png" alt="Профиль">
           </div>
           <div class="profile-info">
 
-            <p class="profile-name">{{ this.user!.name }}</p>
+            <p class="profile-name">{{ this._user()?.username }}</p>
 
           </div>
           <mat-menu #menu="matMenu">

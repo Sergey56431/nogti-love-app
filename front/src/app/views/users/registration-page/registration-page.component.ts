@@ -5,7 +5,7 @@ import {Router, RouterLink} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {AuthService} from '@core/auth';
-import {DefaultResponseType, LoginResponseType, SignupResponseType} from '@shared/types';
+import {DefaultResponseType, LoginResponseType, SignupResponseType, UserInfoType} from '@shared/types';
 
 
 @Component({
@@ -78,16 +78,15 @@ export class RegistrationPageComponent {
                     this._snackBar.open('Ошибка при авторизации');
                     throw new Error(data.message ? data.message : 'Error with data on login');
                   }
-                  this._authService.setUserInfo({
-                    name: this._signupForm.value.username,
-
-                  });
                   if (data as LoginResponseType) {
                     const loginResponse = data as LoginResponseType;
                     if (!loginResponse.accessToken || loginResponse.error) {
                       this._snackBar.open('Что-то пошло не так');
                     } else {
                       this._authService.setTokens(loginResponse.accessToken);
+                      this._authService.getUser(loginResponse.id) .subscribe((user: UserInfoType) => {
+                        this._authService.setUserInfo(user);
+                      });
                       this._router.navigate(['/main']);
                     }
                   }

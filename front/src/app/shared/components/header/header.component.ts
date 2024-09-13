@@ -1,14 +1,16 @@
-import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, OnInit, signal} from '@angular/core';
 import {MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 import {MatIcon} from '@angular/material/icon';
 import {MatMiniFabButton} from '@angular/material/button';
-import {Router, RouterLink} from '@angular/router';
+import {RouterLink} from '@angular/router';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {AuthService} from '@core/auth';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatBadge} from '@angular/material/badge';
+import {UserInfoType} from '@shared/types';
+
 
 @Component({
   selector: 'app-header',
@@ -33,28 +35,31 @@ import {MatBadge} from '@angular/material/badge';
 export class HeaderComponent implements OnInit{
 
   protected _isLogged = signal<boolean>(false);
-  public user = this._authService.getUserInfo();
+  protected _user = signal<UserInfoType | null>(null);
 
   constructor(private _authService: AuthService,
-              private _router: Router,
               private _snackBar: MatSnackBar,) {
+
   }
 
   ngOnInit() {
-      this._isLogged.set(this._authService.isLogged());
-      console.log(this._isLogged());
+    this._isLogged.set(this._authService.isLogged());
+    this._user.set(this._authService.getUserInfo());
   }
 
   logout() {
-    this._authService.logout()
-      .subscribe({
-        next: () => {
-          this.doLogout();
-        },
-        error: () => {
-          this.doLogout();
-        }
-      });
+    if (this._user()) {
+      this._authService.logout(this._user()!._id)
+        .subscribe({
+          next: () => {
+            this.doLogout();
+          },
+          error: () => {
+            this.doLogout();
+          }
+        });
+    }
+
   }
 
   doLogout() {

@@ -1,37 +1,46 @@
-import { Injectable } from '@angular/core';
-import { Action, Selector, State, StateContext } from '@ngxs/store';
-import { SetAuthData } from './auth.actions';
-import {UserInfoType} from '@shared/types';
+import {Inject, Injectable} from '@angular/core';
+import {Action, Selector, State, StateContext} from '@ngxs/store';
+import {AuthData} from '@core/store/auth/auth.actions';
+import {AuthService} from '@core/auth';
+import {tap} from 'rxjs';
 
 export interface AuthenticationStateModel {
-  user: UserInfoType[]
+  username: string | null
+  authToken: string | null
 }
 
 @State<AuthenticationStateModel>({
   name: 'authState',
-  defaults: {}
+  defaults: {
+    username: null,
+    authToken: null
+  }
 })
+
 @Injectable()
 export class AuthState {
 
   @Selector()
-  static getAuthData(state: AuthenticationStateModel): AuthenticationStateModel {
-    return state.user;
+  static getAuthData(state: AuthenticationStateModel): string | null {
+    return state.authToken;
   }
 
-  private static setInstanceState(state: AuthenticationStateModel): AuthenticationStateModel {
-    return { ...state };
+  @Selector()
+  static getISAuth(state: AuthenticationStateModel): boolean {
+    return !!state.authToken;
   }
 
-  private static getInstanceState(state: AuthenticationStateModel): AuthenticationStateModel {
-    return { ...state };
-  }
+  private _authService = Inject(AuthService);
 
-  @Action(SetAuthData)
-  setAuthData(
-    { setState }: StateContext<AuthenticationStateModel>,
-    { payload }: SetAuthData
-  ) {
-    setState(AuthState.setInstanceState(payload));
+  @Action(AuthData.login)
+  login(ctx: StateContext<AuthenticationStateModel>, action: AuthData.login) {
+    return this._authService.login(action.payload).pipe(
+      tap((result: {token: string}) =>{
+        ctx.patchState({
+          authToken: result.token,
+          username: action.payload.username
+        });
+      })
+    );
   }
 }

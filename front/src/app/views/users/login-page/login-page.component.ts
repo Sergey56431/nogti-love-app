@@ -5,7 +5,9 @@ import {Router, RouterLink} from '@angular/router';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {HttpErrorResponse} from '@angular/common/http';
 import {AuthService} from '@core/auth';
-import {DefaultResponseType, LoginResponseType} from '@shared/types';
+import {DefaultResponseType, LoginResponseType, UserInfoType} from '@shared/types';
+// import {select} from '@ngxs/store';
+// import {AuthState} from '@core/store/auth/auth.state';
 
 @Component({
   selector: 'app-login-page',
@@ -21,7 +23,7 @@ import {DefaultResponseType, LoginResponseType} from '@shared/types';
 })
 export class LoginPageComponent {
 
-  isLogged = false;
+  // private _login = select(AuthState.getAuthData);
   protected _loginForm = this._fb.group({
     username: ['', [Validators.required]],
     password: ['', [Validators.pattern('(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,12})$'), Validators.required]],
@@ -51,16 +53,15 @@ export class LoginPageComponent {
               this._snackBar.open('Ошибка при авторизации');
               throw new Error(data.message ? data.message : 'Error with data on login');
             }
-            this._authService.setUserInfo({
-              name: this._loginForm.value.username,
-
-            });
             if (data as LoginResponseType) {
               const loginResponse = data as LoginResponseType;
               if (!loginResponse.accessToken || loginResponse.error) {
                 this._snackBar.open('Что-то пошло не так');
               } else {
                 this._authService.setTokens(loginResponse.accessToken);
+                this._authService.getUser(loginResponse.id) .subscribe((user: UserInfoType) => {
+                  this._authService.setUserInfo(user);
+                });
                 this._router.navigate(['/main']);
               }
             }

@@ -27,21 +27,22 @@ export class AuthService {
     this.isLogged.set(!!this.cookieService.get(this._accessTokenKey));
   }
 
-  login(username:string, password: string): Observable<LoginResponseType | DefaultResponseType> {
+  login(username: string, password: string): Observable<LoginResponseType | DefaultResponseType> {
     return this.http.post<LoginResponseType>(environment.api + 'auth/login', {
       username,
       password
     })
       .pipe(
         tap((data: LoginResponseType) => {
-          if (data.username && data.accessToken) {
-            this.setUserInfo({
-              name: data.username
-            });
-            this.setTokens(data.accessToken);
+          if (data) {
+           // this.getUser(data.id).subscribe((user: UserInfoType) => {
+           //   this.setUserInfo(user);
+           // });
           }
-        })
-      );
+        }));
+
+
+
   }
 
   signup(username: string, password: string, phone?: string, birthDay?: string): Observable<SignupResponseType> {
@@ -53,8 +54,18 @@ export class AuthService {
     });
   }
 
-  logout(): Observable<DefaultResponseType> {
-    return this.http.get<DefaultResponseType>(environment.api + 'auth/logout/' );
+  public getUser(id: string): Observable<UserInfoType> {
+    return this.http.get<UserInfoType>(environment.api + 'users/' + id, {
+      headers: {
+        'Authorization': 'Bearer ' + this.cookieService.get(this._accessTokenKey)
+      }
+    });
+  }
+
+  logout(id: string): Observable<DefaultResponseType> {
+    return this.http.post<DefaultResponseType>(environment.api + 'auth/logout/', {
+      id
+    });
   }
 
   refresh(): Observable<RefreshResponseType> {
@@ -100,7 +111,7 @@ export class AuthService {
     localStorage.setItem(this._userInfoKey, JSON.stringify(info));
   }
 
-  public getTokens(): { accessToken: string | null}{
+  public getTokens(): { accessToken: string | null } {
     return {
       accessToken: this.cookieService.get(this._accessTokenKey),
       // refreshToken: this.cookieService.get(this._refreshTokenKey)
