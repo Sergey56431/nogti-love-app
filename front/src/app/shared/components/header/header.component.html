@@ -20,10 +20,10 @@
             <img src="/images/profile-non-icon.png" alt="Профиль">
           </div>
           <div class="profile-info">
-              <p class="profile-name">{{ this._user()?.username }}</p>
+              <p class="profile-name">{{ this._user()!.username }}</p>
           </div>
           <mat-menu #menu="matMenu">
-            <button mat-menu-item>
+            <button mat-menu-item (click)="_settingsUser()">
               <mat-icon>settings</mat-icon>
               <span>Настройки</span>
             </button>

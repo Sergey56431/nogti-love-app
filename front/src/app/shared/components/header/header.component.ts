@@ -10,6 +10,9 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatBadge} from '@angular/material/badge';
 import {UserInfoType} from '@shared/types';
+import {createDispatchMap, select} from '@ngxs/store';
+import {AuthState} from '@core/store/auth/auth.state';
+import {AuthData} from '@core/store/auth/auth.actions';
 
 
 @Component({
@@ -35,17 +38,26 @@ import {UserInfoType} from '@shared/types';
 export class HeaderComponent implements OnInit{
 
   protected _isLogged = signal<boolean>(false);
-  protected _user = signal<UserInfoType | null>(null);
+  protected _user = signal<UserInfoType | null>({} as UserInfoType);
+  protected _isAdmin = select(AuthState.getUserInfo);
 
   constructor(private _authService: AuthService,
               private _snackBar: MatSnackBar,
               private _cdr: ChangeDetectorRef,) {
-  }
+    };
+
+  private _actions = createDispatchMap({
+    loadUser: AuthData.GetUser,
+  });
 
   ngOnInit() {
     this._isLogged.set(this._authService.isLogged());
-    this._user.set(this._authService.getUserInfo());
-    this._cdr.detectChanges();
+    if (this._isLogged()) {
+      // setTimeout(() => { //временное решение нужно найти причину почему не подгружается информация от сервера
+        this._user.set(this._authService.getUserInfo());
+      // }, 500); // перейти на использование стаейт менеджера
+
+    }
   }
 
   logout() {
@@ -56,16 +68,20 @@ export class HeaderComponent implements OnInit{
             this.doLogout();
           },
           error: () => {
-            this.doLogout();
+            console.log('Ошибка выхода');
           }
         });
     }
+  }
+
+  protected _settingsUser() {
+    this._actions.loadUser(this._user()!._id);
+    console.log(this._isAdmin());
 
   }
 
   doLogout() {
     this._authService.removeTokens();
-    // this.authService.userId = null;
     this._snackBar.open('Вы успешно вышли из системы');
     window.location.reload();
   }

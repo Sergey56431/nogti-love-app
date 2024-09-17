@@ -4,5 +4,6 @@ export interface LoginResponseType {
   id: string,
   error?: boolean,
   accessToken?: string,
+  ref?: string,
   message?: string
 }

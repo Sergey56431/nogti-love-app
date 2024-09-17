@@ -1,6 +1,6 @@
 export interface RefreshResponseType {
-    error: boolean,
-    accessToken?: string,
-    refreshToken?: string,
-    message: string,
+    error?: boolean,
+    accessToken: string,
+    ref: string,
+    message?: string,
 }

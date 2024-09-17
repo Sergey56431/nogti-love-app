@@ -1,7 +1,7 @@
 import {Injectable, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {CookieService} from 'ngx-cookie-service';
-import {Observable, Subject, tap} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {
   DefaultResponseType,
   LoginResponseType,
@@ -31,18 +31,7 @@ export class AuthService {
     return this.http.post<LoginResponseType>(environment.api + 'auth/login', {
       username,
       password
-    })
-      .pipe(
-        tap((data: LoginResponseType) => {
-          if (data) {
-           // this.getUser(data.id).subscribe((user: UserInfoType) => {
-           //   this.setUserInfo(user);
-           // });
-          }
-        }));
-
-
-
+    });
   }
 
   signup(username: string, password: string, phone?: string, birthDay?: string): Observable<SignupResponseType> {
@@ -55,21 +44,16 @@ export class AuthService {
   }
 
   public getUser(id: string): Observable<UserInfoType> {
-    return this.http.get<UserInfoType>(environment.api + 'users/' + id, {
-      headers: {
-        'Authorization': 'Bearer ' + this.cookieService.get(this._accessTokenKey)
-      }
-    });
+    return this.http.get<UserInfoType>(environment.api + 'users/' + id);
   }
 
   logout(id: string): Observable<DefaultResponseType> {
-    return this.http.post<DefaultResponseType>(environment.api + 'auth/logout/', {
+    return this.http.post<DefaultResponseType>(environment.api + 'auth/logout/' + id, {
       id
     });
   }
 
-  refresh(): Observable<RefreshResponseType> {
-    const refreshToken: string | null = localStorage.getItem(this._refreshTokenKey);
+  refresh(refreshToken: string): Observable<RefreshResponseType> {
     return this.http.post<RefreshResponseType>(environment.api + 'auth/refresh', {
       refreshToken
     });
@@ -79,20 +63,19 @@ export class AuthService {
     return this.isLogged();
   }
 
-  public setTokens(accessToken: string) {
+  public setTokens(accessToken: string, refreshToken: string) {
     this.cookieService.set(this._accessTokenKey, accessToken);
-    // this.cookieService.set(this._refreshTokenKey, refreshToken);
+    this.cookieService.set(this._refreshTokenKey, refreshToken);
     this.isLogged.set(true);
     this.isLogged$.next(true);
   }
 
   public removeTokens() {
     this.cookieService.delete(this._accessTokenKey);
-    // this.cookieService.delete(this._refreshTokenKey);
+    this.cookieService.delete(this._refreshTokenKey);
     this.removeUserInfo();
     this.isLogged.set(false);
     this.isLogged$.next(false);
-    console.log(this.cookieService.get(this._accessTokenKey));
   }
 
   public removeUserInfo(): void {
@@ -111,10 +94,10 @@ export class AuthService {
     localStorage.setItem(this._userInfoKey, JSON.stringify(info));
   }
 
-  public getTokens(): { accessToken: string | null } {
+  public getTokens(): { accessToken: string | null, refreshToken: string | null } {
     return {
       accessToken: this.cookieService.get(this._accessTokenKey),
-      // refreshToken: this.cookieService.get(this._refreshTokenKey)
+      refreshToken: this.cookieService.get(this._refreshTokenKey)
     };
   }
 }

@@ -6,8 +6,8 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {HttpErrorResponse} from '@angular/common/http';
 import {AuthService} from '@core/auth';
 import {DefaultResponseType, LoginResponseType, UserInfoType} from '@shared/types';
-// import {select} from '@ngxs/store';
-// import {AuthState} from '@core/store/auth/auth.state';
+import {createDispatchMap, select} from '@ngxs/store';
+import {AuthData, AuthState} from '@core/store';
 
 @Component({
   selector: 'app-login-page',
@@ -23,7 +23,6 @@ import {DefaultResponseType, LoginResponseType, UserInfoType} from '@shared/type
 })
 export class LoginPageComponent {
 
-  // private _login = select(AuthState.getAuthData);
   protected _loginForm = this._fb.group({
     username: ['', [Validators.required]],
     password: ['', [Validators.pattern('(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,12})$'), Validators.required]],
@@ -35,6 +34,12 @@ export class LoginPageComponent {
               private _router: Router,
               private _snackBar: MatSnackBar) {
   }
+
+  protected _isAdmin = select(AuthState.getUserInfo);
+
+  private _actions = createDispatchMap({
+    loadUser: AuthData.GetUser,
+  });
 
   get username() {
     return this._loginForm.get('username');
@@ -55,12 +60,14 @@ export class LoginPageComponent {
             }
             if (data as LoginResponseType) {
               const loginResponse = data as LoginResponseType;
-              if (!loginResponse.accessToken || loginResponse.error) {
+              if (!loginResponse.accessToken || !loginResponse.ref || loginResponse.error) {
                 this._snackBar.open('Что-то пошло не так');
               } else {
-                this._authService.setTokens(loginResponse.accessToken);
+                this._authService.setTokens(loginResponse.accessToken, loginResponse.ref);
                 this._authService.getUser(loginResponse.id) .subscribe((user: UserInfoType) => {
                   this._authService.setUserInfo(user);
+                  this._actions.loadUser(user._id);
+                  console.log(this._isAdmin());
                 });
                 this._router.navigate(['/main']);
               }

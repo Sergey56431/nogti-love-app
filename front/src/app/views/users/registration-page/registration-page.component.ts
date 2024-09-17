@@ -80,10 +80,10 @@ export class RegistrationPageComponent {
                   }
                   if (data as LoginResponseType) {
                     const loginResponse = data as LoginResponseType;
-                    if (!loginResponse.accessToken || loginResponse.error) {
+                    if (!loginResponse.accessToken || !loginResponse.ref || loginResponse.error) {
                       this._snackBar.open('Что-то пошло не так');
                     } else {
-                      this._authService.setTokens(loginResponse.accessToken);
+                      this._authService.setTokens(loginResponse.accessToken, loginResponse.ref);
                       this._authService.getUser(loginResponse.id) .subscribe((user: UserInfoType) => {
                         this._authService.setUserInfo(user);
                       });

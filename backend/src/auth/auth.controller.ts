@@ -58,7 +58,7 @@ export class AuthController {
     }
 
     @ApiOperation({summary: 'Выход'})
-    @UseGuards(TokenGuard)
+    // @UseGuards(TokenGuard)
     @ApiBearerAuth()
     @ApiParamUserId()
     @ApiResponse({status:200, description: 'Successful logout'})

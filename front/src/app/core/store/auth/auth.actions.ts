@@ -1,14 +1,19 @@
+import {UserInfoType} from '@shared/types';
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace AuthData {
 
-  export class login {
-    static readonly type = '[Auth] Login';
-    constructor(readonly payload: {username: string, password: string}) {}
+  export class GetUser {
+    static readonly type = '[User] Get User';
+    constructor(public readonly userId: string) {}
   }
 
   export class logout {
-    static readonly type = '[Auth] Logout';
+    static readonly type = '[User] Logout';
   }
 
+  export class GetUserSuccess {
+    static readonly type = '[User] Get User Success';
+    constructor(readonly payload: UserInfoType) {};
+  }
 }

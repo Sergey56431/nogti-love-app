@@ -1,39 +1,47 @@
-import {Inject, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Action, Selector, State, StateContext} from '@ngxs/store';
 import {AuthData} from '@core/store/auth/auth.actions';
+import {CookieService} from 'ngx-cookie-service';
+import {UserInfoType} from '@shared/types';
+import {patch} from '@ngxs/store/operators';
 import {AuthService} from '@core/auth';
-import {CookieService} from "ngx-cookie-service";
+import {Observable, tap} from "rxjs";
 
 export interface AuthenticationStateModel {
-  userInfo: []
-  authToken: string | null
+  userInfo?: UserInfoType;
 }
 
 @State<AuthenticationStateModel>({
-  name: 'authState',
-  defaults: {
-
-  }
+  name: 'user',
+  defaults: {}
 })
 
 @Injectable()
 export class AuthState {
-
-  @Selector()
-  static getAuthData(state: AuthenticationStateModel): string | null {
-    return state.authToken;
+  constructor(private _authService: AuthService, private _cookiesService: CookieService) {
   }
 
   @Selector()
-  static getISAuth(state: AuthenticationStateModel): boolean {
-    return !!state.authToken;
+  static getUserInfo(state: AuthenticationStateModel) {
+    return state.userInfo;
   }
 
-  private _authService = Inject(AuthService);
-  private _cookiesService = Inject(CookieService);
-
-  @Action(AuthData.login)
-  _login(ctx: StateContext<AuthenticationStateModel>, action: AuthData.login) {
-    const state =
+  @Action(AuthData.GetUser)
+  private _getUser(ctx: StateContext<AuthenticationStateModel>, action: AuthData.GetUser): Observable<UserInfoType> {
+    const state = ctx.getState();
+    if (state.userInfo != null) {
+      // @ts-ignore
+      return;
+    }
+    return this._authService.getUser(action.userId)
+      .pipe(
+        tap((user: UserInfoType) => {
+          ctx.setState(patch({
+            userInfo: user
+          }));
+          this._authService.setUserInfo(user);
+          ctx.dispatch(new AuthData.GetUserSuccess(user));
+        })
+      );
   }
 }
