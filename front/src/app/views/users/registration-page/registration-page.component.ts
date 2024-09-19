@@ -1,11 +1,11 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NgIf, NgStyle} from '@angular/common';
 import {Router, RouterLink} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {AuthService} from '@core/auth';
-import {DefaultResponseType, LoginResponseType, SignupResponseType} from '@shared/types';
+import {DefaultResponseType, LoginResponseType, SignupResponseType, UserInfoType} from '@shared/types';
 
 
 @Component({
@@ -20,83 +20,82 @@ import {DefaultResponseType, LoginResponseType, SignupResponseType} from '@share
   ],
   templateUrl: './registration-page.component.html'
 })
-export class RegistrationPageComponent implements OnInit {
+export class RegistrationPageComponent {
 
-  signupForm = this.fb.group({
-    email: ['', [Validators.email, Validators.required]],
+  protected _signupForm = this._fb.group({
     password: ['', [Validators.pattern('^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,12})$'), Validators.required]],
     username: ['', [Validators.required]],
-    phone: ['', [Validators.pattern('^((8|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$'), Validators.required]],
-    // birth_day: ['', [Validators.pattern('^(?:0[1-9]|[12]\\d|3[01])([\\/.-])(?:0[1-9]|1[012])\\1(?:19|20)\\d\\d$')]],
+    phone: ['', [Validators.pattern('^((8|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$')]],
+    birth_day: ['', [Validators.pattern('^(?:0[1-9]|[12]\\d|3[01])([\\/.-])(?:0[1-9]|1[012])\\1(?:19|20)\\d\\d$')]],
     accept: [false, [Validators.requiredTrue]]
   });
 
-  // private birthDay: string[] = [];
+  private _birthDay = '';
 
-  constructor(private authService: AuthService,
-              private router: Router,
-              private fb: FormBuilder,
+  constructor(private _authService: AuthService,
+              private _router: Router,
+              private _fb: FormBuilder,
               private _snackBar: MatSnackBar) {
   }
 
-  ngOnInit(): void {
-  }
-
   get username() {
-    return this.signupForm.get('username');
-  }
-
-  get email() {
-    return this.signupForm.get('email');
+    return this._signupForm.get('username');
   }
 
   get password() {
-    return this.signupForm.get('password');
+    return this._signupForm.get('password');
   }
 
   get phone() {
-    return this.signupForm.get('phone');
+    return this._signupForm.get('phone');
   }
 
-  // get birth_day() {
-  //   return this.signupForm.get('birth_day');
-  // }
+  get birth_day() {
+    return this._signupForm.get('birth_day');
+  }
 
   signup() {
-    if (this.signupForm.valid && this.signupForm.value.email && this.signupForm.value.password
-      && this.signupForm.value.phone && this.signupForm.value.username
-      //&& this.signupForm.value.birth_day
-    ) {
-
-      // this.birthDay = this.signupForm.value.birth_day.split('.');
-      // let sendBirthDay = this.birthDay[2] + '-' + this.birthDay[1] + '-' + this.birthDay[0]
-
-      this.authService.signup(this.signupForm.value.email, this.signupForm.value.password,
-        this.signupForm.value.phone, this.signupForm.value.username)
+    if (this._signupForm.valid && this._signupForm.value) {
+      if (this._signupForm.value.birth_day) {
+        this._birthDay = this._signupForm.value.birth_day.split('.').reverse().join('.');
+      }
+      this._authService.signup(this._signupForm.value.username!, this._signupForm.value.password!.toString(),
+        this._signupForm.value.phone?.toString(), this._signupForm.value.birth_day?.toString(),
+      )
         .subscribe({
           next: (data: DefaultResponseType | SignupResponseType) => {
 
             let error = null;
             if ((data as DefaultResponseType).error !== undefined) {
               error = (data as DefaultResponseType).message;
+              console.log(error);
             }
 
-            this.authService.login(this.signupForm.value.phone!, this.signupForm.value.password!)
+            this._authService.login(this._signupForm.value.username!, this._signupForm.value.password!)
               .subscribe({
                 next: (data: LoginResponseType | DefaultResponseType) => {
-                  if ((data as DefaultResponseType).error ||
-                    !(data as LoginResponseType).accessToken || !(data as LoginResponseType).username) {
+                  if ((data as DefaultResponseType).error !== undefined) {
                     this._snackBar.open('Ошибка при авторизации');
                     throw new Error(data.message ? data.message : 'Error with data on login');
                   }
-                  this.router.navigate(['/main']);
+                  if (data as LoginResponseType) {
+                    const loginResponse = data as LoginResponseType;
+                    if (!loginResponse.accessToken || !loginResponse.ref || loginResponse.error) {
+                      this._snackBar.open('Что-то пошло не так');
+                    } else {
+                      this._authService.setTokens(loginResponse.accessToken, loginResponse.ref);
+                      this._authService.getUser(loginResponse.id) .subscribe((user: UserInfoType) => {
+                        this._authService.setUserInfo(user);
+                      });
+                      this._router.navigate(['/main']);
+                    }
+                  }
                 },
                 error: (error: HttpErrorResponse) => {
                   this._snackBar.open('Ошибка при авторизации');
                   throw new Error(error.error.message);
                 }
               });
-
           },
           error: (errorResponse: HttpErrorResponse) => {
             if (errorResponse.error && errorResponse.message) {

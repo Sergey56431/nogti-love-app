@@ -26,6 +26,13 @@ button {
 
 .page {
   display: flex;
+  margin-top: 55px;
+  margin-left: 250px;
+  transition: .2s ease-in-out;
+}
+
+.page:has(.sidebar.close) {
+  margin-left: 120px;
 }
 
 .button {
@@ -39,8 +46,9 @@ button {
   margin-bottom: 10px;
 }
 
-.page-content{
+.page-content {
   padding-top: 30px;
+
   .page-title {
     font-size: 40px;
     font-family: 'Montserrat-Bold', sans-serif;

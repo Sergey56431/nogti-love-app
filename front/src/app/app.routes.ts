@@ -5,7 +5,7 @@ import {AuthForvardGuard, AuthGuard} from '@core/auth';
 
 export const routes: Routes = [
   {path: '', redirectTo: 'main', pathMatch: 'full'},
-  // {path: '**' , redirectTo: '', pathMatch: 'full'},
+  // {path: '**' , redirectTo: '/status-error-page',},
 
   {
     path: '',
@@ -21,6 +21,11 @@ export const routes: Routes = [
         path: 'clients',
         loadComponent:() => import('./views/page').then(c => c.ClientsPageComponent),
         title: 'Клиенты'
+      },
+      {
+        path: 'schedule',
+        loadComponent:() => import('./views/page').then(c => c.SchedulePageComponent),
+        title: 'Расписание'
       },
     ]
   },

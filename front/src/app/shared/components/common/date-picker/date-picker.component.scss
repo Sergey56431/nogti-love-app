@@ -2,13 +2,13 @@
 @import "../../../../../assets/styles/mixins";
 
 .date-picker {
-  border-radius: 10px;
+  border-radius: 20px;
   width: 790px;
   height: 432px;
-  border: 1px solid #ccc;
+  box-shadow: 0 0 20px 4px #3d3d3d33;
 
   .date-picker-title {
-    border-radius: 7px 7px 0 0;
+    border-radius: 20px 20px 0 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -33,7 +33,7 @@
 
     .calendar {
       padding-right: 38px;
-      border-right: 1px solid #D9D9D9;
+      border-right: 1px solid $bg-color;
       padding-bottom: 82px;
 
       .calendar-title {
@@ -52,7 +52,7 @@
         gap: 4px;
         width: 268px;
         height: 183px;
-        background-color: #D9D9D9;
+        background-color: $bg-color;
         transition: .15s all ease-in-out;
 
         .custom-checkbox {
@@ -131,20 +131,13 @@
             background-color: #b3d7ff;
           }
 
-          &:focus + label::before {
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-          }
-
-          &:focus:not(:checked) + label::before {
-
-          }
-
           &:disabled {
+            color: white;
             + label {
               cursor: not-allowed;
 
               &::before {
-                background-color: #e9ecef;
+                background-color: $busy-color;
               }
 
               .checkbox-count {
@@ -170,7 +163,7 @@
           }
 
           &.disabled {
-            background: #aaa;
+            background: $busy-color;
             color: rgba(0, 0, 0, 0.38);
             cursor: not-allowed;
 
@@ -290,7 +283,7 @@
         .button-icon {
           border-radius: 5px;
           padding: 8px;
-          background: #D9D9D9;
+          background: $bg-color;
           margin-right: 15px;
           @include transition;
         }

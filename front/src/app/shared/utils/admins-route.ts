@@ -1,6 +1,7 @@
 export enum AdminsRoute {
   main = '/main',
   clients = '/clients',
-  directs = '/directs',
+  schedule = '/schedule',
   employs = '/employs',
+  operations = '/operations',
 }

@@ -1,37 +1,47 @@
-import { Injectable } from '@angular/core';
-import { Action, Selector, State, StateContext } from '@ngxs/store';
-import { SetAuthData } from './auth.actions';
-import {UserInfoType} from '../../../shared/types/user-info.type';
+import {Injectable} from '@angular/core';
+import {Action, Selector, State, StateContext} from '@ngxs/store';
+import {AuthData} from '@core/store/auth/auth.actions';
+import {CookieService} from 'ngx-cookie-service';
+import {UserInfoType} from '@shared/types';
+import {patch} from '@ngxs/store/operators';
+import {AuthService} from '@core/auth';
+import {Observable, tap} from "rxjs";
 
 export interface AuthenticationStateModel {
-  user: UserInfoType[]
+  userInfo?: UserInfoType;
 }
 
 @State<AuthenticationStateModel>({
-  name: 'authState',
+  name: 'user',
   defaults: {}
 })
+
 @Injectable()
 export class AuthState {
+  constructor(private _authService: AuthService, private _cookiesService: CookieService) {
+  }
 
   @Selector()
-  static getAuthData(state: AuthenticationStateModel): AuthenticationStateModel {
-    return state.user;
+  static getUserInfo(state: AuthenticationStateModel) {
+    return state.userInfo;
   }
 
-  private static setInstanceState(state: AuthenticationStateModel): AuthenticationStateModel {
-    return { ...state };
-  }
-
-  private static getInstanceState(state: AuthenticationStateModel): AuthenticationStateModel {
-    return { ...state };
-  }
-
-  @Action(SetAuthData)
-  setAuthData(
-    { setState }: StateContext<AuthenticationStateModel>,
-    { payload }: SetAuthData
-  ) {
-    setState(AuthState.setInstanceState(payload));
+  @Action(AuthData.GetUser)
+  private _getUser(ctx: StateContext<AuthenticationStateModel>, action: AuthData.GetUser): Observable<UserInfoType> {
+    const state = ctx.getState();
+    if (state.userInfo != null) {
+      // @ts-ignore
+      return;
+    }
+    return this._authService.getUser(action.userId)
+      .pipe(
+        tap((user: UserInfoType) => {
+          ctx.setState(patch({
+            userInfo: user
+          }));
+          this._authService.setUserInfo(user);
+          ctx.dispatch(new AuthData.GetUserSuccess(user));
+        })
+      );
   }
 }

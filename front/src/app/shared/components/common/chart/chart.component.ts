@@ -40,13 +40,15 @@ export class ChartComponent {
   }];
   protected pieChartLegend = true;
   protected pieChartPlugins = {
-    datalabels: {
+    dataLabels: {
       anchor: 'end',
       align: 'end',
     }
   };
 
-
+  private _getAmounts() {
+    // получение доходов и расходов за месяц
+  }
 
 
 }
