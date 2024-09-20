@@ -65,9 +65,9 @@ export class LoginPageComponent {
               } else {
                 this._authService.setTokens(loginResponse.accessToken, loginResponse.ref);
                 this._authService.getUser(loginResponse.id) .subscribe((user: UserInfoType) => {
-                  this._authService.setUserInfo(user);
                   this._actions.loadUser(user._id);
-                  console.log(this._isAdmin());
+                  this._authService.setUserInfo(user);
+                  // console.log(this._isAdmin());
                 });
                 this._router.navigate(['/main']);
               }

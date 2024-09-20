@@ -53,10 +53,8 @@ export class HeaderComponent implements OnInit{
   ngOnInit() {
     this._isLogged.set(this._authService.isLogged());
     if (this._isLogged()) {
-      // setTimeout(() => { //временное решение нужно найти причину почему не подгружается информация от сервера
-        this._user.set(this._authService.getUserInfo());
-      // }, 500); // перейти на использование стаейт менеджера
-
+      const user = this._authService.getUserInfo()
+      this._actions.loadUser(user?._id!);
     }
   }
 
@@ -75,9 +73,7 @@ export class HeaderComponent implements OnInit{
   }
 
   protected _settingsUser() {
-    this._actions.loadUser(this._user()!._id);
     console.log(this._isAdmin());
-
   }
 
   doLogout() {

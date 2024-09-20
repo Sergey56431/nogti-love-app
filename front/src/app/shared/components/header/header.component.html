@@ -19,9 +19,11 @@
           <div class="profile-icon">
             <img src="/images/profile-non-icon.png" alt="Профиль">
           </div>
-          <div class="profile-info">
-              <p class="profile-name">{{ this._user()!.username }}</p>
-          </div>
+          @defer {
+            <div class="profile-info">
+              <p class="profile-name">{{ this._isAdmin()!.username }}</p>
+            </div>
+          }
           <mat-menu #menu="matMenu">
             <button mat-menu-item (click)="_settingsUser()">
               <mat-icon>settings</mat-icon>
