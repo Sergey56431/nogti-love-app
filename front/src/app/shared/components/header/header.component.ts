@@ -11,8 +11,7 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {MatBadge} from '@angular/material/badge';
 import {UserInfoType} from '@shared/types';
 import {createDispatchMap, select} from '@ngxs/store';
-import {AuthState} from '@core/store/auth/auth.state';
-import {AuthData} from '@core/store/auth/auth.actions';
+import {UsersActions, UserState} from "@core/store";
 
 
 @Component({
@@ -39,7 +38,7 @@ export class HeaderComponent implements OnInit{
 
   protected _isLogged = signal<boolean>(false);
   protected _user = signal<UserInfoType | null>({} as UserInfoType);
-  protected _isAdmin = select(AuthState.getUserInfo);
+  protected _isAdmin = select(UserState.getUser);
 
   constructor(private _authService: AuthService,
               private _snackBar: MatSnackBar,
@@ -47,20 +46,20 @@ export class HeaderComponent implements OnInit{
     };
 
   private _actions = createDispatchMap({
-    loadUser: AuthData.GetUser,
+    loadUser: UsersActions.GetUser,
   });
 
   ngOnInit() {
     this._isLogged.set(this._authService.isLogged());
     if (this._isLogged()) {
-      const user = this._authService.getUserInfo()
-      this._actions.loadUser(user?._id!);
+      const userId = localStorage.getItem('userId');
+      this._actions.loadUser(userId!);
     }
   }
 
   logout() {
-    if (this._user()) {
-      this._authService.logout(this._user()!._id)
+    if (this._isAdmin()) {
+      this._authService.logout(this._isAdmin()!._id)
         .subscribe({
           next: () => {
             this.doLogout();

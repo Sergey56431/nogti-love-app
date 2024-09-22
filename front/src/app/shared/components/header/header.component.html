@@ -21,7 +21,7 @@
           </div>
           @defer {
             <div class="profile-info">
-              <p class="profile-name">{{ this._isAdmin()!.username }}</p>
+              <p class="profile-name">{{ this._isAdmin()?.username }}</p>
             </div>
           }
           <mat-menu #menu="matMenu">
