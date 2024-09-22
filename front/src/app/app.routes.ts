@@ -17,6 +17,10 @@ export const routes: Routes = [
         loadComponent:() => import('./views/page').then(c => c.MainComponent),
         title: 'Главная'
       },
+      // {
+      //   path: 'settings',
+      //   loadComponent:() => import('./views/page').then(c => c.SettingsPageComponent),
+      // },
       {
         path: 'clients',
         loadComponent:() => import('./views/page').then(c => c.ClientsPageComponent),
@@ -26,6 +30,16 @@ export const routes: Routes = [
         path: 'schedule',
         loadComponent:() => import('./views/page').then(c => c.SchedulePageComponent),
         title: 'Расписание'
+      },
+      {
+        path: 'employs',
+        loadComponent:() => import('./views/page').then(c => c.EmployesPageComponent),
+        title: 'Персонал'
+      },
+      {
+        path: 'operations',
+        loadComponent:() => import('./views/page').then(c => c.AllTransationsPageComponent),
+        title: 'Операции'
       },
     ]
   },

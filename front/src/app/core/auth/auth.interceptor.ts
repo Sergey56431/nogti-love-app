@@ -26,7 +26,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
         .pipe(
           catchError((error) => {
-            if (error.status === 401 && !authReq.url.includes('/login') && !authReq.url.includes('/signup')) {
+            if (error.status === 401 && !authReq.url.includes('/login') && !authReq.url.includes('/registration')) {
               return this.handle401(authReq, next);
             }
             return throwError(error);
@@ -62,7 +62,7 @@ export class AuthInterceptor implements HttpInterceptor {
           return throwError(() => new Error(error));
         }
 
-        this._authService.setTokens(this._tokens.refreshToken!, refreshResult.accessToken);
+        this._authService.setTokens(refreshResult.accessToken, this._tokens.refreshToken!);
         console.log(refreshResult);
         const authReq = req.clone({
           headers: req.headers.set('Authorization', 'Bearer ' + refreshResult.accessToken),
@@ -73,7 +73,8 @@ export class AuthInterceptor implements HttpInterceptor {
 
       catchError(error => {
         this._authService.removeTokens();
-        this._router.navigate(['/login']);
+        // this._router.navigate(['/login']);
+        window.location.reload();
         return throwError(() => error); // Возвращаем оригинальную ошибку
       })
     );

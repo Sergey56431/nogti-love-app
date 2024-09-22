@@ -10,7 +10,10 @@
   <div class="header-right-content">
 
     <div class="example-button-container">
-        <mat-icon color="primary" matTooltip="Уведомления" matBadge="15">notifications</mat-icon>
+        <mat-icon
+          color="{{_pushCount > 0 ? 'primary' : 'secondary'}}"
+          matTooltip="{{_pushCount > 0 ? 'У вас ' + _pushCount + ' новых уведомлений' : 'Нет новых уведомлений'}}"
+          matBadge="{{_pushCount > 0 ? _pushCount : null}}">notifications</mat-icon>
     </div>
 
     <div class="header-profile-content">
@@ -19,9 +22,11 @@
           <div class="profile-icon">
             <img src="/images/profile-non-icon.png" alt="Профиль">
           </div>
-          <div class="profile-info">
-              <p class="profile-name">{{ this._user()!.username }}</p>
-          </div>
+          @defer {
+            <div class="profile-info">
+              <p class="profile-name">{{ this._isAdmin()?.username }}</p>
+            </div>
+          }
           <mat-menu #menu="matMenu">
             <button mat-menu-item (click)="_settingsUser()">
               <mat-icon>settings</mat-icon>

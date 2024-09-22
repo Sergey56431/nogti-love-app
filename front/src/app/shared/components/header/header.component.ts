@@ -11,8 +11,7 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {MatBadge} from '@angular/material/badge';
 import {UserInfoType} from '@shared/types';
 import {createDispatchMap, select} from '@ngxs/store';
-import {AuthState} from '@core/store/auth/auth.state';
-import {AuthData} from '@core/store/auth/auth.actions';
+import {UsersActions, UserState} from "@core/store";
 
 
 @Component({
@@ -37,9 +36,10 @@ import {AuthData} from '@core/store/auth/auth.actions';
 })
 export class HeaderComponent implements OnInit{
 
+  protected _pushCount = 0;
   protected _isLogged = signal<boolean>(false);
   protected _user = signal<UserInfoType | null>({} as UserInfoType);
-  protected _isAdmin = select(AuthState.getUserInfo);
+  protected _isAdmin = select(UserState.getUser);
 
   constructor(private _authService: AuthService,
               private _snackBar: MatSnackBar,
@@ -47,22 +47,20 @@ export class HeaderComponent implements OnInit{
     };
 
   private _actions = createDispatchMap({
-    loadUser: AuthData.GetUser,
+    loadUser: UsersActions.GetUser,
   });
 
   ngOnInit() {
     this._isLogged.set(this._authService.isLogged());
     if (this._isLogged()) {
-      // setTimeout(() => { //временное решение нужно найти причину почему не подгружается информация от сервера
-        this._user.set(this._authService.getUserInfo());
-      // }, 500); // перейти на использование стаейт менеджера
-
+      const userId = localStorage.getItem('userId');
+      this._actions.loadUser(userId!);
     }
   }
 
   logout() {
-    if (this._user()) {
-      this._authService.logout(this._user()!._id)
+    if (this._isAdmin()) {
+      this._authService.logout(this._isAdmin()!._id)
         .subscribe({
           next: () => {
             this.doLogout();
@@ -75,9 +73,7 @@ export class HeaderComponent implements OnInit{
   }
 
   protected _settingsUser() {
-    this._actions.loadUser(this._user()!._id);
     console.log(this._isAdmin());
-
   }
 
   doLogout() {

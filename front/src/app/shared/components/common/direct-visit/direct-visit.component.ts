@@ -5,6 +5,7 @@ import {MatError, MatFormField, MatLabel} from '@angular/material/form-field';
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatInput} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-direct-visit',
@@ -28,7 +29,8 @@ import {MatOption, MatSelect} from '@angular/material/select';
 })
 export class DirectVisitComponent {
 
-  constructor(private _fb: FormBuilder) {}
+  constructor(private readonly _fb: FormBuilder,
+              private readonly _snackbar: MatSnackBar) {}
 
   protected _newVisitor = this._fb.group({
     name: new FormControl('', [Validators.required]),
@@ -49,8 +51,9 @@ export class DirectVisitComponent {
     return this._newVisitor.get('dateVisit');
   }
 
-  // protected _sendNewDirect(){
-  //
-  // }
+  protected _sendNewDirect(){
+    this._snackbar.open(`Клиент ${this._name?.value} записан на время ${this._dateVisit?.value}`);
+    console.log(this._newVisitor.value);
+  }
 
 }

@@ -21,7 +21,7 @@
         <mat-error>Введите <strong>телефон</strong> клиента</mat-error>
       }
       @if (_phone?.errors?.['pattern'] && !_phone?.errors?.['required']) {
-        <mat-error>Введите <strong>телефон</strong> клиента</mat-error>
+        <mat-error>Формат <strong>телефона</strong> 8-(999)-999-99-99) </mat-error>
       }
     </mat-form-field>
     <mat-form-field class="visit-form-input">
@@ -46,5 +46,5 @@
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-flat-button [disabled]="_newVisitor.invalid" [mat-dialog-close]="true">Записать</button>
-  <button class="mat-warn" mat-flat-button mat-dialog-close>Отмена</button>
+  <button class="mat-warn" (click)="_sendNewDirect()" mat-flat-button mat-dialog-close>Отмена</button>
 </mat-dialog-actions>

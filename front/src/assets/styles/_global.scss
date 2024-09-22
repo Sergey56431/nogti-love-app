@@ -1,4 +1,5 @@
 @import "fonts";
+@import "variables";
 
 * {
   margin: 0;
@@ -7,7 +8,7 @@
 
 body, html {
   height: 100vh;
-  font-family: 'Montserrat', sans-serif;
+  font-family: Montserrat, sans-serif;
 }
 
 a {
@@ -17,6 +18,14 @@ a {
 
 button {
   cursor: pointer;
+}
+
+.btn {
+  border-radius: 30px;
+  border: none;
+  background-color: $blue-color;
+  outline: none;
+  color: $white-color;
 }
 
 .container {
@@ -33,10 +42,6 @@ button {
 
 .page:has(.sidebar.close) {
   margin-left: 120px;
-}
-
-.button {
-  cursor: pointer;
 }
 
 .text-danger {
