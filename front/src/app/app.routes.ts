@@ -17,6 +17,10 @@ export const routes: Routes = [
         loadComponent:() => import('./views/page').then(c => c.MainComponent),
         title: 'Главная'
       },
+      // {
+      //   path: 'settings',
+      //   loadComponent:() => import('./views/page').then(c => c.SettingsPageComponent),
+      // },
       {
         path: 'clients',
         loadComponent:() => import('./views/page').then(c => c.ClientsPageComponent),

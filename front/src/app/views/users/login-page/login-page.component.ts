@@ -6,8 +6,6 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {HttpErrorResponse} from '@angular/common/http';
 import {AuthService} from '@core/auth';
 import {DefaultResponseType, LoginResponseType, UserInfoType} from '@shared/types';
-import {createDispatchMap, select} from '@ngxs/store';
-import {AuthData, AuthState} from '@core/store';
 
 @Component({
   selector: 'app-login-page',
@@ -35,12 +33,6 @@ export class LoginPageComponent {
               private _snackBar: MatSnackBar) {
   }
 
-  protected _isAdmin = select(AuthState.getUserInfo);
-
-  private _actions = createDispatchMap({
-    loadUser: AuthData.GetUser,
-  });
-
   get username() {
     return this._loginForm.get('username');
   }
@@ -64,11 +56,7 @@ export class LoginPageComponent {
                 this._snackBar.open('Что-то пошло не так');
               } else {
                 this._authService.setTokens(loginResponse.accessToken, loginResponse.ref);
-                this._authService.getUser(loginResponse.id) .subscribe((user: UserInfoType) => {
-                  this._authService.setUserInfo(user);
-                  this._actions.loadUser(user._id);
-                  console.log(this._isAdmin());
-                });
+                localStorage.setItem('userId', loginResponse.id);
                 this._router.navigate(['/main']);
               }
             }
