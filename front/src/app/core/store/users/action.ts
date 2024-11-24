@@ -1,5 +1,6 @@
-import {UserInfoType} from "@shared/types";
+import {UserInfoType} from '@shared/types';
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace UsersActions {
   export class GetUser {
     static readonly type = '[Users] Get User';

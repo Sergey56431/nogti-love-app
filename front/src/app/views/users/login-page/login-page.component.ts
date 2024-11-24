@@ -5,7 +5,7 @@ import {Router, RouterLink} from '@angular/router';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {HttpErrorResponse} from '@angular/common/http';
 import {AuthService} from '@core/auth';
-import {DefaultResponseType, LoginResponseType, UserInfoType} from '@shared/types';
+import {DefaultResponseType, LoginResponseType} from '@shared/types';
 
 @Component({
   selector: 'app-login-page',

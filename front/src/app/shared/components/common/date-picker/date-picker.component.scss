@@ -36,10 +36,16 @@
       border-right: 1px solid $bg-color;
       padding-bottom: 82px;
 
-      .calendar-title {
-        font-size: 24px;
-        text-align: center;
+      .calendar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         margin-bottom: 24px;
+
+        .calendar-title {
+          font-size: 24px;
+          text-align: center;
+        }
       }
 
       .calendar-date-items {

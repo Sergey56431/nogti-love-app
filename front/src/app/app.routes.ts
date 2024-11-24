@@ -31,6 +31,16 @@ export const routes: Routes = [
         loadComponent:() => import('./views/page').then(c => c.SchedulePageComponent),
         title: 'Расписание'
       },
+      {
+        path: 'employs',
+        loadComponent:() => import('./views/page').then(c => c.EmployesPageComponent),
+        title: 'Персонал'
+      },
+      {
+        path: 'operations',
+        loadComponent:() => import('./views/page').then(c => c.AllTransationsPageComponent),
+        title: 'Операции'
+      },
     ]
   },
   {

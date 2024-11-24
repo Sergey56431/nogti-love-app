@@ -6,7 +6,7 @@ import {HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi} from '@ang
 import {MAT_SNACK_BAR_DEFAULT_OPTIONS} from '@angular/material/snack-bar';
 import {provideCharts, withDefaultRegisterables} from 'ng2-charts';
 import {provideStore} from '@ngxs/store';
-import {ErrorStateMatcher, ShowOnDirtyErrorStateMatcher} from '@angular/material/core';
+import {ErrorStateMatcher, provideNativeDateAdapter, ShowOnDirtyErrorStateMatcher} from '@angular/material/core';
 import { provideServiceWorker } from '@angular/service-worker';
 import {AuthInterceptor} from '@core/auth';
 
@@ -14,12 +14,12 @@ import {AuthInterceptor} from '@core/auth';
 export const appConfig: ApplicationConfig = {
 
   providers: [provideZoneChangeDetection({ eventCoalescing: true }),
+    provideNativeDateAdapter(),
     provideRouter(routes),
-    provideStore(),
+    provideStore([]),
     provideAnimationsAsync(),
     provideHttpClient(withInterceptorsFromDi()),
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
-    provideStore(),
     { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
 
     {

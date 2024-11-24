@@ -4,6 +4,7 @@ import {ChartOptions} from 'chart.js';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
+import {RouterLink} from "@angular/router";
 
 @Component({
   selector: 'app-chart',
@@ -15,7 +16,8 @@ import {MatIcon} from '@angular/material/icon';
     MatMenuItem,
     MatMenuTrigger,
     MatIcon,
-    MatIconButton
+    MatIconButton,
+    RouterLink
   ],
   templateUrl: './chart.component.html',
   styleUrl: './chart.component.scss'

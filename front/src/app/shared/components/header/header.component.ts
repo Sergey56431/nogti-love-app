@@ -36,6 +36,7 @@ import {UsersActions, UserState} from "@core/store";
 })
 export class HeaderComponent implements OnInit{
 
+  protected _pushCount = 0;
   protected _isLogged = signal<boolean>(false);
   protected _user = signal<UserInfoType | null>({} as UserInfoType);
   protected _isAdmin = select(UserState.getUser);

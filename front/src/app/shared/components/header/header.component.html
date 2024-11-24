@@ -10,7 +10,10 @@
   <div class="header-right-content">
 
     <div class="example-button-container">
-        <mat-icon color="primary" matTooltip="Уведомления" matBadge="15">notifications</mat-icon>
+        <mat-icon
+          color="{{_pushCount > 0 ? 'primary' : 'secondary'}}"
+          matTooltip="{{_pushCount > 0 ? 'У вас ' + _pushCount + ' новых уведомлений' : 'Нет новых уведомлений'}}"
+          matBadge="{{_pushCount > 0 ? _pushCount : null}}">notifications</mat-icon>
     </div>
 
     <div class="header-profile-content">

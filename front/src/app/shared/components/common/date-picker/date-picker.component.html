@@ -7,13 +7,21 @@
     <mat-menu #menu="matMenu">
       <button mat-menu-item>Редактировать расписание</button>
       <button mat-menu-item>Список всех записей</button>
-      <button mat-menu-item>Обновить</button>
+      <button mat-menu-item (click)="_refreshDatePicker()">Обновить</button>
     </mat-menu>
   </div>
 
   <div class="date-picker-content">
     <div class="calendar">
-      <h3 class="calendar-title">{{ month }}</h3>
+      <div class="calendar-header">
+        <button mat-icon-button (click)="_choiceMonth('prev')">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <h3 class="calendar-title">{{ month }}</h3>
+        <button mat-icon-button (click)="_choiceMonth('next')">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
       <div class="calendar-date-items">
         @for (item of _dateCount(); track item) {
           <input class="custom-checkbox"

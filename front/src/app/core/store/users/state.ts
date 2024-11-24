@@ -1,9 +1,9 @@
-import {UserInfoType} from "@shared/types";
-import {Action, Selector, State, StateContext} from "@ngxs/store";
-import {Inject, Injectable} from "@angular/core";
-import {UsersActions} from "@core/store/users/action";
-import {patch} from "@ngxs/store/operators";
-import {UsersService} from "@shared/services";
+import {UserInfoType} from '@shared/types';
+import {Action, Selector, State, StateContext} from '@ngxs/store';
+import {Injectable} from '@angular/core';
+import {UsersActions} from '@core/store/users/action';
+import {patch} from '@ngxs/store/operators';
+import {UsersService} from '@shared/services';
 
 export interface UserStateModel {
   user?: UserInfoType
@@ -25,12 +25,12 @@ export class UserState {
 
   @Selector()
   public static getUser(state: UserStateModel) {
-    return state.user
+    return state.user;
   }
 
   @Selector()
   public static getUsers(state: UserStateModel) {
-    return state.usersList
+    return state.usersList;
   }
 
   @Action(UsersActions.GetUser)
@@ -42,9 +42,9 @@ export class UserState {
     this._service.userInfo(action.id).subscribe((user: UserInfoType) => {
       ctx.setState(patch({
         user: user
-      }))
+      }));
 
-      ctx.dispatch(new UsersActions.GetUserSuccess(user))
-    })
+      ctx.dispatch(new UsersActions.GetUserSuccess(user));
+    });
   }
 }
