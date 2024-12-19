@@ -18,7 +18,7 @@ import {
   ApiBody,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { CreateUserDto } from '../users/dto/create-user.dto';
+import { CreateUserDto } from '../users/dto';
 import { TokenGuard } from './auth.guard';
 import { ApiParamUserId } from '../custom-swagger/api-responses';
 
