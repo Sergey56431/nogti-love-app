@@ -13,22 +13,22 @@ model User {
   lastName    String
   username    String
   phoneNumber String
-  score       Int
-  birthday    DateTime
+  password    String 
+  score       Int      
 }
 
 model Calendar {
-  id      Int       @id @default(autoincrement())
+  id      Int          @id @default(autoincrement())
   date    DateTime
   directs Directs[]
 }
 
 model Directs {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   phone      String
   clientName String
   time       String
   comment    String
-  calendar   Calendar @relation(fields: [calendarId], references: [id])
   calendarId Int
+  calendar   Calendar @relation(fields: [calendarId], references: [id])
 }

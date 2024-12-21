@@ -1,28 +1,12 @@
 import { Module } from '@nestjs/common';
-import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
-import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule } from '@nestjs/config';
-import { CalendarModule } from './calendar/calendar.module';
-import ormConfig from './ormconfig';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { PrismaService } from './prisma/prisma.service';
+import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [
-    UsersModule,
-    AuthModule,
-    CalendarModule,
-    // TypeOrmModule.forRoot(ormConfig),
-    // MongooseModule.forRoot(
-    //   'mongodb+srv://fignya2605:260520Zz_@cluster0.kornc6n.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0\n',
-    // ),
-    ConfigModule.forRoot({
-      envFilePath: '.env',
-      isGlobal: true,
-    }),
-  ],
-  controllers: [],
-  providers: [PrismaService],
+  imports: [UsersModule],
+  controllers: [AppController],
+  providers: [AppService, PrismaService],
 })
 export class AppModule {}
