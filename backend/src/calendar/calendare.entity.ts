@@ -8,6 +8,4 @@ export class CalendarEntity {
   @Column()
   date: string;
 
-  @OneToMany(() => Directs, (direct) => direct.record)
-  directs: Directs[];
 }

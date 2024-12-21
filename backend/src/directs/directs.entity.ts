@@ -26,7 +26,4 @@ export class Directs {
   @Column()
   timeDirect: string;
 
-  @OneToMany(() => Record, (record) => record.record)
-  @JoinColumn({ name: 'recordId' })
-  record: Record;
 }

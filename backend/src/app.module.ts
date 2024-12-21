@@ -6,22 +6,23 @@ import { ConfigModule } from '@nestjs/config';
 import { CalendarModule } from './calendar/calendar.module';
 import ormConfig from './ormconfig';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { PrismaService } from './prisma/prisma.service';
 
 @Module({
   imports: [
     UsersModule,
     AuthModule,
     CalendarModule,
-    TypeOrmModule.forRoot(ormConfig),
-    MongooseModule.forRoot(
-      'mongodb+srv://fignya2605:260520Zz_@cluster0.kornc6n.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0\n',
-    ),
+    // TypeOrmModule.forRoot(ormConfig),
+    // MongooseModule.forRoot(
+    //   'mongodb+srv://fignya2605:260520Zz_@cluster0.kornc6n.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0\n',
+    // ),
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
     }),
   ],
   controllers: [],
-  providers: [],
+  providers: [PrismaService],
 })
 export class AppModule {}
