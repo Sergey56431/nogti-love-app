@@ -8,13 +8,13 @@ datasource db {
 }
 
 model User {
-  id          Int    @id @default(autoincrement())
-  name        String
-  lastName    String
-  username    String @unique
-  phoneNumber String
+  id          String @id @default(uuid())
+  name        String @db.VarChar(100)
+  lastName    String @db.VarChar(100)
+  username    String @unique @db.VarChar(100)
+  phoneNumber String @unique @db.VarChar(20)
   score       Int
-  password    String
+  password    String @db.VarChar(60)
   role        Role   @default(CLIENT)
 }
 
@@ -25,7 +25,7 @@ model Calendar {
 }
 
 model Directs {
-  id         Int      @id @default(autoincrement())
+  id         Int   @id @default(autoincrement())
   phone      String
   clientName String
   time       String
