@@ -1,8 +1,11 @@
+import { Role } from '.prisma/client';
+
 export class UserDto {
   name: string;
   lastName: string;
   username: string;
   password: string;
   phoneNumber: string;
-  score: number
+  role: Role;
+  score: number;
 }
