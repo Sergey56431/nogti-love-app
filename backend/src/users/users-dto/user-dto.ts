@@ -1,6 +1,6 @@
 import { Role } from '.prisma/client';
 
-export class UserDto {
+export class UserCreateDto {
   name: string;
   lastName: string;
   username: string;
@@ -9,3 +9,5 @@ export class UserDto {
   role: Role;
   score: number;
 }
+
+export type TUserUpdateDto = Partial<UserCreateDto>;
