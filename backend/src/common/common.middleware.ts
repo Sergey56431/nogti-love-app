@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction } from 'express';
-import { ExpressRequestInterface } from '../types/express-request';
+import { ExpressRequestInterface } from '../types';
 
 @Injectable()
 export class CommonMiddleware implements NestMiddleware {

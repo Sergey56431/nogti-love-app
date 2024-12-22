@@ -1,13 +1,14 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PrismaService } from './prisma/prisma.service';
-import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
-import { CommonMiddleware } from './common/common.middleware';
+import { PrismaService } from './prisma';
+import { UsersModule } from './users';
+import { AuthModule } from './auth';
+import { CommonMiddleware } from './common';
+import { DirectsModule } from './directs';
 
 @Module({
-  imports: [UsersModule, AuthModule],
+  imports: [UsersModule, AuthModule, DirectsModule],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })
