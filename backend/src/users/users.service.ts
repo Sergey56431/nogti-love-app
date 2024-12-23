@@ -1,56 +1,76 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import {FilterQuery, Model} from 'mongoose';
-import { User, UserDocument } from './schemas/user.schema';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { TUserUpdateDto, UserCreateDto } from './users-dto';
 import * as bcrypt from 'bcrypt';
-import {UpdateUserDto} from "./dto/update-user.dto";
-import {CreateUserDto} from "./dto/create-user.dto";
-import {ConfigService} from "@nestjs/config";
 
 @Injectable()
 export class UsersService {
-    constructor(
-        @InjectModel(User.name)
-        private userModel: Model<UserDocument>,
-        private configService: ConfigService,
-        ) {}
+  constructor(
+    private readonly _prismaService: PrismaService,
+    // private readonly _configService: ConfigService,
+  ) {}
 
-    async create(user: CreateUserDto): Promise<User> {
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(user.password, saltRounds);
-        const defaultPoints = parseInt(
-            this.configService.get<string>('DEFAULT_POINTS') || '0',
-            10,
-        );
-        return this.userModel.create({
-            ...user,
-            password: hashedPassword,
-            points: defaultPoints,
-            role: 'user'
-        });
+  public async findAll() {
+    return this._prismaService.user.findMany();
+  }
+
+  public async findUniqUser(username: string) {
+    return this._prismaService.user.findUnique({
+      where: {
+        username: username,
+      },
+    });
+  }
+
+  public findOne(id: string) {
+    return this._prismaService.user.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
+
+  public async createUser(dto: UserCreateDto) {
+    const existingUser = await this._prismaService.user.findUnique({
+      where: {
+        username: dto.username,
+        phoneNumber: dto.phoneNumber,
+      },
+    });
+
+    if (existingUser) {
+      throw new Error('Пользователь с таким email уже существует');
     }
 
-    async findOne(userFilterQuery: FilterQuery<User>): Promise<User | undefined> {
-        return this.userModel.findOne(userFilterQuery).exec();
-    }
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
 
-    async findByUsername(username: string): Promise<User | undefined> {
-        return this.userModel.findOne({ username }).exec();
-    }
+    return this._prismaService.user
+      .create({
+        data: {
+          ...dto,
+          password: hashedPassword,
+        },
+      })
+      .then((createdUser) => {
+        console.log(createdUser.password); // Логируем хэшированный пароль
+        return createdUser;
+      });
+  }
 
-    async findById(id: string): Promise<User | undefined> {
-        return this.userModel.findById(id).select(['-password', '-__v', '-refreshToken']).exec();
-    }
+  public updateUser(id: string, data: TUserUpdateDto) {
+    return this._prismaService.user.update({
+      where: {
+        id,
+      },
+      data: data,
+    });
+  }
 
-    async findAll(): Promise<User[]> {
-        return this.userModel.find().select(['-password', '-__v', '-refreshToken']).exec();
-    }
-
-    async update(id: string, user: UpdateUserDto): Promise<User> {
-        return this.userModel.findByIdAndUpdate(id, user, { new: true }).select(['-password', '-__v', '-refreshToken']).exec();
-    }
-
-    async remove(id: string): Promise<User> {
-        return this.userModel.findByIdAndDelete(id).select(['-password', '-__v', '-refreshToken']).exec();
-    }
+  public deleteUser(id: string) {
+    return this._prismaService.user.delete({
+      where: {
+        id,
+      },
+    });
+  }
 }
