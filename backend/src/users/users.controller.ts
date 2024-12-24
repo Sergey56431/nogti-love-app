@@ -14,14 +14,18 @@ import { TUserUpdateDto, UserCreateDto } from './users-dto';
 export class UsersController {
   constructor(private readonly _usersService: UsersService) {}
 
+  /*TODO
+   * Исключить получение пароля в гет запросе
+   * */
+
   @Get()
-  public findAll() {
+  public async findAll() {
     return this._usersService.findAll();
   }
 
   @Get(':id')
-  public findOne(@Param('id') id: string) {
-    return this._usersService.findOne(id);
+  public async findOne(@Param('id') id: string) {
+    return await this._usersService.findOne(id);
   }
 
   @Post()
@@ -30,15 +34,15 @@ export class UsersController {
   }
 
   @Put(':id')
-  public updateUser(
+  public async updateUser(
     @Param('id') id: string,
     @Body('user') dto: TUserUpdateDto,
   ) {
-    return this._usersService.updateUser(id, dto);
+    return await this._usersService.updateUser(id, dto);
   }
 
   @Delete(':id')
-  public deleteUser(@Param('id') id: string) {
-    return this._usersService.deleteUser(id);
+  public async deleteUser(@Param('id') id: string) {
+    return await this._usersService.deleteUser(id);
   }
 }

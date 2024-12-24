@@ -22,7 +22,7 @@ export class UsersService {
     });
   }
 
-  public findOne(id: string) {
+  public async findOne(id: string) {
     return this._prismaService.user.findUnique({
       where: {
         id,
@@ -52,12 +52,11 @@ export class UsersService {
         },
       })
       .then((createdUser) => {
-        console.log(createdUser.password); // Логируем хэшированный пароль
         return createdUser;
       });
   }
 
-  public updateUser(id: string, data: TUserUpdateDto) {
+  public async updateUser(id: string, data: TUserUpdateDto) {
     return this._prismaService.user.update({
       where: {
         id,
@@ -66,7 +65,7 @@ export class UsersService {
     });
   }
 
-  public deleteUser(id: string) {
+  public async deleteUser(id: string) {
     return this._prismaService.user.delete({
       where: {
         id,
