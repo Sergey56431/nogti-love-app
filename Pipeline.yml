@@ -1,0 +1,69 @@
+image: node:lts
+
+# Эта часть выполняется глобально для всего pipeline перед началом выполнения задач
+# В ней мы добавляем наш ключ из установленной ранее переменной SSH_KEY в ssh agent
+# для входа на сервер
+before_script:
+  - 'which ssh-agent || ( apt-get install -qq openssh-client )'
+  - eval $(ssh-agent -s)
+  - ssh-add <(echo "$secret")
+  - mkdir -p ~/.ssh
+  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+
+stages:
+  - install
+  - esLint
+  - build
+  - release
+
+install packages:
+  stage: install
+  cache:
+    paths:
+      - node_modules/
+  script:
+    - npm install
+    - npm install @angular/cli
+  only:
+    - test
+    - master
+  artifacts:
+    paths:
+      - node_modules/
+    expire_in: 1 hour
+
+esLint:
+  stage: esLint
+  cache:
+    paths:
+      - node_modules/
+    script:
+      - npm run lint
+    only:
+      - test
+      - master
+
+build project:
+  stage: build
+  dependencies:
+    - install packages
+  script:
+    - ./node_modules/.bin/ng build
+  only:
+    - test
+    - master
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 hour
+
+deploy project:
+  stage: release
+  dependencies:
+    - build project
+  script:
+    - ssh -p22 $user@$host "rm -rf /var/www/html/*"
+    - scp -P22 -r dist/pizza/* $user@$host:/var/www/html
+  only:
+    - test
+    - master
