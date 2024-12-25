@@ -5,13 +5,26 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
+  private _returnUserModel = {
+    id: true,
+    name: true,
+    lastName: true,
+    username: true,
+    phoneNumber: true,
+    score: true,
+    password: false,
+    role: true,
+  };
+
   constructor(
     private readonly _prismaService: PrismaService,
     // private readonly _configService: ConfigService,
   ) {}
 
   public async findAll() {
-    return this._prismaService.user.findMany();
+    return this._prismaService.user.findMany({
+      select: this._returnUserModel,
+    });
   }
 
   public async findUniqUser(username: string) {
@@ -24,6 +37,16 @@ export class UsersService {
 
   public async findOne(id: string) {
     return this._prismaService.user.findUnique({
+      select: {
+        id: true,
+        name: true,
+        lastName: true,
+        username: true,
+        phoneNumber: true,
+        score: true,
+        password: false,
+        role: true,
+      },
       where: {
         id,
       },
