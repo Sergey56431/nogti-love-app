@@ -1,18 +1,49 @@
-name: Демонстрация GitVerse Cloud CI/CD
+name: CI/CD Pipeline
 on:
   push:
+    branches:
+      - main
 jobs:
-  build-test:
-    name: Cloud Runner Demo
-    runs-on: ubuntu-cloud-runner
+  build-backend:
+    runs-on: ubuntu-latest
     steps:
-      - name: Display event name
-        run: echo ${{ gitverse.event_name }}
-      - name: Display Workflow
-        run: echo ${{ gitverse.workflow }}
-      - name: Display repository name
-        run: echo ${{ gitverse.Repository}}
-      - name: Display repository owner
-        run: echo ${{ gitverse.repository_owner }}
-      - name: Display actor
-        run: echo ${{ gitverse.actor }}
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./backend
+      - name: Run tests
+        run: npm test
+        working-directory: ./backend
+      - name: Build backend
+        run: npm run build
+        working-directory: ./backend
+  build-front:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./front
+      - name: Run tests
+        run: npm test
+        working-directory: ./front
+      - name: Build front
+        run: npm run build
+        working-directory: ./front
+  deploy:
+    needs: [build-backend, build-front]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to production
+        run: |
+          echo "
