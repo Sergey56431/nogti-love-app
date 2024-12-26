@@ -5,25 +5,40 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
+  private _returnUserModel = {
+    id: true,
+    name: true,
+    lastName: true,
+    username: true,
+    phoneNumber: true,
+    score: true,
+    password: false,
+    role: true,
+  };
+
   constructor(
     private readonly _prismaService: PrismaService,
     // private readonly _configService: ConfigService,
   ) {}
 
   public async findAll() {
-    return this._prismaService.user.findMany();
+    return this._prismaService.user.findMany({
+      select: this._returnUserModel,
+    });
   }
 
   public async findUniqUser(username: string) {
     return this._prismaService.user.findUnique({
+      select: this._returnUserModel,
       where: {
         username: username,
       },
     });
   }
 
-  public findOne(id: string) {
+  public async findOne(id: string) {
     return this._prismaService.user.findUnique({
+      select: this._returnUserModel,
       where: {
         id,
       },
@@ -52,13 +67,13 @@ export class UsersService {
         },
       })
       .then((createdUser) => {
-        console.log(createdUser.password); // Логируем хэшированный пароль
         return createdUser;
       });
   }
 
-  public updateUser(id: string, data: TUserUpdateDto) {
+  public async updateUser(id: string, data: TUserUpdateDto) {
     return this._prismaService.user.update({
+      select: this._returnUserModel,
       where: {
         id,
       },
@@ -66,7 +81,7 @@ export class UsersService {
     });
   }
 
-  public deleteUser(id: string) {
+  public async deleteUser(id: string) {
     return this._prismaService.user.delete({
       where: {
         id,

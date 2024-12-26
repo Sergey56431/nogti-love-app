@@ -15,27 +15,30 @@ export class DirectsController {
   constructor(private readonly _directsService: DirectsService) {}
 
   @Post()
-  create(@Body() createDirectDto: CreateDirectDto) {
-    return this._directsService.create(createDirectDto);
+  public async create(@Body('direct') createDirectDto: CreateDirectDto) {
+    return await this._directsService.create(createDirectDto);
   }
 
   @Get()
-  findAll() {
-    return this._directsService.findAll();
+  public async findAll() {
+    return await this._directsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this._directsService.findOne(+id);
+  public async findOne(@Param('id') id: string) {
+    return await this._directsService.findOne(+id);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateDirectDto: UpdateDirectDto) {
-    return this._directsService.update(+id, updateDirectDto);
+  public async update(
+    @Param('id') id: string,
+    @Body('direct') updateDirectDto: UpdateDirectDto,
+  ) {
+    return await this._directsService.update(+id, updateDirectDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this._directsService.remove(+id);
+  public async remove(@Param('id') id: string) {
+    return await this._directsService.remove(+id);
   }
 }
