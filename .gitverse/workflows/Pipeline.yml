@@ -24,7 +24,7 @@ jobs:
         run: npm run build
         working-directory: ./backend
   build-front:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-cloud-runner
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
