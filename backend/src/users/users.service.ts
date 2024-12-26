@@ -29,6 +29,7 @@ export class UsersService {
 
   public async findUniqUser(username: string) {
     return this._prismaService.user.findUnique({
+      select: this._returnUserModel,
       where: {
         username: username,
       },
@@ -37,16 +38,7 @@ export class UsersService {
 
   public async findOne(id: string) {
     return this._prismaService.user.findUnique({
-      select: {
-        id: true,
-        name: true,
-        lastName: true,
-        username: true,
-        phoneNumber: true,
-        score: true,
-        password: false,
-        role: true,
-      },
+      select: this._returnUserModel,
       where: {
         id,
       },
@@ -81,6 +73,7 @@ export class UsersService {
 
   public async updateUser(id: string, data: TUserUpdateDto) {
     return this._prismaService.user.update({
+      select: this._returnUserModel,
       where: {
         id,
       },
