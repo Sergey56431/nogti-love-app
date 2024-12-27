@@ -5,6 +5,8 @@ on:
       - master
       - test
       - newBackend
+  env: 
+    EVOAR_URI: nails-app.cr.cloud.ru   
 jobs:
   build-backend:
     runs-on: ubuntu-cloud-runner
