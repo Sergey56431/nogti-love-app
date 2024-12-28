@@ -5,11 +5,9 @@ on:
       - master
       - test
       - newBackend
-  env: 
-    EVOAR_URI: nails-app.cr.cloud.ru   
 jobs:
   build-backend:
-    runs-on: ubuntu-cloud-runner
+    runs on: ubuntu-cloud-runner
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -27,7 +25,7 @@ jobs:
         run: npm run build
         working-directory: ./backend
   build-front:
-    runs-on: ubuntu-cloud-runner
+    runs on: ubuntu-cloud-runner
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -46,7 +44,7 @@ jobs:
         working-directory: ./front
   deploy:
     needs: [build-backend, build-front]
-    runs-on: ubuntu-latest
+    runs on: ubuntu-cloud-runner
     steps:
       - name: Deploy to production
         run: |
