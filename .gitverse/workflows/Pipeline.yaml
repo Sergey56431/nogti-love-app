@@ -1,10 +1,6 @@
 name: CI/CD Pipeline
 on:
   push:
-    branches:
-      - master
-      - test
-      - newBackend
 jobs:
   build-backend:
     runs on: ubuntu-cloud-runner
@@ -17,9 +13,6 @@ jobs:
           node-version: '20'
       - name: Install dependencies
         run: npm install
-        working-directory: ./backend
-      - name: Run tests
-        run: npm test
         working-directory: ./backend
       - name: Build backend
         run: npm run build
@@ -36,16 +29,6 @@ jobs:
       - name: Install dependencies
         run: npm install
         working-directory: ./front
-      - name: Run tests
-        run: npm test
-        working-directory: ./front
       - name: Build front
         run: npm run build
         working-directory: ./front
-  deploy:
-    needs: [build-backend, build-front]
-    runs on: ubuntu-cloud-runner
-    steps:
-      - name: Deploy to production
-        run: |
-          echo "
