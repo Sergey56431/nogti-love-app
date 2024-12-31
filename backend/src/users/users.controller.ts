@@ -14,10 +14,6 @@ import { TUserUpdateDto, UserCreateDto } from './users-dto';
 export class UsersController {
   constructor(private readonly _usersService: UsersService) {}
 
-  /*TODO
-   * Исключить получение пароля в гет запросе
-   * */
-
   @Get()
   public async findAll() {
     return this._usersService.findAll();

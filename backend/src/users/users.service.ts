@@ -29,7 +29,7 @@ export class UsersService {
 
   public async findUniqUser(username: string) {
     return this._prismaService.user.findUnique({
-      select: this._returnUserModel,
+      // select: this._returnUserModel,
       where: {
         username: username,
       },

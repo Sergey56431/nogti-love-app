@@ -6,11 +6,12 @@ import { UsersModule } from './users';
 import { AuthModule } from './auth';
 import { CommonMiddleware } from './common';
 import { DirectsModule } from './directs';
+import { JwtStrategy } from './auth/jwt-strategy';
 
 @Module({
   imports: [UsersModule, AuthModule, DirectsModule],
   controllers: [AppController],
-  providers: [AppService, PrismaService],
+  providers: [AppService, PrismaService, JwtStrategy],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
