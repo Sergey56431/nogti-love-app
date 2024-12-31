@@ -12,16 +12,18 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async login(loginDto: LoginDto): Promise<{ access_token: string }> {
+  async login(
+    loginDto: LoginDto,
+  ): Promise<{ access_token: string; refresh_token: string; userId: string }> {
     const user = await this.validateUser(loginDto);
-    console.log(user);
     if (!user) {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
     const payload = { username: user!.username };
     return {
-      ...user,
-      access_token: this.jwtService.sign(payload),
+      userId: user.id,
+      access_token: await this.generateAccessToken(user),
+      refresh_token: await this.generateRefreshToken(user),
     };
   }
 
@@ -32,5 +34,19 @@ export class AuthService {
     } else {
       return null;
     }
+  }
+
+  public async generateAccessToken(user: UserCreateDto) {
+    return this.jwtService.signAsync(user, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+  }
+
+  public generateRefreshToken(user: UserCreateDto) {
+    return this.jwtService.signAsync(user, {
+      secret: process.env.JWT_REFRESH_SECRET,
+      expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
+    });
   }
 }

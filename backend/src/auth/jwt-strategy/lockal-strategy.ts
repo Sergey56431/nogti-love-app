@@ -8,7 +8,7 @@ import { LoginDto } from '../auth-dto';
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {
     super({
-      usernameField: 'email', // Используем email вместо стандартного username
+      usernameField: 'username', // Используем email вместо стандартного username
     });
   }
 
