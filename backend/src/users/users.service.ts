@@ -16,10 +16,7 @@ export class UsersService {
     role: true,
   };
 
-  constructor(
-    private readonly _prismaService: PrismaService,
-    // private readonly _configService: ConfigService,
-  ) {}
+  constructor(private readonly _prismaService: PrismaService) {}
 
   public async findAll() {
     return this._prismaService.user.findMany({
@@ -29,7 +26,6 @@ export class UsersService {
 
   public async findUniqUser(username: string) {
     return this._prismaService.user.findUnique({
-      // select: this._returnUserModel,
       where: {
         username: username,
       },
@@ -61,6 +57,7 @@ export class UsersService {
 
     return this._prismaService.user
       .create({
+        select: this._returnUserModel,
         data: {
           ...dto,
           password: hashedPassword,

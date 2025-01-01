@@ -9,20 +9,24 @@ datasource db {
 }
 
 model User {
-  id          String  @id @default(uuid())
-  name        String  @db.VarChar(100)
-  lastName    String? @db.VarChar(100)
-  username    String  @unique @db.VarChar(100)
-  phoneNumber String  @unique @db.VarChar(20)
-  score       Int?
-  password    String  @db.VarChar(60)
-  role        Role    @default(CLIENT)
+  id           String     @id @default(uuid())
+  name         String     @db.VarChar(100)
+  lastName     String?    @db.VarChar(100)
+  username     String     @unique @db.VarChar(100)
+  phoneNumber  String     @unique @db.VarChar(20)
+  score        Int?       @default(100)
+  password     String     @db.VarChar(60)
+  role         Role       @default(CLIENT)
+  calendare    Calendar[]
+  //refreshToken String
 }
 
 model Calendar {
-  id      Int       @id @default(autoincrement())
+  id      String    @id @default(uuid())
   date    DateTime
   directs Directs[]
+  userId  String
+  creator User      @relation(fields: [userId], references: [id])
 }
 
 model Directs {
@@ -30,8 +34,8 @@ model Directs {
   phone      String
   clientName String
   time       String
-  comment    String
-  calendarId Int
+  comment    String?
+  calendarId String
   calendar   Calendar @relation(fields: [calendarId], references: [id])
 }
 

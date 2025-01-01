@@ -1,14 +1,16 @@
 import { Role } from '.prisma/client';
 
 export class UserCreateDto {
-  id: string;
   name: string;
   lastName: string;
   username: string;
   password: string;
   phoneNumber: string;
-  role: Role;
-  score: number;
+  id?: string;
+  role?: Role;
+  score?: number;
+  calendar?: [];
+  //refreshToken?: string;
 }
 
 export type TUserUpdateDto = Partial<UserCreateDto>;

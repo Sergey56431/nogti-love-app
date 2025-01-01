@@ -2,7 +2,7 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users';
-import { LoginDto } from './auth-dto';
+import { LoginDto, SignupDto } from './auth-dto';
 import { UserCreateDto } from '../users';
 
 @Injectable()
@@ -19,12 +19,21 @@ export class AuthService {
     if (!user) {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
-    const payload = { username: user!.username };
+    //await this.usersService.findUniqUser(user.id, {refreshtoken: });
     return {
       userId: user.id,
       access_token: await this.generateAccessToken(user),
       refresh_token: await this.generateRefreshToken(user),
     };
+  }
+
+  public async signUp(user: SignupDto): Promise<UserCreateDto> {
+    return this.usersService.createUser(user);
+    // Сделать функцию регистрации пользователей
+  }
+
+  public async refreshToken(user: UserCreateDto) {
+    // Сделать функцию обновления токена
   }
 
   public async validateUser(body: LoginDto): Promise<UserCreateDto | null> {
