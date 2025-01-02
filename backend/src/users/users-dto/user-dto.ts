@@ -10,7 +10,7 @@ export class UserCreateDto {
   role?: Role;
   score?: number;
   calendar?: [];
-  //refreshToken?: string;
+  refreshToken?: string | null;
 }
 
 export type TUserUpdateDto = Partial<UserCreateDto>;

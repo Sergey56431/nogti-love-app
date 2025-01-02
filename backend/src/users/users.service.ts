@@ -14,6 +14,7 @@ export class UsersService {
     score: true,
     password: false,
     role: true,
+    refreshToken: true,
   };
 
   constructor(private readonly _prismaService: PrismaService) {}

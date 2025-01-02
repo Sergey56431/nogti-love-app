@@ -19,17 +19,20 @@ export class AuthService {
     if (!user) {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
-    //await this.usersService.findUniqUser(user.id, {refreshtoken: });
+    const refreshTokenKey = await this.generateRefreshToken(user);
+    await this.usersService.updateUser(user.id, {
+      refreshToken: refreshTokenKey,
+    });
     return {
       userId: user.id,
       access_token: await this.generateAccessToken(user),
-      refresh_token: await this.generateRefreshToken(user),
+      refresh_token: refreshTokenKey,
     };
   }
 
   public async signUp(user: SignupDto): Promise<UserCreateDto> {
     return this.usersService.createUser(user);
-    // Сделать функцию регистрации пользователей
+    // Добавить функцию добавления в базу рефреш токена
   }
 
   public async refreshToken(user: UserCreateDto) {
