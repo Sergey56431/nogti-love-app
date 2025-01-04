@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto, SignupDto } from './auth-dto';
 import { UserCreateDto } from '../users';
@@ -17,13 +17,13 @@ export class AuthController {
     return await this._authService.signUp(body);
   }
 
-  @Get('logout')
-  public async logout() {
-    // return await this._authService.logout();
+  @Get('logout/:id')
+  public async logout(@Param('id') userId: string): Promise<any> {
+    return await this._authService.logout(userId);
   }
 
-  @Post('refresh')
-  public async refresh() {
-    // return await this._authService.refresh();
+  @Get('refresh/:id')
+  public async refresh(@Param('id') userId: string) {
+    return await this._authService.refreshToken(userId);
   }
 }

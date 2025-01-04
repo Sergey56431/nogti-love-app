@@ -11,10 +11,10 @@ export class UsersService {
     lastName: true,
     username: true,
     phoneNumber: true,
+    refreshToken: true,
     score: true,
     password: false,
     role: true,
-    refreshToken: true,
   };
 
   constructor(private readonly _prismaService: PrismaService) {}
