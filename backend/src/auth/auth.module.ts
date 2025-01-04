@@ -26,8 +26,10 @@ import { TokenGuard } from './auth.guard';
     AuthService,
     PrismaService,
     TokenGuard,
+    ConfigService,
     UsersService,
     JwtStrategy,
   ],
+  exports: [AuthService],
 })
 export class AuthModule {}
