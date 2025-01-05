@@ -24,13 +24,12 @@ export class AuthService {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
 
-    // Очистка старого токена перед созданием нового
-    await this._usersService.updateUser(user.id, { refreshToken: '' });
-
     const refreshTokenKey = await this.generateRefreshToken(user);
     await this._usersService.updateUser(user.id, {
       refreshToken: refreshTokenKey,
     });
+
+    console.log(await this.generateAccessToken(user));
 
     return {
       userId: user.id,
@@ -44,7 +43,7 @@ export class AuthService {
   }
 
   public async refreshToken(userId: string): Promise<{ accessToken: string }> {
-    const user = await this._usersService.findOne(userId);
+    const user = await this._usersService.findUserToRefresh(userId);
     if (!user.refreshToken) {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
@@ -62,15 +61,15 @@ export class AuthService {
   }
 
   public async logout(userId: string) {
-    this._prismaService.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        refreshToken: '0',
-      },
-    });
-    return HttpStatus.OK;
+    try {
+      await this._usersService.updateUser(userId, { refreshToken: '' });
+      return {
+        status: HttpStatus.OK,
+        message: 'Logged out successfully',
+      };
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   public async validateUser(body: LoginDto): Promise<UserCreateDto | null> {
@@ -83,14 +82,14 @@ export class AuthService {
   }
 
   public async generateAccessToken(user: UserCreateDto) {
-    return this._jwtService.sign(user, {
+    return this._jwtService.signAsync(user, {
       secret: this._configService.get<string>('JWT_SECRET'),
       expiresIn: this._configService.get<string>('JWT_EXPIRES_IN'),
     });
   }
 
   public generateRefreshToken(user: UserCreateDto) {
-    return this._jwtService.sign(user, {
+    return this._jwtService.signAsync(user, {
       secret: this._configService.get<string>('JWT_REFRESH_SECRET'),
       expiresIn: this._configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
     });

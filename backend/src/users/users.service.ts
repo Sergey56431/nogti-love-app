@@ -11,11 +11,10 @@ export class UsersService {
     lastName: true,
     username: true,
     phoneNumber: true,
-    refreshToken: true,
+    refreshToken: false,
     score: true,
     password: false,
     role: true,
-    refreshToken: true,
   };
 
   constructor(private readonly _prismaService: PrismaService) {}
@@ -30,6 +29,14 @@ export class UsersService {
     return this._prismaService.user.findUnique({
       where: {
         username: username,
+      },
+    });
+  }
+
+  public async findUserToRefresh(id: string) {
+    return this._prismaService.user.findUnique({
+      where: {
+        id,
       },
     });
   }

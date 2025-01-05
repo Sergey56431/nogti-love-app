@@ -14,6 +14,7 @@ CREATE TABLE "User" (
     "score" INTEGER DEFAULT 100,
     "password" VARCHAR(60) NOT NULL,
     "role" "Role" NOT NULL DEFAULT 'CLIENT',
+    "refreshToken" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -33,7 +34,7 @@ CREATE TABLE "Directs" (
     "phone" TEXT NOT NULL,
     "clientName" TEXT NOT NULL,
     "time" TEXT NOT NULL,
-    "comment" TEXT NOT NULL,
+    "comment" TEXT,
     "calendarId" TEXT NOT NULL,
 
     CONSTRAINT "Directs_pkey" PRIMARY KEY ("id")
