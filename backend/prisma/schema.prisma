@@ -27,7 +27,7 @@ model Calendar {
   directs Directs[]
   state   DayState  @default(empty)
   userId  String
-  creator User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  creator User      @relation(fields: [userId], references: [id])
 }
 
 model Directs {
@@ -37,7 +37,7 @@ model Directs {
   time       String
   comment    String?
   calendarId String
-  calendar   Calendar @relation(fields: [calendarId], references: [id])
+  calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Income_Expanses {
