@@ -7,6 +7,11 @@ import { UserCreateDto } from '../users';
 import { PrismaService } from '../prisma';
 import { ConfigService } from '@nestjs/config';
 
+interface User {
+  id: string;
+  role: string;
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -72,23 +77,26 @@ export class AuthService {
     }
   }
 
-  public async validateUser(body: LoginDto): Promise<UserCreateDto | null> {
+  public async validateUser(body: LoginDto): Promise<User | null> {
     const user = await this._usersService.findUniqUser(body.username);
     if (user && (await bcrypt.compare(body.password, user.password))) {
-      return user;
+      return {
+        id: user.id,
+        role: user.role,
+      };
     } else {
       return null;
     }
   }
 
-  public async generateAccessToken(user: UserCreateDto) {
+  public async generateAccessToken(user: User) {
     return this._jwtService.signAsync(user, {
       secret: this._configService.get<string>('JWT_SECRET'),
       expiresIn: this._configService.get<string>('JWT_EXPIRES_IN'),
     });
   }
 
-  public generateRefreshToken(user: UserCreateDto) {
+  public generateRefreshToken(user: User) {
     return this._jwtService.signAsync(user, {
       secret: this._configService.get<string>('JWT_REFRESH_SECRET'),
       expiresIn: this._configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
