@@ -23,7 +23,9 @@ export class LoginPageComponent {
 
   protected _loginForm = this._fb.group({
     username: ['', [Validators.required]],
-    password: ['', [Validators.pattern('(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,12})$'), Validators.required]],
+    // password:
+    // h['', [Validators.pattern('(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,12})$'), Validators.required]],
+    password: ['', [Validators.required]],
     rememberMe: false
   });
 
@@ -48,17 +50,17 @@ export class LoginPageComponent {
           next: (data: LoginResponseType | DefaultResponseType) => {
             if ((data as DefaultResponseType).error !== undefined) {
               this._snackBar.open('Ошибка при авторизации');
-              throw new Error(data.message ? data.message : 'Error with data on login');
+              throw new Error((data as DefaultResponseType).message);
             }
             if (data as LoginResponseType) {
               const loginResponse = data as LoginResponseType;
-              if (!loginResponse.accessToken || !loginResponse.ref || loginResponse.error) {
-                this._snackBar.open('Что-то пошло не так');
-              } else {
-                this._authService.setTokens(loginResponse.accessToken, loginResponse.ref);
-                localStorage.setItem('userId', loginResponse.id);
+
+                this._authService.setTokens(loginResponse.access_token);
+                this._authService.setUserInfo({
+                  name: loginResponse.name,
+                  userId: loginResponse.userId,
+                });
                 this._router.navigate(['/main']);
-              }
             }
           },
           error: (error: HttpErrorResponse) => {

@@ -1,5 +1,4 @@
 import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
-import {NgForOf} from '@angular/common';
 import {ItemChangerDirective} from '@shared/directives';
 import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
@@ -16,7 +15,6 @@ import {DirectsClientType} from '@shared/types/directs-client.type';
   selector: 'app-date-picker',
   standalone: true,
   imports: [
-    NgForOf,
     ItemChangerDirective,
     MatIcon,
     MatIconButton,
@@ -54,7 +52,7 @@ export class DatePickerComponent implements OnInit{
     this._mountCount.set(new Date().getMonth() + 1);
     this._yearCount.set(new Date().getFullYear());
     const userId = localStorage.getItem('userId');
-    this._calendarService.getDirects(userId!).subscribe(directs => {
+    this._calendarService.getAllDirects().subscribe(directs => {
       console.log(directs);
     });
     try {

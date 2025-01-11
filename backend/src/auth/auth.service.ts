@@ -85,7 +85,9 @@ export class AuthService {
     }
   }
 
-  public async validateUser(body: LoginDto): Promise<User | null> {
+  public async validateUser(
+    body: LoginDto | UserCreateDto,
+  ): Promise<User | null> {
     const user = await this._usersService.findUniqUser(body.username);
     if (user && (await bcrypt.compare(body.password, user.password))) {
       return {

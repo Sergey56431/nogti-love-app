@@ -6,10 +6,13 @@ import {
   Param,
   Delete,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { CalendarService } from './calendar.service';
 import { CreateCalendarDto, UpdateCalendarDto } from './dto';
+import { TokenGuard } from '../auth';
 
+@UseGuards(TokenGuard)
 @Controller('calendar')
 export class CalendarController {
   constructor(private readonly calendarService: CalendarService) {}

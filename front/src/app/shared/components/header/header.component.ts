@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, OnInit, signal} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, OnInit, Signal, signal } from '@angular/core';
 import {MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 import {MatIcon} from '@angular/material/icon';
@@ -11,7 +11,7 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {MatBadge} from '@angular/material/badge';
 import {UserInfoType} from '@shared/types';
 import {createDispatchMap, select} from '@ngxs/store';
-import {UsersActions, UserState} from "@core/store";
+import {UsersActions, UserState} from '@core/store';
 
 
 @Component({
@@ -38,8 +38,9 @@ export class HeaderComponent implements OnInit{
 
   protected _pushCount = 0;
   protected _isLogged = signal<boolean>(false);
-  protected _user = signal<UserInfoType | null>({} as UserInfoType);
-  protected _isAdmin = select(UserState.getUser);
+  protected _user: Signal<UserInfoType> = computed(() => {
+    return this._authService.getUserInfo();
+  });
 
   constructor(private _authService: AuthService,
               private _snackBar: MatSnackBar,
@@ -53,14 +54,15 @@ export class HeaderComponent implements OnInit{
   ngOnInit() {
     this._isLogged.set(this._authService.isLogged());
     if (this._isLogged()) {
-      const userId = localStorage.getItem('userId');
-      this._actions.loadUser(userId!);
+      // const userId = localStorage.getItem('userId');
+      // this._actions.loadUser(userId!);
     }
   }
 
   logout() {
-    if (this._isAdmin()) {
-      this._authService.logout(this._isAdmin()!._id)
+    if (this._user()) {
+      console.log(this._user())
+      this._authService.logout(this._user().userId)
         .subscribe({
           next: () => {
             this.doLogout();
@@ -73,7 +75,7 @@ export class HeaderComponent implements OnInit{
   }
 
   protected _settingsUser() {
-    console.log(this._isAdmin());
+    console.log(this._user());
   }
 
   doLogout() {
