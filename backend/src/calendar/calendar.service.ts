@@ -48,6 +48,7 @@ export class CalendarService {
       where: {
         id,
       },
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
       data: updateCalendarDto,
     });

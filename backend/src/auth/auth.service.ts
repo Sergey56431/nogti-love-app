@@ -4,11 +4,11 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users';
 import { LoginDto, SignupDto } from './auth-dto';
 import { UserCreateDto } from '../users';
-import { PrismaService } from '../prisma';
 import { ConfigService } from '@nestjs/config';
 
 interface User {
   id: string;
+  name: string;
   role: string;
 }
 
@@ -18,12 +18,14 @@ export class AuthService {
     private readonly _usersService: UsersService,
     private readonly _configService: ConfigService,
     private readonly _jwtService: JwtService,
-    private readonly _prismaService: PrismaService,
   ) {}
 
-  async login(
-    loginDto: LoginDto,
-  ): Promise<{ access_token: string; refresh_token: string; userId: string }> {
+  async login(loginDto: LoginDto): Promise<{
+    access_token: string;
+    userId: string;
+    name: string;
+    role: string;
+  }> {
     const user = await this.validateUser(loginDto);
     if (!user) {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
@@ -34,12 +36,11 @@ export class AuthService {
       refreshToken: refreshTokenKey,
     });
 
-    console.log(await this.generateAccessToken(user));
-
     return {
       userId: user.id,
+      name: user.name,
+      role: user.role,
       access_token: await this.generateAccessToken(user),
-      refresh_token: refreshTokenKey,
     };
   }
 
@@ -60,9 +61,16 @@ export class AuthService {
       });
     } catch (e) {
       await this.logout(userId);
+      console.error(e);
       throw new HttpException('Refresh token expired', HttpStatus.UNAUTHORIZED);
     }
-    return { accessToken: await this.generateAccessToken(user) };
+    return {
+      accessToken: await this.generateAccessToken({
+        id: user.id,
+        name: user.name + ' ' + user.lastName,
+        role: user.role,
+      }),
+    };
   }
 
   public async logout(userId: string) {
@@ -82,6 +90,7 @@ export class AuthService {
     if (user && (await bcrypt.compare(body.password, user.password))) {
       return {
         id: user.id,
+        name: user.name + ' ' + user.lastName,
         role: user.role,
       };
     } else {

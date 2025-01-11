@@ -9,16 +9,17 @@ datasource db {
 }
 
 model User {
-  id           String     @id @default(uuid())
-  name         String     @db.VarChar(100)
-  lastName     String?    @db.VarChar(100)
-  username     String     @unique @db.VarChar(100)
-  phoneNumber  String     @unique @db.VarChar(20)
-  score        Int?       @default(100)
-  password     String     @db.VarChar(60)
-  role         Role       @default(CLIENT)
-  calendare    Calendar[]
-  refreshToken String?
+  id              String            @id @default(uuid())
+  name            String            @db.VarChar(100)
+  lastName        String?           @db.VarChar(100)
+  username        String            @unique @db.VarChar(100)
+  phoneNumber     String            @unique @db.VarChar(20)
+  score           Int?              @default(100)
+  password        String            @db.VarChar(60)
+  role            Role              @default(CLIENT)
+  calendare       Calendar[]
+  refreshToken    String?
+  Income_Expanses Income_Expanses[]
 }
 
 model Calendar {
@@ -46,6 +47,8 @@ model Income_Expanses {
   type       TypeOperation
   value      Float
   createDate DateTime      @default(now())
+  userId     String
+  user       User          @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 enum TypeOperation {
