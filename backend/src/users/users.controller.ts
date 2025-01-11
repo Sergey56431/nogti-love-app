@@ -6,17 +6,16 @@ import {
   Post,
   Put,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { TUserUpdateDto, UserCreateDto } from './users-dto';
+import { TokenGuard } from '../auth/auth.guard';
 
+@UseGuards(TokenGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly _usersService: UsersService) {}
-
-  /*TODO
-   * Исключить получение пароля в гет запросе
-   * */
 
   @Get()
   public async findAll() {

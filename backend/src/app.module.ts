@@ -1,22 +1,23 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaService } from './prisma';
 import { UsersModule } from './users';
 import { AuthModule } from './auth';
-import { CommonMiddleware } from './common';
 import { DirectsModule } from './directs';
+import { JwtStrategy } from './auth/jwt-strategy';
+import { CalendarModule } from './calendar';
+import { IncomExpencesModule } from './incom_expences/incom_expences.module';
 
 @Module({
-  imports: [UsersModule, AuthModule, DirectsModule],
+  imports: [
+    UsersModule,
+    AuthModule,
+    DirectsModule,
+    CalendarModule,
+    IncomExpencesModule,
+  ],
   controllers: [AppController],
-  providers: [AppService, PrismaService],
+  providers: [AppService, PrismaService, JwtStrategy],
 })
-export class AppModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(CommonMiddleware).forRoutes({
-      path: 'users',
-      method: RequestMethod.ALL,
-    });
-  }
-}
+export class AppModule {}

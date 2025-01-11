@@ -19,8 +19,8 @@ export class DirectsController {
     return await this._directsService.create(createDirectDto);
   }
 
-  @Get()
-  public async findAll() {
+  @Get(':userId')
+  public async findAll(@Param('id') userId: string) {
     return await this._directsService.findAll();
   }
 
