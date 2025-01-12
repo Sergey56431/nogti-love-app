@@ -8,13 +8,12 @@ export class CalendarService {
 
   public async create(data: { body: CreateCalendarDto; userId: string }) {
     return this._prismaService.calendar.create({
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
       data: {
-        ...data.body,
+        date: new Date(data.body.date),
+        state: data.body.state,
         creator: {
           connect: {
-            id: data.userId,
+            id: data.userId.toString(),
           },
         },
       },
@@ -48,9 +47,10 @@ export class CalendarService {
       where: {
         id,
       },
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      data: updateCalendarDto,
+      data: {
+        date: new Date(updateCalendarDto.date),
+        state: updateCalendarDto.state,
+      },
     });
   }
 

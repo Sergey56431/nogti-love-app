@@ -1,9 +1,10 @@
 import { CreateDirectDto } from '../../directs';
+import { DayState } from '@prisma/client';
 
 export class CreateCalendarDto {
   id: string;
   date: Date | string;
-  state: string;
+  state: DayState;
   directs?: CreateDirectDto[];
 }
 
