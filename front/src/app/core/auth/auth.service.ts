@@ -41,7 +41,7 @@ export class AuthService {
   }
 
   refresh(userId: string): Observable<RefreshResponseType> {
-    return this.http.get<RefreshResponseType>(environment.api + 'auth/refresh' + userId);
+    return this.http.get<RefreshResponseType>(environment.api + 'auth/refresh/' + userId);
   }
 
   public getIsLoggedIn() {

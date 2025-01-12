@@ -28,8 +28,6 @@
                  (change)="onChange(item)"
                  [checked]="item === isChecked"
                  type="radio"
-                 [date]="item"
-                 ItemChanger
                  id="{{item}}"
                  (click)="choiceDay(item)">
           <label for="{{item}}">
@@ -43,7 +41,7 @@
 
       </div>
     </div>
-    @if(day) {
+    @if (day) {
       <div class="timetable">
         <h3 class="timetable-day">{{ day }}</h3>
         <ul class="timetable-items">
@@ -83,10 +81,10 @@
               <div class="item-profile-phone">89005002424</div>
             </div>
           </li>
-          @if(directs > 4){
+          @if (directs > 4) {
             <div class="loadElseDirect">
               <svg width="22" height="13" viewBox="0 0 26 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M13 15L25.9904 0H0.00961876L13 15Z" fill="#D9D9D9"/>
+                <path d="M13 15L25.9904 0H0.00961876L13 15Z" fill="#D9D9D9" />
               </svg>
             </div>
           }
@@ -94,7 +92,7 @@
         <button type="button" (click)="newDirect()">
           <div class="button-icon">
             <svg width="15" height="14" viewBox="0 0 27 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M13.5 0V28M0 13.5H26.5" stroke="white" stroke-opacity="0.44" stroke-width="3"/>
+              <path d="M13.5 0V28M0 13.5H26.5" stroke="white" stroke-opacity="0.44" stroke-width="3" />
             </svg>
           </div>
           <span>Новая запись</span>

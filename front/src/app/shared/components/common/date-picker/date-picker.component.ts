@@ -38,10 +38,10 @@ export class DatePickerComponent implements OnInit{
   protected day = '';
   protected isChecked: number | null = null;
   protected _dateCount = signal<number[]>([]);
-  private _mountCount = signal<number>(0);
+  protected _mountCount = signal<number>(0);
   private _yearCount = signal<number>(0);
   protected _clientsList: DirectsClientType[] = [];
-  directs = 5;// по мер е расширения проекта переделать эту переменную
+  protected directs = 5;// по мере расширения проекта переделать эту переменную
 
   private _actions = createDispatchMap({
     loadDirects: Directs.GetDirects,
@@ -57,7 +57,6 @@ export class DatePickerComponent implements OnInit{
     });
     try {
       this._actions.loadDirects(userId!);
-      console.log(this._directs());
     } catch (err) {
       console.log(err);
     }
@@ -95,7 +94,6 @@ export class DatePickerComponent implements OnInit{
         console.log('Невозможно выбрать месяц');
     }
     this._monthName(this._mountCount());
-   console.log(this._mountCount() + ' ' + this._yearCount());
     // вызов функции я получения всех дней в выбранном месяце
     this._daysInMonth(this._mountCount(), this._yearCount());
   }
@@ -117,8 +115,11 @@ export class DatePickerComponent implements OnInit{
   };
 
   protected _getDirects(day: number, month: number,) {
-
     // получение записей на выбранный день
+  }
+
+  protected _setDayState() {
+    // метод для установки состояния дня
   }
 
   protected _refreshDatePicker () {
