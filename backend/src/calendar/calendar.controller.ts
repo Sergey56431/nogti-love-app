@@ -6,7 +6,7 @@ import {
   Param,
   Delete,
   Put,
-  UseGuards,
+  UseGuards, Query,
 } from '@nestjs/common';
 import { CalendarService } from './calendar.service';
 import { CreateCalendarDto, UpdateCalendarDto } from './dto';
@@ -29,25 +29,25 @@ export class CalendarController {
   }
 
   @Get()
-  public async findAll() {
-    return this.calendarService.findAll();
+  public async findOne(@Query('id') id: string) {
+    if(id){
+      return this.calendarService.findOne(id);
+    } else {
+      return this.calendarService.findAll();
+    }
+
   }
 
-  @Get(':id')
-  public async findOne(@Param('id') id: string) {
-    return this.calendarService.findOne(id);
-  }
-
-  @Put(':id')
+  @Put()
   update(
-    @Param('id') id: string,
+    @Query('id') id: string,
     @Body() updateCalendarDto: UpdateCalendarDto,
   ) {
     return this.calendarService.update(id, updateCalendarDto);
   }
 
-  @Delete(':id')
-  public async remove(@Param('id') id: string) {
+  @Delete()
+  public async remove(@Query('id') id: string) {
     return this.calendarService.remove(id);
   }
 }

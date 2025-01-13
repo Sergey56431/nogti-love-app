@@ -50,6 +50,19 @@ export class UsersService {
     });
   }
 
+  public async findFiltred(filter) {
+    if(isNaN(filter.score)) {
+      filter.score=undefined;
+    }
+
+    return this._prismaService.user.findMany({
+      where: {
+        ...filter
+      },
+      select: this._returnUserModel,
+    })
+  }
+
   public async createUser(dto: UserCreateDto) {
     const existingUser = await this._prismaService.user.findUnique({
       where: {
