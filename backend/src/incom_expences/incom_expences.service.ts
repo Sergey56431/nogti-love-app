@@ -34,7 +34,7 @@ export class IncomExpencesService {
     });
   }
 
-  public async findOne(id: number, userId: string) {
+  public async findOne(id: string, userId: string) {
     return this._prismaService.income_Expanses.findFirst({
       where: {
         userId: userId,
@@ -44,7 +44,7 @@ export class IncomExpencesService {
   }
 
   public async update(
-    id: number,
+    id: string,
     userId: string,
     updateIncomExpenceDto: UpdateIncomeExpences,
   ) {
@@ -60,7 +60,7 @@ export class IncomExpencesService {
   }
 
   public async remove(
-    id: number,
+    id: string,
     userId: string,
   ): Promise<CreateIncomeExpencesDto | HttpException> {
     try {
