@@ -1,4 +1,10 @@
-import {Injectable} from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException
+} from '@nestjs/common';
 import {CreateDirectDto, UpdateDirectDto} from './dto';
 import {PrismaService} from "../prisma";
 
@@ -24,78 +30,81 @@ export class DirectsService {
 
   public async create(createDirectDto: CreateDirectDto) {
     try {
-      //Важная проверка на корректность даты
       const date = new Date(createDirectDto.date);
       if (isNaN(date.getTime())) {
-        throw new Error(`Некорректная дата: ${createDirectDto.date}`);
+        throw new BadRequestException('Некорректная дата');
       }
 
-
-      let calendar;
-      try{
-        calendar = await this._prismaService.calendar.findFirst({
-          where: { date },
-        });
-      }
-      catch(error){
-        console.error("Ошибка поиска календаря:", error);
-        throw new Error("Ошибка при поиске календаря");
-      }
-
-      if (!calendar) {
-        try{
-          /*calendar = await this._prismaService.calendar.create({
-            data: {
-              date: date
-            }
-          });*/
-        } catch (error) {
-          console.error("Ошибка при создании календаря:", error);
-          throw new Error("Ошибка при создании календаря"); // Перебрасываем ошибку
-        }
-      }
-      console.log({data: {
-          ...createDirectDto,
-          calendarId: calendar.id,
-
-        }})
-      const newDirect = await this._prismaService.directs.create({
-        data: {
-          phone: createDirectDto.phone,
-          clientName: createDirectDto.name,
-          time: createDirectDto.time,
-          comment: createDirectDto.comment,
-          calendarId: calendar.id,
-        }
+      const calendar = await this._prismaService.calendar.findFirst({
+        where: { date: date },
       });
 
-      return newDirect;
+      if (!calendar) {
+        throw new NotFoundException('Календарь не найден для указанной даты');
+      } else if (!createDirectDto.userId && (!createDirectDto.phone || !createDirectDto.clientName)) {
+        throw new BadRequestException('Введите данные или id пользователя');
+      }
+
+      delete createDirectDto.date;
+
+      return await this._prismaService.directs.create({
+        data: {
+          ...createDirectDto,
+          calendarId: calendar.id,
+        },
+        include: {
+          user: {
+            select: {
+              name: true,
+              lastName: true,
+              phoneNumber: true,
+            },
+          },
+        },
+      });
     } catch (error) {
-      console.error('Ошибка при создании записи:', error);
-      throw new Error('Ошибка при создании данных');
+      if (error instanceof HttpException || error instanceof BadRequestException) {
+        throw error;
+      } else {
+        console.error('Ошибка при создании записи:', error);
+        throw new InternalServerErrorException('Внутренняя ошибка сервера');
+      }
     }
   }
 
   public async findAll(id: string) {   // Подлежит переработке для оптимизации
     try {
-      const userPhone = await this._prismaService.user.findMany({
-        where: {id},
-        select: { phoneNumber:true }
-      });
-      return await this._prismaService.directs.findMany({
-        where: {phone: userPhone[0].phoneNumber}
+      return  await this._prismaService.directs.findMany({
+        where: {userId: id},
+        include: {
+          user: {
+            select: {
+              name: true,
+              lastName:true,
+              phoneNumber: true,
+            }
+          }
+        }
       })
-
     } catch (error) {
       console.error('Ошибка при получении всех записей:', error);
       throw new Error('Ошибка при получении данных');
     }
   }
 
-  public async findOne(id: number) {
+  public async findOne(id: string) {
     try {
       return await this._prismaService.directs.findUnique({
-        where: { id: +id },
+        where: { id },
+        include: {
+          user: {
+            select: {
+              name: true,
+              lastName:true,
+              phoneNumber: true,
+            }
+          }
+        }
       });
     } catch (error) {
       console.error('Ошибка при поиске записи:', error);
@@ -103,33 +112,48 @@ export class DirectsService {
     }
   }
 
-  public async update(id: number, updateDirectDto: UpdateDirectDto) {
+  public async update(id: string, updateDirectDto: UpdateDirectDto) {
     try {
       const calendarId = await this._prismaService.calendar.findUnique({
-        where:{date: new Date(updateDirectDto.date)},
-        select:{id:true}
+        where: {date: new Date(updateDirectDto.date)},
+        select: {id: true}
       });
+      if (!calendarId) {
+        throw new NotFoundException('Календарь не найден для указанной даты');
+      }
+
+      delete updateDirectDto.date;
 
       return await this._prismaService.directs.update({
-        where: { id:+id },
+        where: {id},
         data: {
-          phone: updateDirectDto.phone,
-          clientName: updateDirectDto.name,
-          time: updateDirectDto.time,
-          comment: updateDirectDto.comment,
+          ...updateDirectDto,
           calendarId: calendarId.id,
         },
+        include: {
+          user: {
+            select: {
+              name: true,
+              lastName: true,
+              phoneNumber: true,
+            }
+          }
+        }
       });
     } catch (error) {
-      console.error('Ошибка при обновлении записи:', error);
-      throw new Error('Ошибка при обновлении данных');
+      if (error instanceof HttpException || error instanceof BadRequestException) {
+        throw error;
+      } else {
+        console.error('Ошибка при создании записи:', error);
+        throw new InternalServerErrorException('Внутренняя ошибка сервера');
+      }
     }
   }
 
-  public async remove(id: number) {
+  public async remove(id: string) {
     try {
       await this._prismaService.directs.delete({
-        where: {id: +id},
+        where: { id },
       });
       return true
     } catch (error) {

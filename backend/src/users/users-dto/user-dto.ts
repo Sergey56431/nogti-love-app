@@ -6,11 +6,13 @@ export class UserCreateDto {
   username: string;
   password: string;
   phoneNumber: string;
+  rate?: number;
+  birthday?: Date;
+  description?:string;
   refreshToken?: string;
   id?: string;
   role?: Role;
   score?: number;
-  calendar?: [];
 }
 
 export type TUserUpdateDto = Partial<UserCreateDto>;

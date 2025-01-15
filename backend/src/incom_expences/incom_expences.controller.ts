@@ -32,20 +32,20 @@ export class IncomeExpencesController {
 
   @Get(':userId/:id')
   public async findOne(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Param('userId') userId: string,
   ) {
-    return this.incomeExpencesService.findOne(+id, userId);
+    return this.incomeExpencesService.findOne(id, userId);
   }
 
   @Put(':userId/:id')
   public async update(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Param('userId') userId: string,
     @Body() updateIncomExpenceDto: UpdateIncomeExpences,
   ) {
     return this.incomeExpencesService.update(
-      +id,
+      id,
       userId,
       updateIncomExpenceDto,
     );
@@ -53,9 +53,9 @@ export class IncomeExpencesController {
 
   @Delete(':userId/:id')
   public async remove(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Param('userId') userId: string,
   ) {
-    return this.incomeExpencesService.remove(+id, userId);
+    return this.incomeExpencesService.remove(id, userId);
   }
 }

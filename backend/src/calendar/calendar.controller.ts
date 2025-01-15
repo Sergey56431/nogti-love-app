@@ -46,6 +46,8 @@ export class CalendarController {
     return this.calendarService.update(id, updateCalendarDto);
   }
 
+  //@Post() - Отпрявляет не рабочие дни (должно генерировать на месяц )
+
   @Delete()
   public async remove(@Query('id') id: string) {
     return this.calendarService.remove(id);
