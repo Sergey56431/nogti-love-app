@@ -33,7 +33,7 @@ export class AuthService {
   }
 
   signup(body: SignupResponseType): Observable<SignupResponseType> {
-    return this.http.post<SignupResponseType>(environment.api + 'auth/signup', { body });
+    return this.http.post<SignupResponseType>(environment.api + 'auth/signup', {  ...body });
   }
 
   logout(id: string): Observable<DefaultResponseType> {

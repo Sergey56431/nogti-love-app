@@ -51,16 +51,16 @@ export class UsersService {
   }
 
   public async findFiltred(filter) {
-    if(isNaN(filter.score)) {
-      filter.score=undefined;
+    if (isNaN(filter.score)) {
+      filter.score = undefined;
     }
 
     return this._prismaService.user.findMany({
       where: {
-        ...filter
+        ...filter,
       },
       select: this._returnUserModel,
-    })
+    });
   }
 
   public async createUser(dto: UserCreateDto) {
