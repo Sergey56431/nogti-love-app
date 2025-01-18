@@ -12,10 +12,12 @@
   border-radius: 0 20px 20px 0;
   background-color: $bg-color;
   margin-right: 60px;
+  z-index: 10;
   @include transition;
 
   .sidebar-body {
     padding: 20px 10px;
+
     .menu {
       .menu-items {
         list-style: none;
@@ -33,14 +35,14 @@
           margin-bottom: 5px;
           transition: .2s ease-in;
 
-           &.active {
-             box-shadow: inset 0 4px 4px 0 rgba(0, 0, 0, 0.25);
-             background: $blue-color;
+          &.active {
+            box-shadow: inset 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+            background: $blue-color;
 
-             span, .mat-icon {
-               color: $white-color;
-             }
-           }
+            span, .mat-icon {
+              color: $white-color;
+            }
+          }
 
           &:hover:not(.active) {
             box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
@@ -62,15 +64,46 @@
   }
 
   &.close {
-      width: 62px;
-      .sidebar-body {
-        .menu-items {
-          .menu-item {
-            span {
-              display: none;
-            }
+    width: 62px;
+
+    .sidebar-body {
+      .menu-items {
+        .menu-item {
+          span {
+            display: none;
           }
         }
       }
+    }
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .sidebar {
+    height: unset;
+    top: unset;
+    bottom: 0;
+    justify-content: center;
+    flex-direction: row;
+    border-radius: 20px 20px 0 0;
+
+    &.close {
+      width: 100%;
+    }
+
+    .sidebar-body {
+      padding: 10px;
+
+      .menu {
+        .menu-items {
+          display: flex;
+          column-gap: 20px;
+
+          .menu-open {
+            display: none;
+          }
+        }
+      }
+    }
   }
 }
