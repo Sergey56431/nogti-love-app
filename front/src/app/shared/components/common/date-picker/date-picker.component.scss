@@ -366,3 +366,12 @@
   }
 }
 
+@media screen and (max-width: 970px){
+  .date-picker {
+    max-width: 340px;
+    height: unset;
+    .date-picker-content {
+      flex-direction: column;
+    }
+  }
+}
