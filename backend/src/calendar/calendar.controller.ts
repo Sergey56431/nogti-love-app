@@ -29,9 +29,14 @@ export class CalendarController {
   }
 
   @Get()
-  public async findOne(@Query('id') id: string) {
-    if(id){
+  public async findOne(
+      @Query('id') id: string,
+      @Query('userId') userId: string
+  ) {
+    if (id) {
       return this.calendarService.findOne(id);
+    } else if (userId) {
+      return this.calendarService.findByUser(userId);
     } else {
       return this.calendarService.findAll();
     }

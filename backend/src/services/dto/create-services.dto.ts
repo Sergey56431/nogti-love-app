@@ -1,9 +1,19 @@
+import {IsNotEmpty, IsNumber, IsString} from "class-validator";
 
 export class CreateServicesDto {
-    id: string;
+    @IsString()
+    @IsNotEmpty()
     name: string;
-    time: Date | string;
+
+    @IsNotEmpty()
+    time: string;
+
+    @IsNumber()
+    @IsNotEmpty()
     price: number;
+
+    @IsString()
+    @IsNotEmpty()
     categoryId: string;
 }
 

@@ -21,6 +21,28 @@ export class DirectsService {
             date: new Date(date),
           },
         },
+        include: {
+          services: {
+            select:{
+              service: {
+                include: {
+                  category:{
+                    select:{
+                      name:true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          user: {
+            select: {
+              name: true,
+              lastName:true,
+              phoneNumber: true,
+            }
+          }
+        }
       });
     } catch (error) {
       console.error('Ошибка при поиске по дате:', error);
@@ -28,7 +50,7 @@ export class DirectsService {
     }
   }
 
-  public async create(createDirectDto: CreateDirectDto) {
+  public async create(createDirectDto) {
     try {
       const date = new Date(createDirectDto.date);
       if (isNaN(date.getTime())) {
@@ -36,34 +58,51 @@ export class DirectsService {
       }
 
       const calendar = await this._prismaService.calendar.findFirst({
-        where: { date: date },
+        where: {date: date},
       });
 
       if (!calendar) {
         throw new NotFoundException('Календарь не найден для указанной даты');
       } else if (!createDirectDto.userId && (!createDirectDto.phone || !createDirectDto.clientName)) {
         throw new BadRequestException('Введите данные или id пользователя');
+      } else if (!createDirectDto.services || !createDirectDto.services[0]) {
+        throw new BadRequestException('Выберите услуги')
       }
 
-      delete createDirectDto.date;
 
-      return await this._prismaService.directs.create({
+      const createDirect = {...createDirectDto}
+      delete createDirect.services;
+      delete createDirect.date;
+
+
+      const direct = await this._prismaService.directs.create({
         data: {
-          ...createDirectDto,
+          ...createDirect,
           calendarId: calendar.id,
-        },
-        include: {
-          user: {
-            select: {
-              name: true,
-              lastName: true,
-              phoneNumber: true,
-            },
-          },
-        },
+        }
       });
+
+      const servicePromises = createDirectDto.services.map(async (service) => {
+        const serviceExists = await this._prismaService.services.findUnique({
+          where: { id: service.serviceId },
+        });
+        if (!serviceExists) {
+          throw new NotFoundException(`Услуга не найдена`);
+        }
+        return this._prismaService.directsServices.create({
+          data: {
+            serviceId: service.serviceId,
+            directId: direct.id,
+          },
+        });
+      });
+
+      await Promise.all(servicePromises);
+
+      return this.findOne(direct.id);
+
     } catch (error) {
-      if (error instanceof HttpException || error instanceof BadRequestException) {
+      if (error instanceof HttpException || error instanceof BadRequestException || error instanceof NotFoundException) {
         throw error;
       } else {
         console.error('Ошибка при создании записи:', error);
@@ -72,11 +111,28 @@ export class DirectsService {
     }
   }
 
-  public async findAll(id: string) {   // Подлежит переработке для оптимизации
+  public async findAll() {
+    return this._prismaService.directs.findMany();
+  }
+
+  public async findByUser(id: string) {
     try {
       return  await this._prismaService.directs.findMany({
         where: {userId: id},
         include: {
+          services: {
+            select:{
+              service: {
+                include: {
+                  category:{
+                    select:{
+                      name:true
+                    }
+                  }
+                }
+              }
+            }
+          },
           user: {
             select: {
               name: true,
@@ -97,6 +153,19 @@ export class DirectsService {
       return await this._prismaService.directs.findUnique({
         where: { id },
         include: {
+          services: {
+            select:{
+              service: {
+                include: {
+                  category:{
+                    select:{
+                      name:true
+                    }
+                  }
+                }
+              }
+            }
+          },
           user: {
             select: {
               name: true,
@@ -112,7 +181,7 @@ export class DirectsService {
     }
   }
 
-  public async update(id: string, updateDirectDto: UpdateDirectDto) {
+  public async update(id: string, updateDirectDto) {
     try {
       const calendarId = await this._prismaService.calendar.findUnique({
         where: {date: new Date(updateDirectDto.date)},
@@ -122,24 +191,50 @@ export class DirectsService {
         throw new NotFoundException('Календарь не найден для указанной даты');
       }
 
-      delete updateDirectDto.date;
+      const updateDirect = {...updateDirectDto}
+      delete updateDirect.services;
+      delete updateDirect.date;
 
-      return await this._prismaService.directs.update({
+      const direct = await this._prismaService.directs.update({
         where: {id},
         data: {
-          ...updateDirectDto,
+          ...updateDirect,
           calendarId: calendarId.id,
         },
-        include: {
-          user: {
-            select: {
-              name: true,
-              lastName: true,
-              phoneNumber: true,
-            }
-          }
-        }
       });
+
+      if (updateDirectDto.services) {
+        const serviceCheckPromises = updateDirectDto.services.map(async (service) => {
+          const serviceExists = await this._prismaService.services.findUnique({
+            where: {id: service.serviceId},
+          });
+          if (!serviceExists) {
+            throw new NotFoundException(`Услуга не найдена`);
+          }
+        });
+
+        await Promise.all(serviceCheckPromises);
+
+        await this._prismaService.directsServices.deleteMany({
+          where: {
+            directId: direct.id,
+          }
+        })
+
+        const servicePromises = updateDirectDto.services.map(async (service) => {
+          return this._prismaService.directsServices.create({
+            data: {
+              serviceId: service.serviceId,
+              directId: direct.id,
+            },
+          });
+        });
+
+        await Promise.all(servicePromises);
+      }
+
+      return this.findOne(direct.id);
+
     } catch (error) {
       if (error instanceof HttpException || error instanceof BadRequestException) {
         throw error;

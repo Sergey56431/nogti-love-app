@@ -1,4 +1,50 @@
-import { Controller } from '@nestjs/common';
+import {
+    Controller,
+    Post,
+    Body,
+    Get,
+    Put,
+    Delete,
+    Query, UseGuards
+} from '@nestjs/common';
+import { ServicesService } from './services.service';
+import { CreateServicesDto, UpdateServicesDto } from './dto';
+import {TokenGuard} from "../auth";
 
+@UseGuards(TokenGuard)
 @Controller('services')
-export class ServicesController {}
+export class ServicesController {
+    constructor(private readonly servicesService: ServicesService) {}
+
+    @Post()
+    create(@Body() createServicesDto: CreateServicesDto) {
+        return this.servicesService.create(createServicesDto);
+    }
+
+    @Get()
+    find(
+        @Query('categoryId') categoryId?: string,
+        @Query('id') id?: string,
+    ) {
+        if(categoryId) {
+            return this.servicesService.findByCategory(categoryId);
+        } else if (id) {
+            return  this.servicesService.findOne(id)
+        } else {
+            return this.servicesService.findAll()
+        }
+    }
+
+    @Put()
+    update(
+        @Body() updateServicesDto: UpdateServicesDto,
+        @Query('id') id: string
+    ) {
+        return this.servicesService.update(id, updateServicesDto);
+    }
+
+    @Delete()
+    remove(@Query('id') id: string) {
+        return this.servicesService.remove(id);
+    }
+}

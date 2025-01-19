@@ -44,7 +44,7 @@ clientName            String?
 time                  String
 comment               String?
 userId                String?
-directsServices       DirectsServices[]
+services              DirectsServices[]
 calendarId            String
 user                  User?    @relation(fields: [userId], references: [id])
 calendar              Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -73,9 +73,9 @@ user      User      @relation(fields: [userId], references: [id], onUpdate: Casc
 model Services {
 id                String    @id @default(uuid())
 name              String    @db.VarChar(100)
-time              DateTime
+time              String
 price             Float
-directsServices   DirectsServices[]
+directs           DirectsServices[]
 categoryId        String
 category          Category  @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }

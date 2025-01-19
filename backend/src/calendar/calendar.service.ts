@@ -31,6 +31,15 @@ export class CalendarService {
     });
   }
 
+  public async findByUser(userId: string){
+    return this._prismaService.calendar.findMany({
+      where:{ userId: userId },
+      include: {
+        directs: true,
+      },
+    })
+  }
+
   public async findOne(id: string) {
     return this._prismaService.calendar.findFirst({
       where: {
