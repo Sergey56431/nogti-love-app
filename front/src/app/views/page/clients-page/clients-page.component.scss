@@ -1,7 +1,27 @@
-table {
-  width: 80vw
+.table-container {
+  table {
+    width: 100%; /* Заставляет таблицу занимать всю ширину контейнера */
+    th.mat-header-cell,
+    td.mat-cell {
+      font-size: 14px; /* Уменьшение шрифта для компактности */
+      padding: 8px; /* Уменьшение отступов */
+    }
+  }
 }
 
-th.mat-sort-header-sorted {
-  color: black;
+@media (max-width: 975px) {
+  .table-container {
+    max-width: 768px;
+    overflow: auto;
+  }
+}
+
+@media (max-width: 375px) {
+  .table-container {
+    table {
+      th.mat-header-cell, td.mat-cell {
+        font-size: 12px; /* Дополнительное уменьшение шрифта на маленьких экранах */
+      }
+    }
+  }
 }

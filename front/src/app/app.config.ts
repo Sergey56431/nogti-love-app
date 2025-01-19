@@ -9,6 +9,8 @@ import {provideStore} from '@ngxs/store';
 import {ErrorStateMatcher, provideNativeDateAdapter, ShowOnDirtyErrorStateMatcher} from '@angular/material/core';
 import { provideServiceWorker } from '@angular/service-worker';
 import {AuthInterceptor} from '@core/auth';
+import { providePrimeNG } from 'primeng/config';
+import Material from '@primeng/themes/material';
 
 
 export const appConfig: ApplicationConfig = {
@@ -18,6 +20,9 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideStore([]),
     provideAnimationsAsync(),
+    providePrimeNG({
+
+    }),
     provideHttpClient(withInterceptorsFromDi()),
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
     { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
