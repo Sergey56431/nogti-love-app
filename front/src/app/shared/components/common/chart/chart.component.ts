@@ -1,28 +1,22 @@
 import { Component } from '@angular/core';
-import {BaseChartDirective} from 'ng2-charts';
-import {ChartOptions} from 'chart.js';
-import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
-import {MatButton, MatIconButton} from '@angular/material/button';
-import {MatIcon} from '@angular/material/icon';
-import {RouterLink} from "@angular/router";
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartOptions } from 'chart.js';
+import { Menu } from 'primeng/menu';
+import { Button } from 'primeng/button';
 
 @Component({
   selector: 'app-chart',
   standalone: true,
-  imports: [
-    BaseChartDirective,
-    MatMenu,
-    MatButton,
-    MatMenuItem,
-    MatMenuTrigger,
-    MatIcon,
-    MatIconButton,
-    RouterLink
-  ],
+  imports: [BaseChartDirective, Menu, Button],
   templateUrl: './chart.component.html',
-  styleUrl: './chart.component.scss'
+  styleUrl: './chart.component.scss',
 })
 export class ChartComponent {
+  protected _options = [
+    { routerLink: '', label: 'Доходы' },
+    { routerLink: '', label: 'Расходы' },
+    { routerLink: '/operations', label: 'Детально' },
+  ];
 
   protected pieChartOptions: ChartOptions<'doughnut'> = {
     plugins: {
@@ -34,23 +28,23 @@ export class ChartComponent {
   };
   protected pieChartLabels = {
     labels: ['Даходы', 'Расходы'],
-};
-  protected pieChartDatasets = [{
-    data: [235, 765],
-    backgroundColor: ['#dfc49c', '#0E55DD'],
-    hoverBackgroundColor: ['#f3cd8e', '#003381'],
-  }];
+  };
+  protected pieChartDatasets = [
+    {
+      data: [235, 765],
+      backgroundColor: ['#dfc49c', '#0E55DD'],
+      hoverBackgroundColor: ['#f3cd8e', '#003381'],
+    },
+  ];
   protected pieChartLegend = true;
   protected pieChartPlugins = {
     dataLabels: {
       anchor: 'end',
       align: 'end',
-    }
+    },
   };
 
   private _getAmounts() {
     // получение доходов и расходов за месяц
   }
-
-
 }

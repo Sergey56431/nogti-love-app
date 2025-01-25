@@ -10,27 +10,47 @@ import {ErrorStateMatcher, provideNativeDateAdapter, ShowOnDirtyErrorStateMatche
 import { provideServiceWorker } from '@angular/service-worker';
 import {AuthInterceptor} from '@core/auth';
 import { providePrimeNG } from 'primeng/config';
-import Material from '@primeng/themes/material';
+import Aura from '@primeng/themes/aura';
+import { DialogService } from 'primeng/dynamicdialog';
 
 
 export const appConfig: ApplicationConfig = {
 
-  providers: [provideZoneChangeDetection({ eventCoalescing: true }),
+  providers: [
+    DialogService,
+    provideZoneChangeDetection({ eventCoalescing: true }),
     provideNativeDateAdapter(),
     provideRouter(routes),
     provideStore([]),
     provideAnimationsAsync(),
     providePrimeNG({
-
-    }),
-    provideHttpClient(withInterceptorsFromDi()),
+      theme: {
+        preset: Aura,
+        options: {
+          palette: {
+            primary: '#003cff',
+            secondary: '#6c757d',
+            success: '#28a745',
+            warning: '#ffc107',
+            info: '#17a2b8',
+            danger: '#dc3545'
+          },
+          prefix: 'p',
+          darkModeSelector: false,
+          cssLayer: false
+        }
+      }
+    }), provideHttpClient(withInterceptorsFromDi()),
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
     { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
 
     {
         provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
         useValue: { duration: 2500 },
-    }, provideCharts(withDefaultRegisterables()), provideStore([]), provideServiceWorker('ngsw-worker.js', {
+    },
+    provideCharts(withDefaultRegisterables()),
+    provideStore([]),
+    provideServiceWorker('ngsw-worker.js', {
         enabled: isDevMode(),
         registrationStrategy: 'registerWhenStable:30000'
     })]

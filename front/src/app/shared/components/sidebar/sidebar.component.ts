@@ -8,6 +8,8 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {AdminsRoute} from '@shared/utils';
 import {MatTooltip} from '@angular/material/tooltip';
+import { PrimeIcons } from 'primeng/api';
+
 
 @Component({
   selector: 'app-sidebar',
@@ -15,16 +17,12 @@ import {MatTooltip} from '@angular/material/tooltip';
   imports: [
     MatSidenavModule,
     MatListModule,
-    RouterOutlet,
     MatIconModule,
     MatToolbarModule,
     MatButtonModule,
     RouterLink,
     RouterLink,
     RouterLinkActive,
-    MatMenuTrigger,
-    MatMenu,
-    MatMenuItem,
     MatTooltip
   ],
   templateUrl: './sidebar.component.html',
@@ -39,10 +37,10 @@ export class SidebarComponent {
     this._menuOpen.set(!this._menuOpen());
   }
   protected _menuAdminItems = [
-    {route: AdminsRoute.main, icon: 'home', routeName: 'Главная'},
-    {route: AdminsRoute.clients, icon: 'apps', routeName: 'База клиентов'},
-    {route: AdminsRoute.schedule, icon: 'event_note', routeName: 'Расписание'},
-    {route: AdminsRoute.employs, icon: 'group', routeName: 'Персонал'},
-    {route: AdminsRoute.operations, icon: 'currency_ruble', routeName: 'Операции'},
+    {route: AdminsRoute.main, icon: PrimeIcons.HOME, routeName: 'Главная'},
+    {route: AdminsRoute.clients, icon: PrimeIcons.DATABASE, routeName: 'База клиентов'},
+    {route: AdminsRoute.schedule, icon: PrimeIcons.CALENDAR, routeName: 'Расписание'},
+    {route: AdminsRoute.employs, icon: PrimeIcons.USERS, routeName: 'Персонал'},
+    {route: AdminsRoute.operations, icon: PrimeIcons.WALLET, routeName: 'Операции'},
   ];
 }

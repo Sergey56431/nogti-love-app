@@ -5,7 +5,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 98svw;
+  width: 100%;
   padding: 10px;
   align-items: center;
   justify-content: space-between;
@@ -17,6 +17,7 @@
   .header-left-content,
   .header-right-content {
     display: flex;
+    align-items: center;
   }
 
   .header-logo {

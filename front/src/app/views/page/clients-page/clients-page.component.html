@@ -71,7 +71,7 @@
 <!--  <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Select page of periodic elements" />-->
 
 
-<div class="table-container">
+<div class="w-100 table-container">
   <p-table [value]="ELEMENT_DATA" [tableStyle]="{'min-width': '60rem'}">
     <ng-template #header>
       <tr>
@@ -81,7 +81,7 @@
         <th pSortableColumn="name" style="width:20%">
           Name <p-sortIcon field="name" />
         </th>
-        <th pSortableColumn="score" style="width:20%">
+        <th class="" pSortableColumn="score" style="width:20%">
           Score <p-sortIcon field="score" />
         </th>
         <th pSortableColumn="phone" style="width:20%">

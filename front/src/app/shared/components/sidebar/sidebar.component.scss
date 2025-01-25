@@ -6,7 +6,7 @@
   width: 200px;
   position: fixed;
   left: 0;
-  top: 70px;
+  top: 80px;
   display: flex;
   flex-direction: column;
   border-radius: 0 20px 20px 0;
@@ -26,7 +26,7 @@
           border: 1px solid transparent;
           width: 100%;
           box-sizing: border-box;
-          padding: 10px 8px;
+          padding: 10px;
           display: flex;
           font-size: 14px;
           border-radius: 10px;
@@ -35,11 +35,15 @@
           margin-bottom: 5px;
           transition: .2s ease-in;
 
+          i {
+            font-size: 20px;
+          }
+
           &.active {
             box-shadow: inset 0 4px 4px 0 rgba(0, 0, 0, 0.25);
             background: $blue-color;
 
-            span, .mat-icon {
+            span, i {
               color: $white-color;
             }
           }
