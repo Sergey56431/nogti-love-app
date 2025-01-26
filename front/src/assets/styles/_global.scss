@@ -34,7 +34,6 @@ button {
 }
 
 .page {
-  display: flex;
   margin-top: 55px;
   margin-left: 250px;
   transition: .2s ease-in-out;
@@ -52,7 +51,8 @@ button {
 }
 
 .page-content {
-  padding-top: 30px;
+  padding-inline: 15px;
+  padding-top: 80px;
 
   .page-title {
     font-size: 40px;
@@ -68,6 +68,10 @@ button {
 @media screen and (max-width: 500px) {
   .page {
     justify-content: center;
+
+    .page-title {
+      text-align: center;
+    }
 
     &:has(.sidebar.close) {
       margin-left: 0;

@@ -1,5 +1,24 @@
+@import "../../../../assets/styles/mixins";
+
 .table-container {
+  scrollbar-width: none;
+  scrollbar-color: $blue-color transparent;
+
+  &::-webkit-scrollbar {
+    width: 0;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: $blue-color;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  @include card();
   table {
+
     width: 100%; /* Заставляет таблицу занимать всю ширину контейнера */
     th.mat-header-cell,
     td.mat-cell {
@@ -12,7 +31,7 @@
 @media (max-width: 975px) {
   .table-container {
     max-width: 768px;
-    overflow: auto;
+    overflow-x: auto;
   }
 }
 

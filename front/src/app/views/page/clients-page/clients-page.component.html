@@ -2,112 +2,63 @@
 
   <h1 class="page-title">{{ title }}</h1>
 
-<!--  <div class="table-container">-->
-<!--    <table mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)"-->
-<!--           class="mat-elevation-z8">-->
-
-<!--      &lt;!&ndash; Position Column &ndash;&gt;-->
-<!--      <ng-container matColumnDef="position">-->
-<!--        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by number">-->
-<!--          No.-->
-<!--        </th>-->
-<!--        <td mat-cell *matCellDef="let element"> {{ element.position }}</td>-->
-<!--      </ng-container>-->
-
-<!--      &lt;!&ndash; Name Column &ndash;&gt;-->
-<!--      <ng-container matColumnDef="name">-->
-<!--        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by name">-->
-<!--          Имя-->
-<!--        </th>-->
-<!--        <td mat-cell *matCellDef="let element"> {{ element.name }}</td>-->
-<!--      </ng-container>-->
-
-<!--      &lt;!&ndash; Weight Column &ndash;&gt;-->
-<!--      <ng-container matColumnDef="score">-->
-<!--        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by score">-->
-<!--          Балов-->
-<!--        </th>-->
-<!--        <td mat-cell *matCellDef="let element"> {{ element.score }}</td>-->
-<!--      </ng-container>-->
-
-<!--      &lt;!&ndash; Symbol Column &ndash;&gt;-->
-<!--      <ng-container matColumnDef="phone">-->
-<!--        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by phone">-->
-<!--          Телефон-->
-<!--        </th>-->
-<!--        <td mat-cell *matCellDef="let element"> {{ element.phone }}</td>-->
-<!--      </ng-container>-->
-
-<!--      &lt;!&ndash; Symbol Column &ndash;&gt;-->
-<!--      <ng-container matColumnDef="lastVisit">-->
-<!--        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by lastVisit">-->
-<!--          Последний визит-->
-<!--        </th>-->
-<!--        <td mat-cell *matCellDef="let element"> {{ element.lastVisit }}</td>-->
-<!--      </ng-container>-->
-
-<!--      &lt;!&ndash; Symbol Column &ndash;&gt;-->
-<!--      <ng-container matColumnDef="comment">-->
-<!--        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by comment">-->
-<!--          Комментарий-->
-<!--        </th>-->
-<!--        <td mat-cell *matCellDef="let element"> {{ element.comment }}</td>-->
-<!--      </ng-container>-->
-
-<!--      &lt;!&ndash; Symbol Column &ndash;&gt;-->
-<!--      <ng-container matColumnDef="options">-->
-<!--        <th mat-header-cell *matHeaderCellDef >-->
-<!--          Опции-->
-<!--        </th>-->
-<!--        <td mat-cell *matCellDef="let element"> {{ element.options }}</td>-->
-<!--      </ng-container>-->
-
-<!--      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>-->
-<!--      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>-->
-<!--    </table>-->
-<!--  </div>-->
-
-
-<!--  <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Select page of periodic elements" />-->
-
-
-<div class="w-100 table-container">
-  <p-table [value]="ELEMENT_DATA" [tableStyle]="{'min-width': '60rem'}">
-    <ng-template #header>
-      <tr>
-        <th pSortableColumn="position" style="width:20%">
-          ID <p-sortIcon field="position" />
-        </th>
-        <th pSortableColumn="name" style="width:20%">
-          Name <p-sortIcon field="name" />
-        </th>
-        <th class="" pSortableColumn="score" style="width:20%">
-          Score <p-sortIcon field="score" />
-        </th>
-        <th pSortableColumn="phone" style="width:20%">
-          Phone <p-sortIcon field="phone" />
-        </th>
-        <th pSortableColumn="lastVisit" style="width:20%">
-          Last visit <p-sortIcon field="lastVisit" />
-        </th>
-        <th pSortableColumn="comment" style="width:20%">
-          Comment <p-sortIcon field="comment" />
-        </th>
-        <th pSortableColumn="options" style="width:20%">options</th>
-      </tr>
-    </ng-template>
-    <ng-template #body let-product>
-      <tr>
-        <td>{{ product.position }}</td>
-        <td>{{ product.name }}</td>
-        <td>{{ product.score }}</td>
-        <td>{{ product.phone }}</td>
-        <td>{{ product.lastVisit }}</td>
-        <td>{{ product.comment }}</td>
-        <td>{{ product.options }}</td>
-      </tr>
-    </ng-template>
-  </p-table>
-</div>
-
+  <div class="w-100 table-container">
+    <p-table [value]="ELEMENT_DATA"
+             [rows]="10"
+             [rowsPerPageOptions]="[10, 25, 50]"
+             [paginator]="true"
+             [lazy]="true"
+             [tableStyle]="{'min-width': '60rem'}">
+      <ng-template #header>
+        <tr>
+          <th pSortableColumn="name">
+            Имя
+            <p-sortIcon field="name" />
+          </th>
+          <th pSortableColumn="phone">
+            Телефон
+            <p-sortIcon field="phone" />
+          </th>
+          <th pSortableColumn="score">
+            Балы
+            <p-sortIcon field="score" />
+          </th>
+          <th pSortableColumn="lastVisit">
+            Последний визит
+            <p-sortIcon field="lastVisit" />
+          </th>
+          <th pSortableColumn="comment">
+            Комментарий
+            <p-sortIcon field="comment" />
+          </th>
+          <th></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-client>
+        <tr>
+          <td>{{ client.name }}</td>
+          <td>{{ client.phone }}</td>
+          <td>{{ client.score }}</td>
+          <td>{{ client.lastVisit }}</td>
+          <td>{{ client.comment }}</td>
+          <td>
+            <div class="flex items-center gap-1">
+              <p-button icon="pi pi-eye"
+                        pTooltip="Подробная информация"
+                        [rounded]="true"
+                        [text]="true"
+                        size="small"
+                        severity="info" />
+              <p-button icon="pi pi-trash"
+                        pTooltip="Удалить клиента {{client.name}}"
+                        [rounded]="true"
+                        size="small"
+                        (click)="_deleteClient(client.id)"
+                        [text]="true" severity="danger" />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
 </div>

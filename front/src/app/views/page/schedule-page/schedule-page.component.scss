@@ -1,4 +1,5 @@
 @import "../../../../assets/styles/variables";
+@import "../../../../assets/styles/mixins";
 
 .schedule-page-content {
   display: grid;
@@ -7,18 +8,15 @@
   justify-items: center;
 
   .schedule-options {
-    display: flex;
-    flex-direction: column;
-    width: 300px;
-    padding-right: 40px;
 
     .schedule-filter-btn {
-      padding: 5px 10px;
+      border-radius: 10px;
+      padding: 10px 10px;
       box-sizing: border-box;
-      width: 150px;
+      width: 75%;
       font-size: 16px;
       font-family: Montserrat-Medium, sans-serif;
-      transition: .1s ease-in-out;
+      @include transition();
 
       &:hover {
         color: $blue-color;
@@ -49,20 +47,18 @@
           font-family: 'Montserrat-Medium', sans-serif;
           margin-bottom: 15px;
         }
-
-        .filter-name-checkboxes {
-          display: flex;
-          flex-direction: column;
-          justify-content: start;
-
-          .checkbox {
-            height: 20px;
-            margin-bottom: 5px;
-          }
-        }
       }
+    }
+  }
+}
 
-
+@media screen and (max-width: 1200px) {
+  .schedule-page-content {
+    grid-template-columns: minmax(320px, 600px);
+    justify-content: center;
+    justify-items: center;
+    .schedule-options {
+      padding-right: 0;
     }
   }
 }

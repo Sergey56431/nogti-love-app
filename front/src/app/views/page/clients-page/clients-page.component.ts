@@ -11,6 +11,9 @@ import {
 } from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
 import { TableModule } from 'primeng/table';
+import { Button } from 'primeng/button';
+import { Tooltip } from 'primeng/tooltip';
+import { RouterLink } from '@angular/router';
 
 export interface PeriodicElement {
   name: string;
@@ -41,6 +44,9 @@ export interface PeriodicElement {
     MatPaginator,
     TableModule,
     TableModule,
+    Button,
+    Tooltip,
+    RouterLink,
   ],
   templateUrl: './clients-page.component.html',
   styleUrl: './clients-page.component.scss',
@@ -123,6 +129,10 @@ export class ClientsPageComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort; // Для сортировки в столбцах
+  }
+
+  protected _deleteClient(userId: string) {
+    console.log(`Пользователь с id '${userId}' удалён`);
   }
 
   announceSortChange(sortState: Sort) {
