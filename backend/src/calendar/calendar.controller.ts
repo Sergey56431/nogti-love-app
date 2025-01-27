@@ -18,18 +18,29 @@ export class CalendarController {
   constructor(private readonly calendarService: CalendarService) {}
 
   @Post()
-  async create(
+  create(
     @Body()
     data: {
       body: CreateCalendarDto;
       userId: string;
     },
   ) {
-    return await this.calendarService.create(data);
+    return this.calendarService.create(data);
+  }
+
+  @Post('all')
+  create_all(
+      @Body()
+      data: {
+        noWorkDays: CreateCalendarDto[];
+        userId: string;
+    }
+  ) {
+    return this.calendarService.create_all(data);
   }
 
   @Get()
-  public async findOne(
+  findOne(
       @Query('id') id: string,
       @Query('userId') userId: string
   ) {
@@ -51,10 +62,8 @@ export class CalendarController {
     return this.calendarService.update(id, updateCalendarDto);
   }
 
-  //@Post() - Отпрявляет не рабочие дни (должно генерировать на месяц )
-
   @Delete()
-  public async remove(@Query('id') id: string) {
+  remove(@Query('id') id: string) {
     return this.calendarService.remove(id);
   }
 }

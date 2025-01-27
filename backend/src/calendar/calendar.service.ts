@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { CreateCalendarDto, UpdateCalendarDto } from './dto';
-import { PrismaService } from '../prisma';
+import {HttpException, Injectable} from '@nestjs/common';
+import {CreateCalendarDto, UpdateCalendarDto} from './dto';
+import {PrismaService} from '../prisma';
+import {DayState} from "@prisma/client";
 
 @Injectable()
 export class CalendarService {
@@ -21,6 +22,53 @@ export class CalendarService {
         directs: true,
       },
     });
+  }
+
+  public async create_all (data) {
+      const { noWorkDays, userId } = data;
+      const now = new Date();
+
+      const firstDayOfMonth = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1));
+      const lastDayOfMonth = new Date(Date.UTC(now.getFullYear(), now.getMonth() + 1, 0));
+
+      const daysMap = new Map<string, { state: DayState; userId: string }>();
+
+      for (let date = new Date(firstDayOfMonth); date <= lastDayOfMonth; date.setDate(date.getDate() + 1)) {
+          const dateString = date.toISOString().slice(0, 10); // Используем строку для ключа Map
+          daysMap.set(dateString, { state: DayState.empty, userId });
+      }
+
+      for (const { date: dateString } of noWorkDays) {
+          if (daysMap.has(dateString)) {
+              daysMap.get(dateString)!.state = DayState.notHave;
+          } else {
+              throw new HttpException(`Дата ${dateString} не находится в текущем месяце`, 404);
+          }
+      }
+
+      try {
+          const daysToCreate = [...daysMap.entries()].map(([dateString, { state, userId }]) => ({
+              date: new Date(dateString),
+              state,
+              userId,
+          }));
+
+          return await this._prismaService.$transaction(
+              daysToCreate.map((day) =>
+                  this._prismaService.calendar.upsert({
+                      where: {
+                          date: day.date,
+                          userId: day.userId,
+                      },
+                      update: { state: day.state },
+                      create: { date: day.date, state: day.state, userId: day.userId },
+                  })
+              )
+          );
+      } catch (error) {
+          console.error("Ошибка при создании календаря:", error);
+          throw new HttpException("Ошибка при создании календаря", 500);
+      }
   }
 
   public async findAll() {
