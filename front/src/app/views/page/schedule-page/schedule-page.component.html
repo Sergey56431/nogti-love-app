@@ -1,13 +1,15 @@
 <div class="page-content">
   <h1 class="page-title">{{ _title }}</h1>
   <div class="schedule-page-content">
-    <div class="schedule-options flex w-72 flex-col items-center pr-10 gap-2.5">
+    <div class="schedule-options flex w-72 flex-col items-center pr-10 gap-2.5 xl:items-start">
       <p-date-picker [fluid]="true"
                      selectionMode="range"
                      #period
                      [readonlyInput]="true"
                      (onSelect)="test(period.value)" />
-      <button class="btn schedule-filter-btn" [class.active]="_showFilters()" (click)="showFiltersWindow()">Фильтры
+      <button class="btn schedule-filter-btn"
+              [class.active]="_showFilters()"
+              (click)="showFiltersWindow()">Фильтры
       </button>
 
       @if (_showFilters()) {
