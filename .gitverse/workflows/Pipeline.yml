@@ -1,11 +1,6 @@
 name: Интеграция
 
 on:
-  push: 
-    branches:
-      - master
-      - features/new_frontend
-      - newBackend
   pull_request:
     branches:
       - master
@@ -15,7 +10,7 @@ on:
 jobs:
   build_backend:
     name: Сборка Бэкенда 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-cloud-runner
     steps:
       - name: Проверка кода
         uses: actions/checkout@v2
@@ -31,7 +26,7 @@ jobs:
         working-directory: ./backend
 
   build_frontend:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-cloud-runner
     name: Сборка Фронтенда
     steps:
       - name: Проверка кода
