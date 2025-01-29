@@ -1,6 +1,11 @@
 name: Интеграция
 
 on:
+  push: 
+    branches:
+      - master
+      - features/new_frontend
+      - newBackend
   pull_request:
     branches:
       - master
