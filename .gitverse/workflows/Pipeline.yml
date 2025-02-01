@@ -1,34 +1,43 @@
-name: CI/CD Pipeline
+name: Интеграция
+
 on:
-  push:
+  pull_request:
+    branches:
+      - master
+      - frontDev
+      - backend
+
 jobs:
-  build-backend:
-    runs on: ubuntu-cloud-runner
+  build_backend:
+    name: Сборка Бэкенда 
+    runs-on: ubuntu-cloud-runner
     steps:
-      - name: Checkout code
+      - name: Проверка кода
         uses: actions/checkout@v2
-      - name: Set up Node.js
+      - name: Установвка Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '20'
-      - name: Install dependencies
+      - name: Установка зависимостей
         run: npm install
         working-directory: ./backend
-      - name: Build backend
+      - name: Сбока бэкенда
         run: npm run build
         working-directory: ./backend
-  build-front:
-    runs on: ubuntu-cloud-runner
+
+  build_frontend:
+    runs-on: ubuntu-cloud-runner
+    name: Сборка Фронтенда
     steps:
-      - name: Checkout code
+      - name: Проверка кода
         uses: actions/checkout@v2
-      - name: Set up Node.js
+      - name: Установка Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '20'
-      - name: Install dependencies
+      - name: Установка зависимостей
         run: npm install
         working-directory: ./front
-      - name: Build front
+      - name: Сборка frontend
         run: npm run build
         working-directory: ./front
