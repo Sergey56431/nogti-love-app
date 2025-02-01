@@ -1,0 +1,94 @@
+<div class="date-picker">
+  <div class="date-picker-title">
+    <h2>Моё расписание</h2>
+    <p-menu #menu [model]="_options" [popup]="true" />
+    <p-button [rounded]="true"
+              [text]="true"
+              (click)="menu.toggle($event)"
+              severity="contrast"
+              icon="pi pi-ellipsis-v" />
+  </div>
+
+  <div class="date-picker-content">
+    <app-date-picker #calendar></app-date-picker>
+
+    @if (calendar.day) {
+      <div class="timetable">
+        <h3 class="timetable-day">{{ calendar.day }}</h3>
+        <ul class="timetable-items">
+
+          <li class="timetable-item">
+            <div class="timetable-item-direct">
+              <div class="item-time-direct">9:00</div>
+              <div class="item-profile-img"></div>
+              <div class="item-profile-name">Марина</div>
+              <div class="item-profile-phone">89005002424</div>
+            </div>
+          </li>
+
+          <li class="timetable-item">
+            <div class="timetable-item-direct">
+              <div class="item-time-direct">12:00</div>
+              <div class="item-profile-img"></div>
+              <div class="item-profile-name">Вера</div>
+              <div class="item-profile-phone">89005002424</div>
+            </div>
+          </li>
+
+          <li class="timetable-item">
+            <div class="timetable-item-direct">
+              <div class="item-time-direct">14:00</div>
+              <div class="item-profile-img"></div>
+              <div class="item-profile-name">Александра</div>
+              <div class="item-profile-phone">89005002424</div>
+            </div>
+          </li>
+
+          <li class="timetable-item">
+            <div class="timetable-item-direct">
+              <div class="item-time-direct">17:00</div>
+              <div class="item-profile-img"></div>
+              <div class="item-profile-name">Ирина</div>
+              <div class="item-profile-phone">89005002424</div>
+            </div>
+          </li>
+          @if (directs > 4) {
+            <div class="loadElseDirect">
+              <svg width="22" height="13" viewBox="0 0 26 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13 15L25.9904 0H0.00961876L13 15Z" fill="#D9D9D9" />
+              </svg>
+            </div>
+          }
+        </ul>
+        <button type="button" (click)="_newDirect()">
+          <div class="button-icon">
+            <svg width="15" height="14" viewBox="0 0 27 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13.5 0V28M0 13.5H26.5" stroke="white" stroke-opacity="0.44" stroke-width="3" />
+            </svg>
+          </div>
+          <span>Новая запись</span>
+        </button>
+      </div>
+    } @else {
+      <div class="timetable no-content">Выберите день</div>
+    }
+  </div>
+</div>
+<div class="date-picker-annotation">
+  <div class="item">
+    <div class="squire choiceDay"></div>
+    <span>Выбранный день</span>
+  </div>
+  <div class="item ">
+    <div class="squire no-work-day"></div>
+    <span>Нерабочий день</span>
+  </div>
+  <div class="item">
+    <div class="squire busy-day"></div>
+    <span>Записей нет</span>
+  </div>
+  <div class="item">
+    <div class="squire free-day"></div>
+    <span>Свободные окна</span>
+  </div>
+</div>

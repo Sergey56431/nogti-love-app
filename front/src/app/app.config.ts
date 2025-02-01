@@ -4,7 +4,7 @@ import {
   isDevMode,
   LOCALE_ID,
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withDebugTracing } from '@angular/router';
 import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {
@@ -25,13 +25,15 @@ import { AuthInterceptor } from '@core/auth';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
 import { DialogService } from 'primeng/dynamicdialog';
+import { MessageService } from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     DialogService,
+    MessageService,
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideNativeDateAdapter(),
-    provideRouter(routes),
+    provideRouter(routes, withDebugTracing()),
     provideStore([]),
     provideAnimationsAsync(),
     providePrimeNG({

@@ -1,19 +1,14 @@
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
-import {MatSort, Sort, MatSortHeader} from '@angular/material/sort';
+import {MatSort, Sort} from '@angular/material/sort';
 import {
-  MatCell, MatCellDef,
-  MatColumnDef, MatHeaderCell,
-  MatHeaderCellDef,
-  MatHeaderRow, MatHeaderRowDef,
-  MatRow, MatRowDef, MatTable,
   MatTableDataSource,
 } from '@angular/material/table';
-import {MatPaginator} from '@angular/material/paginator';
 import { TableModule } from 'primeng/table';
 import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
 import { RouterLink } from '@angular/router';
+import { query } from '@angular/animations';
 
 export interface PeriodicElement {
   name: string;
@@ -29,19 +24,6 @@ export interface PeriodicElement {
   selector: 'app-clients-page',
   standalone: true,
   imports: [
-    MatHeaderCell,
-    MatTable,
-    MatSort,
-    MatColumnDef,
-    MatHeaderCellDef,
-    MatSortHeader,
-    MatCell,
-    MatHeaderRow,
-    MatRow,
-    MatRowDef,
-    MatHeaderRowDef,
-    MatCellDef,
-    MatPaginator,
     TableModule,
     TableModule,
     Button,
@@ -142,4 +124,6 @@ export class ClientsPageComponent implements AfterViewInit {
       this._liveAnnouncer.announce('Sorting cleared');
     }
   }
+
+  protected readonly query = query;
 }

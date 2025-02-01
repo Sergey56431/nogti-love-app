@@ -7,11 +7,12 @@ import {
 import { routes } from './app.routes';
 import { AppStoreModule } from '@core/store';
 import { PrimeNG } from 'primeng/config';
+import { Toast } from 'primeng/toast';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, AppStoreModule],
+  imports: [RouterOutlet, RouterLink, AppStoreModule, Toast],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

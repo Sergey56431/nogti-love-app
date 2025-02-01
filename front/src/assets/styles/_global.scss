@@ -65,6 +65,13 @@ button {
   width: 100%;
 }
 
+.p-breadcrumb {
+  background: none;
+  padding-inline: 0;
+  color: $grey-color;
+  font-size: 12px;
+}
+
 @media screen and (max-width: 500px) {
   .page {
     justify-content: center;

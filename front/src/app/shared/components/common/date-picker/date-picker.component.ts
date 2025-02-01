@@ -14,7 +14,7 @@ import { DirectsClientType } from '@shared/types/directs-client.type';
 import { Menu } from 'primeng/menu';
 import { Button } from 'primeng/button';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { DirectVisitComponent } from '@shared/components';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-date-picker',
@@ -25,9 +25,11 @@ import { DirectVisitComponent } from '@shared/components';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DatePickerComponent implements OnInit {
+
   constructor(
-    private _dialogOpen: DialogService,
-    private _store: Store,
+    private  readonly _dialogOpen: DialogService,
+    private readonly _store: Store,
+    private readonly _toast: MessageService,
     private readonly _calendarService: CalendarService,
   ) {
   }
@@ -37,28 +39,14 @@ export class DatePickerComponent implements OnInit {
   private _user = select(UserState.getUser);
   private _directs = select(DirectsState.getDirects);
   protected month = '';
-  protected day = '';
-  protected isChecked: number | null = null;
+  public day = '';
+  protected _isChecked = signal<number | null>(null);
   protected _dateCount = signal<number[]>([]);
   protected _mountCount = signal<number>(0);
   private _yearCount = signal<number>(0);
-  protected _clientsList: DirectsClientType[] = [];
-  protected directs = 5; // по мере расширения проекта переделать эту переменную
-
-  protected _options = [
-    { routerLink: '', label: 'Редактировать расписание' },
-    { routerLink: '', label: 'Список всех записей' },
-    {
-      label: 'Обновить расписание',
-      command: () => {
-        this._refreshDatePicker();
-      },
-    },
-  ];
 
   private _actions = createDispatchMap({
     loadDirects: Directs.GetDirects,
-    loadUser: UsersActions.GetUser,
   });
 
   ngOnInit() {
@@ -76,10 +64,6 @@ export class DatePickerComponent implements OnInit {
 
     this._monthName(this._mountCount());
     this._daysInMonth(this._mountCount(), this._yearCount());
-  }
-
-  onChange(e: number) {
-    this.isChecked = e;
   }
 
   private _monthName(month: number) {
@@ -117,19 +101,6 @@ export class DatePickerComponent implements OnInit {
     this.day = item + ' ' + this.month;
   }
 
-   newDirect() {
-    this._ref = this._dialogOpen.open(DirectVisitComponent, {
-      header: 'Добавить новую запись',
-      width: '500px',
-      modal: true,
-      draggable: true,
-      contentStyle: {
-        overflow: 'visible',
-      },
-      closable: true,
-    });
-  }
-
   protected _closeDialog() {
     this._ref?.close();
   }
@@ -142,17 +113,20 @@ export class DatePickerComponent implements OnInit {
     }
   }
 
+  public _refreshDatePicker() {
+    this._daysInMonth(this._mountCount(), this._yearCount());
+
+    this._toast.add({
+      severity: 'success',
+      summary: 'Успешно',
+      detail: 'Календарь обновлён',
+      life: 3000,
+    });
+    // Метод для обновления календаря без перезагрузки страницы
+  }
+
   protected _getDirects(day: number, month: number) {
     // получение записей на выбранный день
   }
 
-  protected _setDayState() {
-    // метод для установки состояния дня
-  }
-
-  protected _refreshDatePicker() {
-    this._daysInMonth(this._mountCount(), this._yearCount());
-    console.log('Календаь обновлён');
-    // Метод ля обновления календаря без перезагрузки страницы
-  }
 }
