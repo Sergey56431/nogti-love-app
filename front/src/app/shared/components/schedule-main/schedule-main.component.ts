@@ -1,13 +1,12 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  Input, OnInit, ViewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { Button } from 'primeng/button';
 import { Menu } from 'primeng/menu';
-import { ClientCardComponent, DatePickerComponent, DirectVisitComponent } from '@shared/components';
-import { createDispatchMap, select, Store } from '@ngxs/store';
+import {
+  ClientCardComponent,
+  DatePickerComponent,
+  DirectVisitComponent,
+} from '@shared/components';
+import { createDispatchMap, Store } from '@ngxs/store';
 import { DirectsState } from '@core/store/directs/store';
 import { Directs } from '@core/store/directs/actions';
 import { UsersActions } from '@core/store';
@@ -24,7 +23,7 @@ import { Tooltip } from 'primeng/tooltip';
   styleUrl: './schedule-main.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ScheduleMainComponent implements OnInit {
+export class ScheduleMainComponent {
   @ViewChild(DatePickerComponent) calendar?: DatePickerComponent;
 
   private _ref: DynamicDialogRef | undefined;
@@ -73,7 +72,6 @@ export class ScheduleMainComponent implements OnInit {
       phone: '89533937549',
       comment: 'Просто так',
     },
-
   ];
 
   protected _clientsList: DirectsClientType[] = [];
@@ -90,8 +88,6 @@ export class ScheduleMainComponent implements OnInit {
     private _store: Store,
     private readonly _calendarService: CalendarService,
   ) {}
-
-  public ngOnInit(): void {}
 
   protected _refreshDatePicker() {
     this.calendar?._refreshDatePicker();
@@ -120,12 +116,11 @@ export class ScheduleMainComponent implements OnInit {
       },
       modal: true,
       draggable: true,
-      contentStyle: {
-      },
+      contentStyle: {},
       closable: true,
-      data: direct
+      data: direct,
     });
   }
 
-  private _getDirects() {}
+  // private _getDirects() {}
 }

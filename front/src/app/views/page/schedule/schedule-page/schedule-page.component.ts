@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 
@@ -31,7 +26,7 @@ import { ClientCardComponent } from '@shared/components';
   styleUrl: './schedule-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SchedulePageComponent implements OnInit {
+export class SchedulePageComponent {
   protected _title = 'Расписание';
   protected _services = [
     { id: 1, name: 'Маникюр' },
@@ -73,9 +68,5 @@ export class SchedulePageComponent implements OnInit {
 
   protected _choiceServices(value: string) {
     console.log(value);
-  }
-
-  ngOnInit() {
-    // this.test();
   }
 }

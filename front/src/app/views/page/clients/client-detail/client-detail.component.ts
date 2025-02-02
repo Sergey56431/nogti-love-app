@@ -35,6 +35,7 @@ export class ClientDetailComponent implements OnInit {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected _sendClientDescription(body: Partial<UserInfoType>) {
     // Запрос на редактирование клиента (возможно нужно сделать его универсальным чтобы можно было обновлять любую инфу)
   }

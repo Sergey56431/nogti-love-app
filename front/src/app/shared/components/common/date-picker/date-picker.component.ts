@@ -7,10 +7,8 @@ import {
 import { CalendarService } from '@shared/services';
 import { createDispatchMap, select, Store } from '@ngxs/store';
 import { Directs } from '@core/store/directs/actions';
-import { UsersActions } from '@core/store';
 import { UserState } from '@core/store/dashboard/states/user/user.state';
 import { DirectsState } from '@core/store/directs/store';
-import { DirectsClientType } from '@shared/types/directs-client.type';
 import { Menu } from 'primeng/menu';
 import { Button } from 'primeng/button';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -125,8 +123,8 @@ export class DatePickerComponent implements OnInit {
     // Метод для обновления календаря без перезагрузки страницы
   }
 
-  protected _getDirects(day: number, month: number) {
-    // получение записей на выбранный день
-  }
+  // protected _getDirects(day: number, month: number) {
+  //   // получение записей на выбранный день
+  // }
 
 }

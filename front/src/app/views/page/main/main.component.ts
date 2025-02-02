@@ -19,5 +19,4 @@ import { ScheduleMainComponent } from '@shared/components/schedule-main/schedule
 export class MainComponent {
   title = 'Главная';
 
-  constructor() {}
 }
