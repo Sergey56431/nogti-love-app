@@ -4,6 +4,7 @@ import { Textarea } from 'primeng/textarea';
 import { Button } from 'primeng/button';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { DirectsClientType } from '@shared/types/directs-client.type';
+import { UserInfoType } from '@shared/types';
 
 @Component({
   selector: 'app-client-card',
@@ -15,8 +16,7 @@ import { DirectsClientType } from '@shared/types/directs-client.type';
 })
 export class ClientCardComponent implements OnInit {
   protected _directInfo = signal<DirectsClientType | undefined>(undefined);
-  public clientId = signal<string>('');
-
+  protected _clientInfo = signal<UserInfoType | undefined>(undefined);
 
   constructor(private config: DynamicDialogConfig) {}
 

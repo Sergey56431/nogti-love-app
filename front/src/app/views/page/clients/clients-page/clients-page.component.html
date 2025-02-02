@@ -3,7 +3,7 @@
   <h1 class="page-title">{{ title }}</h1>
 
   <div class="w-100 table-container">
-    <p-table [value]="ELEMENT_DATA"
+    <p-table [value]="_clients()"
              [rows]="10"
              [rowsPerPageOptions]="[10, 25, 50]"
              [paginator]="true"
@@ -16,7 +16,7 @@
             Имя
             <p-sortIcon field="name" />
           </th>
-          <th pSortableColumn="phone">
+          <th pSortableColumn="phoneNumber">
             Телефон
             <p-sortIcon field="phone" />
           </th>
@@ -38,17 +38,17 @@
       <ng-template #body let-client>
         <tr>
           <td>{{ client.name }}</td>
-          <td>{{ client.phone }}</td>
+          <td>{{ client.phoneNumber }}</td>
           <td>{{ client.score }}</td>
-          <td>{{ client.lastVisit }}</td>
-          <td>{{ client.comment }}</td>
+          <td>{{ client.lastVisit ?? '-' }}</td>
+          <td>{{ client.comment ?? '-' }}</td>
           <td>
             <div class="flex items-center gap-1">
               <p-button icon="pi pi-eye"
                         pTooltip="Подробная информация"
                         [rounded]="true"
                         [text]="true"
-                        [routerLink]="['/clients', client.position]"
+                        [routerLink]="['/clients', client.id]"
                         size="small"
                         severity="info" />
               <p-button icon="pi pi-trash"
