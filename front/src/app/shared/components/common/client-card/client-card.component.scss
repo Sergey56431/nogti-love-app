@@ -1,0 +1,11 @@
+@import "../../../../../assets/styles/fonts";
+
+.client-info {
+  font-size: 14px;
+
+  span {
+    &:first-child {
+      font-family: Montserrat-Bold, sans-serif;
+    }
+  }
+}

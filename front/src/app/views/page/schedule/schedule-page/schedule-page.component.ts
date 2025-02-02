@@ -12,6 +12,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Checkbox } from 'primeng/checkbox';
 import { Slider } from 'primeng/slider';
 import { Status } from '@shared/utils';
+import { ClientCardComponent } from '@shared/components';
 
 @Component({
   selector: 'app-schedule-page',
@@ -24,6 +25,7 @@ import { Status } from '@shared/utils';
     Checkbox,
     Slider,
     FormsModule,
+    ClientCardComponent,
   ],
   templateUrl: './schedule-page.component.html',
   styleUrl: './schedule-page.component.scss',
