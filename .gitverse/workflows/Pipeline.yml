@@ -6,7 +6,6 @@ on:
       - master
       - frontDev
       - backend
-
 jobs:
   build_backend:
     name: Сборка Бэкенда 
@@ -37,6 +36,9 @@ jobs:
           node-version: '20'
       - name: Установка зависимостей
         run: npm install
+        working-directory: ./front
+      - name: Проверка EsLint
+        run: npm run lint
         working-directory: ./front
       - name: Сборка frontend
         run: npm run build
