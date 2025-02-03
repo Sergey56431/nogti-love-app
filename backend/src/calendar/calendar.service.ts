@@ -2,30 +2,41 @@ import {HttpException, Injectable} from '@nestjs/common';
 import {CreateCalendarDto, UpdateCalendarDto} from './dto';
 import {PrismaService} from '../prisma';
 import {DayState} from "@prisma/client";
+import {PrismaClientKnownRequestError} from "@prisma/client/runtime/library";
 
 @Injectable()
 export class CalendarService {
   constructor(private readonly _prismaService: PrismaService) {}
 
   public async create(data: { body: CreateCalendarDto; userId: string }) {
-    return this._prismaService.calendar.create({
-      data: {
-        date: new Date(data.body.date),
-        state: data.body.state,
-        creator: {
-          connect: {
-            id: data.userId.toString(),
-          },
-        },
-      },
-      include: {
-        directs: true,
-      },
-    });
+      try {
+          return await this._prismaService.calendar.create({
+              data: {
+                  date: new Date(data.body.date),
+                  state: data.body.state,
+                  creator: {
+                      connect: {
+                          id: data.userId.toString(),
+                      },
+                  },
+              },
+              include: {
+                  directs: true,
+              },
+          });
+      } catch (error) {
+          console.log(error);
+          throw  new HttpException('Ошибка при создании дня календаря', 500);
+      }
+
   }
 
   public async create_all (data) {
       const { noWorkDays, userId } = data;
+      if (!userId) {
+          throw new HttpException('Отсутствует ID пользователя', 400);
+      }
+
       const now = new Date();
 
       const firstDayOfMonth = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1));
@@ -66,56 +77,109 @@ export class CalendarService {
               )
           );
       } catch (error) {
+          if (error instanceof PrismaClientKnownRequestError && error.code == "P2003") {
+              throw new HttpException('Пользователь не найден', 404);
+          }
           console.error("Ошибка при создании календаря:", error);
           throw new HttpException("Ошибка при создании календаря", 500);
       }
   }
 
   public async findAll() {
-    return this._prismaService.calendar.findMany({
-      include: {
-        directs: true,
-      },
-    });
+      try {
+          return await this._prismaService.calendar.findMany({
+              include: {
+                  directs: true,
+              },
+          });
+      } catch (error) {
+          console.log(error);
+          throw new HttpException('Ошибка при поиске всего календаря', 500)
+      }
+
   }
 
   public async findByUser(userId: string){
-    return this._prismaService.calendar.findMany({
-      where:{ userId: userId },
-      include: {
-        directs: true,
-      },
-    })
+    try {
+        const result = await this._prismaService.calendar.findMany({
+            where:{ userId: userId },
+            include: {
+                directs: true,
+            },
+        })
+        if (!result[0]){
+            throw new HttpException('Календарь этого пользователя не найден', 404)
+        }
+
+        return result;
+
+    } catch (error) {
+        if (error instanceof HttpException){
+            throw error;
+        }
+        console.log(error);
+        throw new HttpException('Ошибка сервера при поиске календаря', 500);
+    }
   }
 
   public async findOne(id: string) {
-    return this._prismaService.calendar.findFirst({
-      where: {
-        id,
-      },
-      include: {
-        directs: true,
-      },
-    });
+      try {
+          const result = await this._prismaService.calendar.findFirst({
+              where: {
+                id,
+              },
+              include: {
+                directs: true,
+              },
+          });
+          if (!result){
+              throw new HttpException('День не найден', 404)
+          }
+
+          return result;
+
+      } catch (error) {
+          if (error instanceof HttpException){
+              throw error;
+          }
+          console.log(error);
+          throw new HttpException('Ошибка сервера при поиске дня календаря', 500);
+      }
   }
 
   public async update(id: string, updateCalendarDto: UpdateCalendarDto) {
-    return this._prismaService.calendar.update({
-      where: {
-        id,
-      },
-      data: {
-        date: new Date(updateCalendarDto.date),
-        state: updateCalendarDto.state,
-      },
-    });
+      try {
+          return await this._prismaService.calendar.update({
+              where: {
+                  id,
+              },
+              data: {
+                  date: new Date(updateCalendarDto.date),
+                  state: updateCalendarDto.state,
+              },
+          });
+      } catch (error) {
+          if (error instanceof PrismaClientKnownRequestError && error.code == 'P2025'){
+              throw new HttpException('День календаря не найден', 404);
+          }
+          console.log(error);
+          throw new HttpException('Ошибка сервера при обновлении дня календаря', 500);
+
+      }
   }
 
   public async remove(id: string) {
-    return this._prismaService.calendar.delete({
-      where: {
-        id,
-      },
-    });
+      try {
+          return await this._prismaService.calendar.delete({
+              where: { id },
+          });
+      } catch (error) {
+          if(error instanceof PrismaClientKnownRequestError && error.code == 'P2025'){
+              throw new HttpException('День каледнаря не найден', 404)
+          }
+          console.log(error);
+          throw new HttpException('Ошибка сервера при удалении дня календаря', 500);
+      }
+
   }
 }

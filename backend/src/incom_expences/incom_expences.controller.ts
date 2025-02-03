@@ -5,57 +5,53 @@ import {
   Body,
   Param,
   Delete,
-  Put,
+  Put, Query,
 } from '@nestjs/common';
 import { IncomExpencesService } from './incom_expences.service';
 import {
   CreateIncomeExpencesDto,
   UpdateIncomeExpences,
-} from './dto/create-incom_expence.dto';
+} from './dto';
 
 @Controller('operation')
 export class IncomeExpencesController {
   constructor(private readonly incomeExpencesService: IncomExpencesService) {}
 
-  @Post(':id')
+  @Post()
   public async create(
     @Body() createIncomExpenceDto: CreateIncomeExpencesDto,
-    @Param('id') userId: string,
+    @Query('userId') userId: string,
   ) {
     return this.incomeExpencesService.create(createIncomExpenceDto, userId);
   }
 
-  @Get(':id')
-  public async findAll(@Param('id') userId: string) {
-    return this.incomeExpencesService.findAll(userId);
+  @Get()
+  public async findAll(
+      @Query('userId') userId: string,
+      @Query('id') id: string) {
+    if (userId) {
+      return this.incomeExpencesService.findByUser(userId);
+    } else if (id) {
+      return this.incomeExpencesService.findOne(id);
+    }else
+      return this.incomeExpencesService.findAll()
   }
 
-  @Get(':userId/:id')
-  public async findOne(
-    @Param('id') id: string,
-    @Param('userId') userId: string,
-  ) {
-    return this.incomeExpencesService.findOne(id, userId);
-  }
-
-  @Put(':userId/:id')
+  @Put()
   public async update(
-    @Param('id') id: string,
-    @Param('userId') userId: string,
+    @Query('id') id: string,
     @Body() updateIncomExpenceDto: UpdateIncomeExpences,
   ) {
     return this.incomeExpencesService.update(
       id,
-      userId,
       updateIncomExpenceDto,
     );
   }
 
-  @Delete(':userId/:id')
+  @Delete()
   public async remove(
-    @Param('id') id: string,
-    @Param('userId') userId: string,
+    @Query('id') id: string,
   ) {
-    return this.incomeExpencesService.remove(id, userId);
+    return this.incomeExpencesService.remove(id);
   }
 }

@@ -51,7 +51,7 @@ export class AuthService {
   public async refreshToken(userId: string): Promise<{ accessToken: string }> {
     const user = await this._usersService.findUserToRefresh(userId);
     if (!user.refreshToken) {
-      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('Invalid credentials', 401);
     }
 
     try {
@@ -62,7 +62,7 @@ export class AuthService {
     } catch (e) {
       await this.logout(userId);
       console.error(e);
-      throw new HttpException('Refresh token expired', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('Токен истек', 401);
     }
     return {
       accessToken: await this.generateAccessToken({
@@ -77,11 +77,11 @@ export class AuthService {
     try {
       await this._usersService.updateUser(userId, { refreshToken: '' });
       return {
-        status: HttpStatus.OK,
-        message: 'Logged out successfully',
+        status: 200,
+        message: 'Успешно',
       };
     } catch (error) {
-      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(error, 500);
     }
   }
 

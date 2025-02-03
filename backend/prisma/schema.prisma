@@ -44,6 +44,7 @@ clientName            String?
 time                  String
 comment               String?
 userId                String?
+state                 DirectsState? @default(notConfirmed)
 services              DirectsServices[]
 calendarId            String
 user                  User?    @relation(fields: [userId], references: [id])
@@ -92,6 +93,12 @@ direct     Directs    @relation(fields: [directId], references: [id], onUpdate: 
 enum TypeOperation {
 income
 expense
+}
+
+enum DirectsState {
+notConfirmed
+confirmed
+cancelled
 }
 
 enum DayState {
