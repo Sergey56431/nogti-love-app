@@ -11,7 +11,7 @@ import { InputText } from 'primeng/inputtext';
 import { InputMask } from 'primeng/inputmask';
 import { Select } from 'primeng/select';
 import { Textarea } from 'primeng/textarea';
-import { Button } from 'primeng/button';
+import { ButtonModule } from 'primeng/button';
 import { _closeDialogVia } from '@angular/material/dialog';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 
@@ -25,13 +25,12 @@ import { DynamicDialogRef } from 'primeng/dynamicdialog';
     InputMask,
     Select,
     Textarea,
-    Button,
+    ButtonModule,
   ],
   templateUrl: './direct-visit.component.html',
   styleUrl: './direct-visit.component.scss',
 })
 export class DirectVisitComponent {
-  private _ref: DynamicDialogRef | undefined;
 
   protected _timeVariant = [
     {
@@ -51,7 +50,8 @@ export class DirectVisitComponent {
   constructor(
     private readonly _fb: FormBuilder,
     private readonly _snackbar: MatSnackBar,
-  ) {}
+    private readonly _ref: DynamicDialogRef
+) {}
 
   protected _newVisitor = this._fb.group({
     name: new FormControl('', [Validators.required]),

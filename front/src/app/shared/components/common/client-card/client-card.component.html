@@ -40,8 +40,8 @@
       <textarea [autoResize]="true" disabled rows="5" cols="30" pTextarea [value]="_directInfo()?.comment"></textarea>
     </div>
     <div class="flex justify-end gap-2">
-      <p-button severity="primary" label="Соханить" [raised]="true" />
-      <p-button severity="warn" label="Закрыть" [raised]="true" />
+      <p-button severity="primary" label="Соханить" [raised]="true"/>
+      <p-button severity="warn" label="Закрыть" (onClick)="_close()" [raised]="true" />
     </div>
   </div>
 </div>
