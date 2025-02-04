@@ -14,7 +14,6 @@ export class IncomExpencesService {
     userId: string,
   ) {
     return this._prismaService.income_Expanses.create({
-      // @ts-ignore
       data: {
         ...createIncomExpenceDto,
         user: {
@@ -26,7 +25,7 @@ export class IncomExpencesService {
     });
   }
 
-  public async findAll(userId: string) {
+  public async findByUser(userId: string) {
     return this._prismaService.income_Expanses.findMany({
       where: {
         userId: userId,
@@ -34,10 +33,13 @@ export class IncomExpencesService {
     });
   }
 
-  public async findOne(id: string, userId: string) {
+  public async findAll() {
+    return this._prismaService.income_Expanses.findMany();
+  }
+
+  public async findOne(id: string) {
     return this._prismaService.income_Expanses.findFirst({
       where: {
-        userId: userId,
         id: id,
       },
     });
@@ -45,29 +47,23 @@ export class IncomExpencesService {
 
   public async update(
     id: string,
-    userId: string,
     updateIncomExpenceDto: UpdateIncomeExpences,
   ) {
     return this._prismaService.income_Expanses.update({
       where: {
         id: id,
-        userId: userId,
       },
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
       data: updateIncomExpenceDto,
     });
   }
 
   public async remove(
     id: string,
-    userId: string,
   ): Promise<CreateIncomeExpencesDto | HttpException> {
     try {
       return this._prismaService.income_Expanses.delete({
         where: {
           id: id,
-          userId: userId,
         },
       });
     } catch (error) {

@@ -3,7 +3,9 @@ export interface UserInfoType {
   name: string,
   username?: string,
   role?: string,
-  points?: number
+  rate?: number,
+  score?: number
+  description?: string,
   birthDate?: string,
   lastName?: string,
   phoneNumber?: string,

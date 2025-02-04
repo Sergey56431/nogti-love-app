@@ -20,17 +20,8 @@ export class DirectsController {
   constructor(private readonly _directsService: DirectsService) {}
 
   @Post()
-  public async create(@Body('direct') createDirectDto: CreateDirectDto) {
-    try {
+  public async create(@Body() createDirectDto: CreateDirectDto) {
       return await this._directsService.create(createDirectDto);
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        console.error('Необработанная ошибка:', error);
-        throw new NotFoundException({ message: 'Внутренняя ошибка сервера', code: 404 });
-      }
-    }
   }
 
   @Get()
@@ -42,17 +33,18 @@ export class DirectsController {
     if (date) {
       return this._directsService.findByDate(date);
     } else if (userId) {
-      // Переделать метод для поиска
-      return this._directsService.findAll(userId);
-    } else {
+      return this._directsService.findByUser(userId);
+    } else if (id){
       return this._directsService.findOne(id);
+    } else {
+      return this._directsService.findAll();
     }
   }
 
   @Put()
   public async update(
     @Query('id') id: string,
-    @Body('direct') updateDirectDto: UpdateDirectDto,
+    @Body() updateDirectDto: UpdateDirectDto,
   ) {
     return await this._directsService.update(id, updateDirectDto);
   }

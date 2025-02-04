@@ -23,8 +23,7 @@ export class LoginPageComponent {
 
   protected _loginForm = this._fb.group({
     username: ['', [Validators.required]],
-    // password:
-    // h['', [Validators.pattern('(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,12})$'), Validators.required]],
+    // password: ['', [Validators.pattern('(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,12})$'), Validators.required]],
     password: ['', [Validators.required]],
     rememberMe: false
   });

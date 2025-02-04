@@ -1,7 +1,9 @@
+import { TypeOperation } from "@prisma/client"
+
 export class CreateIncomeExpencesDto {
-  category: string;
+  category: string ;
   value: number;
-  type: string;
+  type: TypeOperation;
 }
 
 export type UpdateIncomeExpences = Partial<CreateIncomeExpencesDto>;

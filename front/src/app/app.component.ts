@@ -17,7 +17,7 @@ import { Toast } from 'primeng/toast';
   styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit {
-  title = 'Nails-room';
+  title = 'Ногти.Love';
   protected readonly routes = routes;
   protected readonly ActivatedRouteSnapshot = ActivatedRouteSnapshot;
 
