@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {environment} from '../../../../environments/environment';
 import { ClientType, UserInfoType } from '@shared/types';
+import { Roles } from '@shared/utils';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class ClientsService {
   public getAllClients(): Observable<ClientType[] | undefined> {
     return this.http.get<ClientType[] | undefined>(environment.api + 'users', {
       params: {
-        role: 'CLIENT',
+        role: Roles.CLIENT,
       }
     });
   }

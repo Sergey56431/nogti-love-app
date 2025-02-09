@@ -1,71 +1,76 @@
 import {
   ChangeDetectionStrategy,
-  Component,
+  Component, computed,
   OnInit,
   signal,
 } from '@angular/core';
-import { CalendarService } from '@shared/services';
-import { createDispatchMap, select, Store } from '@ngxs/store';
+import { CalendarService, DirectsService } from '@shared/services';
+import { createDispatchMap } from '@ngxs/store';
 import { Directs } from '@core/store/directs/actions';
-import { UserState } from '@core/store/dashboard/states/user/user.state';
-import { DirectsState } from '@core/store/directs/store';
 import { Menu } from 'primeng/menu';
 import { Button } from 'primeng/button';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
+import { AuthService } from '@core/auth';
+import { DirectsType } from '@shared/types/directs.type';
+import { CalendarResponse, DefaultResponseType } from '@shared/types';
 
 @Component({
   selector: 'app-date-picker',
   standalone: true,
-  imports: [Menu, Button],
+  imports: [Button],
   templateUrl: './date-picker.component.html',
   styleUrl: './date-picker.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DatePickerComponent implements OnInit {
 
-  constructor(
-    private  readonly _dialogOpen: DialogService,
-    private readonly _store: Store,
-    private readonly _toast: MessageService,
-    private readonly _calendarService: CalendarService,
-  ) {
-  }
-
   private _ref: DynamicDialogRef | undefined;
 
-  private _user = select(UserState.getUser);
-  private _directs = select(DirectsState.getDirects);
   protected month = '';
   public day = '';
+  protected _calendar: CalendarResponse[] = [];
   protected _isChecked = signal<number | null>(null);
   protected _dateCount = signal<number[]>([]);
   protected _mountCount = signal<number>(0);
   private _yearCount = signal<number>(0);
+  protected _isStartMonth = computed(() => {
+    return this._mountCount() > new Date().getMonth() + 1;
+  });
+
+  public directs = signal<DirectsType[]>([]);
 
   private _actions = createDispatchMap({
     loadDirects: Directs.GetDirects,
   });
 
+  constructor(
+    private readonly _toast: MessageService,
+    private readonly _calendarService: CalendarService,
+    private readonly _directService: DirectsService,
+    private readonly _authService: AuthService) {
+  }
+
   ngOnInit() {
     this._mountCount.set(new Date().getMonth() + 1);
     this._yearCount.set(new Date().getFullYear());
-    const userId = localStorage.getItem('userId');
-    this._calendarService.getAllDirects().subscribe((directs) => {
-      console.log(directs);
-    });
-    try {
-      this._actions.loadDirects(userId!);
-    } catch (err) {
-      console.log(err);
+    const user = this._authService.getUserInfo();
+      this._calendarService.fetchCalendarByUser(user.userId).subscribe((calendar) => {
+        if ((calendar as DefaultResponseType).error === undefined) {
+          this._calendar = calendar as CalendarResponse[];
+        }
+      });
+      try {
+        this._actions.loadDirects(user.userId);
+      } catch (err) {
+        console.log(err);
     }
-
     this._monthName(this._mountCount());
     this._daysInMonth(this._mountCount(), this._yearCount());
   }
 
   private _monthName(month: number) {
-    this.month = new Date(0, month, 0).toLocaleDateString('default', {
+    this.month = new Date(0, month, 0).toLocaleDateString('ru-RU', {
       month: 'long',
     });
     this.month = this.month.charAt(0).toUpperCase() + this.month.slice(1);
@@ -95,8 +100,21 @@ export class DatePickerComponent implements OnInit {
     this._daysInMonth(this._mountCount(), this._yearCount());
   }
 
-  choiceDay(item: number) {
-    this.day = item + ' ' + this.month;
+  protected _choiceDay(day: number) {
+    this.day = `${day} ${this.month}`;
+    const options = {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    };
+    const date = new Date(`${this._yearCount()}-${this._mountCount()}-${day}`)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      .toLocaleDateString('ru-RU', options).split('.').reverse().join('-');
+    this._directService.fetchDirectsByDate(date).subscribe((directs) => {
+      this.directs.set(directs);
+      console.log(this.directs());
+    });
   }
 
   protected _closeDialog() {
@@ -122,9 +140,4 @@ export class DatePickerComponent implements OnInit {
     });
     // Метод для обновления календаря без перезагрузки страницы
   }
-
-  // protected _getDirects(day: number, month: number) {
-  //   // получение записей на выбранный день
-  // }
-
 }

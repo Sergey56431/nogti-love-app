@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, Signal, ViewChild } from '@angular/core';
 import { Button } from 'primeng/button';
 import { Menu } from 'primeng/menu';
 import {
@@ -6,14 +6,11 @@ import {
   DatePickerComponent,
   DirectVisitComponent,
 } from '@shared/components';
-import { createDispatchMap, Store } from '@ngxs/store';
-import { DirectsState } from '@core/store/directs/store';
-import { Directs } from '@core/store/directs/actions';
-import { UsersActions } from '@core/store';
 import { DirectsClientType } from '@shared/types/directs-client.type';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CalendarService } from '@shared/services';
+import { DirectsService } from '@shared/services';
 import { Tooltip } from 'primeng/tooltip';
+import { DirectsType } from '@shared/types/directs.type';
 
 @Component({
   selector: 'app-schedule-main',
@@ -28,6 +25,7 @@ export class ScheduleMainComponent {
 
   private _ref: DynamicDialogRef | undefined;
 
+
   protected _options = [
     { routerLink: '', label: 'Редактировать расписание' },
     { routerLink: '', label: 'Список всех записей' },
@@ -39,54 +37,13 @@ export class ScheduleMainComponent {
     },
   ];
 
-  protected _directsList: DirectsClientType[] = [
-    {
-      userId: '1',
-      clientName: 'Мария',
-      time: '08:00',
-      image: '',
-      phone: '89533937549',
-      comment: 'мария цирк',
-    },
-    {
-      userId: '2',
-      clientName: 'Юлия',
-      time: '10:00',
-      image: '',
-      phone: '89533937549',
-      comment: 'Юлия подруга',
-    },
-    {
-      userId: '44',
-      clientName: 'Валерия',
-      time: '12:00',
-      image: '',
-      phone: '89533937549',
-      comment: 'Валерия пришла от Юлии',
-    },
-    {
-      userId: '62',
-      clientName: 'Инесса',
-      time: '14:00',
-      image: '',
-      phone: '89533937549',
-      comment: 'Просто так',
-    },
-  ];
-
-  protected _clientsList: DirectsClientType[] = [];
-  protected directs = 5; // по мере расширения проекта переделать эту переменную
-  private _directs = this._store.selectSignal(DirectsState.getDirects);
-
-  private _actions = createDispatchMap({
-    loadDirects: Directs.GetDirects,
-    loadUser: UsersActions.GetUser,
+  protected _directsList: Signal<DirectsType[]> = computed(() => {
+    return this.calendar?.directs() ?? [];
   });
 
   constructor(
     private _dialogOpen: DialogService,
-    private _store: Store,
-    private readonly _calendarService: CalendarService,
+    private readonly _directsService: DirectsService
   ) {}
 
   protected _refreshDatePicker() {
@@ -94,6 +51,7 @@ export class ScheduleMainComponent {
   }
 
   protected _newDirect() {
+
     this._ref = this._dialogOpen.open(DirectVisitComponent, {
       header: 'Добавить новую запись',
       width: '500px',
@@ -121,6 +79,4 @@ export class ScheduleMainComponent {
       data: direct,
     });
   }
-
-  // private _getDirects() {}
 }

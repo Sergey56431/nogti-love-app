@@ -4,7 +4,7 @@ export interface DirectsType {
   comment:string,
   phone: string,
   clientName: string,
-  userId: string,
+  userId?: string,
   services: {
     serviceId: string,
   }[]

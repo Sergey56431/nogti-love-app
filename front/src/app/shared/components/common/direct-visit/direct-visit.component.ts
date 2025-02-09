@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -14,6 +14,10 @@ import { Textarea } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
 import { _closeDialogVia } from '@angular/material/dialog';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DirectsType } from '@shared/types/directs.type';
+import { DirectsService, FavorsServiceService } from '@shared/services';
+import { CategoriesService } from '@shared/services/categories';
+import { CategoriesType } from '@shared/types/categories.type';
 
 @Component({
   selector: 'app-direct-visit',
@@ -30,8 +34,9 @@ import { DynamicDialogRef } from 'primeng/dynamicdialog';
   templateUrl: './direct-visit.component.html',
   styleUrl: './direct-visit.component.scss',
 })
-export class DirectVisitComponent {
+export class DirectVisitComponent implements OnInit {
 
+  protected _categories: CategoriesType[] = [];
   protected _timeVariant = [
     {
       name: '11:00 - 13:00',
@@ -47,11 +52,12 @@ export class DirectVisitComponent {
     },
   ];
 
-  constructor(
-    private readonly _fb: FormBuilder,
-    private readonly _snackbar: MatSnackBar,
-    private readonly _ref: DynamicDialogRef
-) {}
+  constructor(private readonly _fb: FormBuilder,
+              private readonly _directsService: DirectsService,
+              private readonly _categoryService: CategoriesService,
+              private readonly _favorService: FavorsServiceService,
+              private readonly _snackbar: MatSnackBar,
+              private readonly _ref: DynamicDialogRef) {}
 
   protected _newVisitor = this._fb.group({
     name: new FormControl('', [Validators.required]),
@@ -77,15 +83,32 @@ export class DirectVisitComponent {
     return this._newVisitor.get('dateVisit');
   }
 
-  protected _sendNewDirect() {
-    this._snackbar.open(
-      `Клиент ${this._name?.value} записан на время ${this._dateVisit?.value}`,
-    );
-    console.log(this._newVisitor.value);
+  public ngOnInit() {
+    try {
+      this._categoryService.getAllCategories().subscribe(categories => {
+        this._categories = categories;
+        console.log(this._categories);
+      });
+    } catch (err) {
+      console.log(err);
+    }
+
   }
 
   protected _closeDialog() {
     this._ref?.close();
+  }
+
+  protected _createDirect() {
+    const data: DirectsType = {
+      clientName: '',
+      date: '',
+      comment: '',
+      phone: '',
+      time: '',
+      services: [],
+    };
+    this._directsService.createDirect(data).subscribe();
   }
 
   protected readonly _closeDialogVia = _closeDialogVia;

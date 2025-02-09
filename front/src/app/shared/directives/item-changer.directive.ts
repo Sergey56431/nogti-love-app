@@ -4,7 +4,7 @@ import {
   HostListener,
   Input,
   OnInit,
-  Renderer2,
+  Renderer2, signal,
 } from '@angular/core';
 import { Subject } from 'rxjs';
 
@@ -13,9 +13,15 @@ import { Subject } from 'rxjs';
   standalone: true,
 })
 export class ItemChangerDirective implements OnInit {
+  private _month = signal<number | undefined>(undefined);
 
-  @Input() date = 0;
-  @Input() month = 0;
+  @Input() public set date (month: number) {
+    if (month) {
+      this._month.set(month);
+      console.log(month);
+    }
+  };
+  @Input() month?: number;
   private changeMonth$ = new Subject<number>();
   @Input() changeMonth = this.changeMonth$.asObservable();
 
@@ -36,7 +42,7 @@ export class ItemChangerDirective implements OnInit {
 
   disabledDate() {
     console.log(this.date, this.month);
-    if ((this.date <= this.nowDate && this.nowMonth > this.month) ||
+    if ((this.date <= this.nowDate && this.nowMonth > this.month!) ||
       (this.date <= this.nowDate && this.nowMonth === this.month) ) {
       this.rend.setProperty(this.el.nativeElement, 'disabled', true);
     }

@@ -12,11 +12,11 @@ export class CategoriesService {
   }
 
   public getAllCategories(): Observable<any> {
-    return this.http.get<any>(environment.api + 'categories');
+    return this.http.get<any>(environment.api + 'category');
   }
 
   public getCategoryById(id: string): Observable<any> {
-    return this.http.get<any>(environment.api + 'categories', {
+    return this.http.get<any>(environment.api + 'category', {
       params: {
         id: id,
       },
@@ -24,7 +24,7 @@ export class CategoriesService {
   }
 
   public getCategoryByUser(userId: string): Observable<any> {
-    return this.http.get<any>(environment.api + 'categories', {
+    return this.http.get<any>(environment.api + 'category', {
       params: {
         userId: userId,
       },
@@ -32,11 +32,11 @@ export class CategoriesService {
   }
 
   public createCategory(category: any): Observable<any> {
-    return this.http.post<any>(environment.api + 'categories', category);
+    return this.http.post<any>(environment.api + 'category', category);
   }
 
   public updateCategory(category: any, id: string): Observable<any> {
-    return this.http.put<any>(environment.api + 'categories', {
+    return this.http.put<any>(environment.api + 'category', {
       params: {
         id: id,
       },
@@ -45,7 +45,7 @@ export class CategoriesService {
   }
 
   public deleteCategory(id: string): Observable<any> {
-    return this.http.delete<any>(environment.api + 'categories', {
+    return this.http.delete<any>(environment.api + 'category', {
       params: {
         id: id,
       },

@@ -5,7 +5,7 @@ import {CalendarService} from '@shared/services';
 import {Directs} from '@core/store/directs/actions';
 
 export interface DirectsStateModel {
-  directs?: CalendarResponse;
+  directs?: CalendarResponse[];
 }
 
 @State<DirectsStateModel>({
@@ -31,9 +31,9 @@ export class DirectsState {
     if (state.directs !== null) {
       return;
     }
-    this._service.getAllDirects().subscribe(directs => {
+    this._service.fetchAllDays().subscribe(directs => {
       ctx.setState({
-        directs: directs
+        directs: directs as CalendarResponse,
       });
       ctx.dispatch(new Directs.GetDirectsSuccess(directs));
     });

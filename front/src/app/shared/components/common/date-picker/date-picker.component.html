@@ -3,6 +3,7 @@
         <p-button [rounded]="true"
                   [text]="true"
                   (click)="_choiceMonth('prev')"
+                  [disabled]="!_isStartMonth()"
                   severity="contrast"
                   icon="pi pi-chevron-left" />
         <h3 class="calendar-title">{{ month }}</h3>
@@ -19,7 +20,7 @@
                  [checked]="item === _isChecked()"
                  type="radio"
                  id="{{item}}"
-                 (click)="choiceDay(item)">
+                 (click)="_choiceDay(item)">
           <label for="{{item}}">
             <div class="checkbox-count">
               {{ item }}

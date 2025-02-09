@@ -15,11 +15,22 @@
       <p-select class="w-full"
                 [fluid]="true"
                 formControlName="dateVisit"
-                inputId="code"
+                inputId="time"
                 [options]="_timeVariant"
                 optionLabel="name"
                 styleClass="w-full" />
-      <label for="code">Время</label>
+      <label for="time">Время</label>
+    </p-floatlabel>
+
+    <p-floatlabel class="w-full" variant="on">
+      <p-select class="w-full"
+                [fluid]="true"
+                formControlName="dateVisit"
+                inputId="id"
+                [options]="_categories"
+                optionLabel="name"
+                styleClass="w-full" />
+      <label for="id">Категория услуги</label>
     </p-floatlabel>
 
     <p-floatlabel variant="on">
@@ -46,7 +57,7 @@
                 type="button"
                 label="Записать"
                 [disabled]="_newVisitor.invalid || !_newVisitor.value"
-                (onClick)="_sendNewDirect()"/>
+                (onClick)="_createDirect()"/>
     </div>
   </form>
 </div>
