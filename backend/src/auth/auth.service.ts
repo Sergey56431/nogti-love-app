@@ -5,6 +5,7 @@ import { UsersService } from '../users';
 import { LoginDto, SignupDto } from './auth-dto';
 import { UserCreateDto } from '../users';
 import { ConfigService } from '@nestjs/config';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 interface User {
   id: string;
@@ -28,7 +29,7 @@ export class AuthService {
   }> {
     const user = await this.validateUser(loginDto);
     if (!user) {
-      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('Неверные учетные данные', 401);
     }
 
     const refreshTokenKey = await this.generateRefreshToken(user);
@@ -49,28 +50,39 @@ export class AuthService {
   }
 
   public async refreshToken(userId: string): Promise<{ accessToken: string }> {
-    const user = await this._usersService.findUserToRefresh(userId);
-    if (!user.refreshToken) {
-      throw new HttpException('Invalid credentials', 401);
-    }
-
     try {
-      await this._jwtService.verify(user.refreshToken, {
-        secret: this._configService.get<string>('JWT_REFRESH_SECRET'),
-        ignoreExpiration: true,
-      });
-    } catch (e) {
-      await this.logout(userId);
-      console.error(e);
-      throw new HttpException('Токен истек', 401);
+      const user = await this._usersService.findUserToRefresh(userId);
+      if (!user) {
+        throw new HttpException('Пользователь не найден', 404);
+      }
+      if (!user.refreshToken) {
+        throw new HttpException('Токен отсутствует', 401);
+      }
+
+      try {
+        await this._jwtService.verify(user.refreshToken, {
+          secret: this._configService.get<string>('JWT_REFRESH_SECRET'),
+          ignoreExpiration: true,
+        });
+      } catch (e) {
+        await this.logout(userId);
+        console.error(e);
+        throw new HttpException('Токен истек', 401);
+      }
+      return {
+        accessToken: await this.generateAccessToken({
+          id: user.id,
+          name: user.name + ' ' + user.lastName,
+          role: user.role,
+        }),
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      console.log(error);
+      throw new HttpException('Ошибка при обновлении токена', 500);
     }
-    return {
-      accessToken: await this.generateAccessToken({
-        id: user.id,
-        name: user.name + ' ' + user.lastName,
-        role: user.role,
-      }),
-    };
   }
 
   public async logout(userId: string) {
@@ -81,6 +93,12 @@ export class AuthService {
         message: 'Успешно',
       };
     } catch (error) {
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code == 'P2025'
+      ) {
+        throw new HttpException('Пользователь не найден', 404);
+      }
       throw new HttpException(error, 500);
     }
   }

@@ -7,7 +7,7 @@ import { AuthModule } from './auth';
 import { DirectsModule } from './directs';
 import { JwtStrategy } from './auth/jwt-strategy';
 import { CalendarModule } from './calendar';
-import { IncomExpencesModule } from './incom_expences/incom_expences.module';
+import { IncomExpencesModule } from './incom_expences';
 import { CategoriesModule } from './categories';
 import { ServicesModule } from './services';
 

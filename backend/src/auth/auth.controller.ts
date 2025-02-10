@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto, SignupDto } from './auth-dto';
 import { UserCreateDto } from '../users';
+import { CustomSwaggerUserIdParam } from '../custom-swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -17,13 +18,15 @@ export class AuthController {
     return await this._authService.signUp(body);
   }
 
-  @Get('logout/:id')
-  public async logout(@Param('id') userId: string): Promise<any> {
-    return await this._authService.logout(userId);
+  @CustomSwaggerUserIdParam()
+  @Get('logout')
+  public async logout(@Query('id') id: string): Promise<any> {
+    return await this._authService.logout(id);
   }
 
-  @Get('refresh/:id')
-  public async refresh(@Param('id') userId: string) {
-    return await this._authService.refreshToken(userId);
+  @CustomSwaggerUserIdParam()
+  @Get('refresh')
+  public async refresh(@Query('id') id: string) {
+    return await this._authService.refreshToken(id);
   }
 }
