@@ -3,16 +3,14 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  NotFoundException,
   Post,
   Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
-import {DirectsService} from './directs.service';
-import {CreateDirectDto, UpdateDirectDto} from './dto';
-import {TokenGuard} from "../auth";
+import { DirectsService } from './directs.service';
+import { CreateDirectDto, UpdateDirectDto } from './dto';
+import { TokenGuard } from '../auth';
 
 @UseGuards(TokenGuard)
 @Controller('directs')
@@ -21,20 +19,20 @@ export class DirectsController {
 
   @Post()
   public async create(@Body() createDirectDto: CreateDirectDto) {
-      return await this._directsService.create(createDirectDto);
+    return await this._directsService.create(createDirectDto);
   }
 
   @Get()
   public async handleDirectsQuery(
-      @Query('date') date?: string,
-      @Query('userId') userId?: string,
-      @Query('id') id?: string,
+    @Query('date') date?: string,
+    @Query('userId') userId?: string,
+    @Query('id') id?: string,
   ) {
     if (date) {
       return this._directsService.findByDate(date);
     } else if (userId) {
       return this._directsService.findByUser(userId);
-    } else if (id){
+    } else if (id) {
       return this._directsService.findOne(id);
     } else {
       return this._directsService.findAll();
