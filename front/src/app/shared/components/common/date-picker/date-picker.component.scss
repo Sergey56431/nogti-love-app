@@ -127,9 +127,10 @@
           background-color: $busy-color;
         }
       }
-      &:checked {}
-      .full-day + label::before {
-        background-color: $blue-color;
+      &:checked {
+        .full-day + label::before {
+          background-color: $blue-color;
+        }
       }
     }
 

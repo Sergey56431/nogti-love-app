@@ -148,6 +148,7 @@ export class DatePickerComponent implements OnInit {
         date: `${i > 9 ? i : '0' + i}.${this._mountCount() > 9 ? this._mountCount() : '0' + this._mountCount()}.${this._yearCount()}`,
       });
     }
+    this._fetchUserFullCalendar();
     return 'success';
   }
 
@@ -170,11 +171,11 @@ export class DatePickerComponent implements OnInit {
   // Метод для обновления календаря без перезагрузки страницы
   public _refreshDatePicker() {
     const result = this._daysInMonth(this._mountCount(), this._yearCount());
+    this._setStateOfDate(this._calendar());
     let message = undefined;
     if (result === ProgressStatuses.SUCCESS) {
       message = SnackStatusesUtil.getStatuses(result);
     }
-
     if (message) {
       this._toast.add(message);
     }
