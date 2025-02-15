@@ -19,8 +19,8 @@
                  (change)="_isChecked.set(item.day)"
                  [checked]="item.day === _isChecked()"
                  type="radio"
-                 [ngClass]="_dayStateClass(item)"
-                 [disabled]="item.state === DayState.NOT_WORKING"
+                 ItemChanger
+                 [day]="item"
                  id="{{item.day}}"
                  (click)="_choiceDay(item.day)">
           <label for="{{item.day}}">

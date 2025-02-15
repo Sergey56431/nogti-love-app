@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  computed,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { CalendarService, DirectsService } from '@shared/services';
 import { createDispatchMap } from '@ngxs/store';
 import { Directs } from '@core/store/directs/actions';
@@ -10,17 +17,18 @@ import { DirectsType } from '@shared/types/directs.type';
 import { CalendarResponse, DefaultResponseType } from '@shared/types';
 import { DayState } from '@shared/utils';
 import { NgClass } from '@angular/common';
+import { ItemChangerDirective } from '@shared/directives';
 
 export interface CalendarDay {
   day: number;
   date: string;
-  state?: DayState
+  state?: DayState;
 }
 
 @Component({
   selector: 'app-date-picker',
   standalone: true,
-  imports: [Button, NgClass],
+  imports: [Button, NgClass, ItemChangerDirective],
   templateUrl: './date-picker.component.html',
   styleUrl: './date-picker.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -59,15 +67,7 @@ export class DatePickerComponent implements OnInit {
   ngOnInit() {
     this._mountCount.set(new Date().getMonth() + 1);
     this._yearCount.set(new Date().getFullYear());
-    const user = this._authService.getUserInfo();
-    this._calendarService
-      .fetchCalendarByUser(user.userId)
-      .subscribe((calendar) => {
-        if ((calendar as DefaultResponseType).error === undefined) {
-          this._calendar.set(calendar as CalendarResponse[]);
-          this._setStateOfDate(calendar as CalendarResponse[]);
-        }
-      });
+    this._fetchUserFullCalendar();
     this._monthName(this._mountCount());
     this._daysInMonth(this._mountCount(), this._yearCount());
   }
@@ -80,8 +80,22 @@ export class DatePickerComponent implements OnInit {
     this.month = this.month.charAt(0).toUpperCase() + this.month.slice(1);
   }
 
+  // Запрос всего календаря для пользователя
+  private _fetchUserFullCalendar(): void {
+    const user = this._authService.getUserInfo();
+    this._calendarService
+      .fetchCalendarByUser(user.userId)
+      .subscribe((calendar) => {
+        if ((calendar as DefaultResponseType).error === undefined) {
+          this._calendar.set(calendar as CalendarResponse[]);
+          this._setStateOfDate(calendar as CalendarResponse[]);
+        }
+      });
+  }
+
   // Функция выбора месяца с автоматическим инкрементом или декрементом года
   protected _choiceMonth(select: string) {
+    console.log(this._calendar());
     switch (select) {
       case 'next':
         this._mountCount.update((value) => value + 1);
@@ -100,6 +114,7 @@ export class DatePickerComponent implements OnInit {
       default:
         console.log('Невозможно выбрать месяц');
     }
+    this._fetchUserFullCalendar();
     this._monthName(this._mountCount());
     // вызов функции я получения всех дней в выбранном месяце
     this._daysInMonth(this._mountCount(), this._yearCount());
@@ -154,8 +169,6 @@ export class DatePickerComponent implements OnInit {
       this._date().find((i) => {
         if (i.date === date) {
           Object.assign(i, { state: item.state });
-        } else {
-          Object.assign(i, { state: DayState.FULL});
         }
       });
     }

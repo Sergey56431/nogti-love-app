@@ -55,7 +55,7 @@
           z-index: 5;
           position: relative;
           font-size: 18px;
-          font-weight: bold;
+          font-family: 'Montserrat-SemiBold', sans-serif;
         }
 
         &::before {
@@ -86,6 +86,7 @@
         }
       }
 
+
       &:not(:disabled):not(:checked) {
 
         + label {
@@ -96,12 +97,7 @@
               transform: scale(1.25);
             }
           }
-
-          .checkbox-count {
-
-          }
         }
-
       }
 
       &:not(:disabled):active + label::before {
@@ -122,6 +118,18 @@
             transform: scale(1.0);
           }
         }
+      }
+    }
+
+    &:not(:disabled) {
+      &:not(:checked) {
+        .full-day + label::before {
+          background-color: $busy-color;
+        }
+      }
+      &:checked {}
+      .full-day + label::before {
+        background-color: $blue-color;
       }
     }
 
