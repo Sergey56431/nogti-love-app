@@ -44,7 +44,7 @@ export class ChartComponent {
     },
   };
 
-  private _getAmounts() {
-    // получение доходов и расходов за месяц
+  private _getAmounts(): void {
+
   }
 }

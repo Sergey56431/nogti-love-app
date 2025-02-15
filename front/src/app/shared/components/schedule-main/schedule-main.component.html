@@ -15,7 +15,7 @@
     @if (calendar.day) {
       <div class="timetable">
         <h3 class="timetable-day">{{ calendar.day }}</h3>
-        <ul class="timetable-items">
+        <ul class="timetable-items h-56">
 
           @for (direct of _directsList(); track direct) {
             <li class="timetable-item" (click)="_moreInfo(direct)">

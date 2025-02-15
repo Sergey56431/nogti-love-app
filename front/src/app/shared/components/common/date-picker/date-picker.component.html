@@ -14,16 +14,18 @@
                   icon="pi pi-chevron-right" />
       </div>
       <div class="calendar-date-items">
-        @for (item of _dateCount(); track item) {
+        @for (item of _date(); track item) {
           <input class="custom-checkbox"
-                 (change)="_isChecked.set(item)"
-                 [checked]="item === _isChecked()"
+                 (change)="_isChecked.set(item.day)"
+                 [checked]="item.day === _isChecked()"
                  type="radio"
-                 id="{{item}}"
-                 (click)="_choiceDay(item)">
-          <label for="{{item}}">
+                 [ngClass]="_dayStateClass(item)"
+                 [disabled]="item.state === DayState.NOT_WORKING"
+                 id="{{item.day}}"
+                 (click)="_choiceDay(item.day)">
+          <label for="{{item.day}}">
             <div class="checkbox-count">
-              {{ item }}
+              {{ item.day }}
             </div>
           </label>
         } @empty {

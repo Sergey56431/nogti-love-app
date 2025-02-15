@@ -1,59 +1,60 @@
 import {
+  AfterViewInit,
+  computed,
   Directive,
   ElementRef,
-  HostListener,
   Input,
-  OnInit,
-  Renderer2, signal,
+  Renderer2,
+  signal,
 } from '@angular/core';
-import { Subject } from 'rxjs';
+import { CalendarDay } from '@shared/components';
+import { DayState } from '@shared/utils';
 
 @Directive({
   selector: '[ItemChanger]',
   standalone: true,
 })
-export class ItemChangerDirective implements OnInit {
-  private _month = signal<number | undefined>(undefined);
+export class ItemChangerDirective implements AfterViewInit {
+  private days = signal<CalendarDay[]>([]) ;
+  private _allDays= computed(() => {
+    return this.days();
+  });
 
-  @Input() public set date (month: number) {
-    if (month) {
-      this._month.set(month);
-      console.log(month);
+  @Input() public set day(day: CalendarDay) {
+    if (day != null){
+      this.days().push(day);
     }
   };
-  @Input() month?: number;
-  private changeMonth$ = new Subject<number>();
-  @Input() changeMonth = this.changeMonth$.asObservable();
 
-  constructor(private el: ElementRef,
-              private rend: Renderer2) {
+  constructor(
+    private el: ElementRef,
+    private rend: Renderer2,
+  ) {}
+
+  ngAfterViewInit() {
+
+      for (const item of this._allDays()) {
+        switch (item?.state) {
+          case DayState.NOT_WORKING:
+            this._disabledDate();
+            break;
+          case DayState.WORKING:
+            this._fullDay();
+            break;
+          default:
+            break;
+        }
+        console.log(item.state);
+      }
   }
 
-  ngOnInit() {
-    this.changeMonth.subscribe((month) => {
-      console.log(month);
-      this.changeMonth$.next(month);
-    });
-    this.disabledDate();
+  private _disabledDate() {
+
+    this.rend.setProperty(this.el.nativeElement, 'disabled', true);
+    this.rend.addClass(this.el.nativeElement, 'disabled');
   }
 
-  private nowDate = new Date().getDate();
-  private nowMonth = new Date().getMonth() + 1;
-
-  disabledDate() {
-    console.log(this.date, this.month);
-    if ((this.date <= this.nowDate && this.nowMonth > this.month!) ||
-      (this.date <= this.nowDate && this.nowMonth === this.month) ) {
-      this.rend.setProperty(this.el.nativeElement, 'disabled', true);
-    }
+  private _fullDay() {
+    this.rend.addClass(this.el.nativeElement, 'full-day');
   }
-
-  @HostListener('click')
-  onClick(): void {
-    if (this.el.nativeElement.classList.contains('disabled')) {
-      return;
-    }
-  }
-
-
 }

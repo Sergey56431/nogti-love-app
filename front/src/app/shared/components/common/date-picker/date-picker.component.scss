@@ -56,7 +56,6 @@
           position: relative;
           font-size: 18px;
           font-weight: bold;
-
         }
 
         &::before {
@@ -88,6 +87,7 @@
       }
 
       &:not(:disabled):not(:checked) {
+
         + label {
           &:hover {
             &::before {
@@ -105,17 +105,17 @@
       }
 
       &:not(:disabled):active + label::before {
-        background-color: #b3d7ff;
+        background-color: $blue-color
       }
 
       &:disabled {
-        color: white;
+        color: black;
 
         + label {
           cursor: not-allowed;
 
           &::before {
-            background-color: $busy-color;
+            background-color: $grey-color;
           }
 
           .checkbox-count {
@@ -141,7 +141,7 @@
       }
 
       &.disabled {
-        background: $busy-color;
+        background: $grey-color;
         color: rgba(0, 0, 0, 0.38);
         cursor: not-allowed;
 

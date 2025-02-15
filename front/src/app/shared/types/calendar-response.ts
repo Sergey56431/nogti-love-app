@@ -6,4 +6,4 @@ export type CalendarResponse = {
     state: string,
     userId: string
     directs: DirectsClientType[]
-}[]
+}
