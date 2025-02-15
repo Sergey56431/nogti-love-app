@@ -22,8 +22,8 @@ export class FavorsServiceService {
     });
   }
 
-  public getFavorsByCategory(id: string): Observable<ServicesType | DefaultResponseType> {
-    return this._http.get<ServicesType | DefaultResponseType>(environment.api + 'services' ,{
+  public getFavorsByCategory(id: string): Observable<ServicesType[] | DefaultResponseType> {
+    return this._http.get<ServicesType[] | DefaultResponseType>(environment.api + 'services' ,{
       params: {categoryId: id}
     });
   }

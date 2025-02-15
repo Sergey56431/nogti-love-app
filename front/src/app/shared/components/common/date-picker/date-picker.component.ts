@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   computed,
   OnInit,
@@ -10,14 +9,13 @@ import { CalendarService, DirectsService } from '@shared/services';
 import { createDispatchMap } from '@ngxs/store';
 import { Directs } from '@core/store/directs/actions';
 import { Button } from 'primeng/button';
-import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '@core/auth';
 import { DirectsType } from '@shared/types/directs.type';
 import { CalendarResponse, DefaultResponseType } from '@shared/types';
-import { DayState } from '@shared/utils';
-import { NgClass } from '@angular/common';
+import { DayState, ProgressStatuses, SnackStatusesUtil } from '@shared/utils';
 import { ItemChangerDirective } from '@shared/directives';
+
 
 export interface CalendarDay {
   day: number;
@@ -28,7 +26,7 @@ export interface CalendarDay {
 @Component({
   selector: 'app-date-picker',
   standalone: true,
-  imports: [Button, NgClass, ItemChangerDirective],
+  imports: [Button, ItemChangerDirective],
   templateUrl: './date-picker.component.html',
   styleUrl: './date-picker.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,10 +34,9 @@ export interface CalendarDay {
 export class DatePickerComponent implements OnInit {
   protected _render = signal<boolean>(false);
 
-  private _ref: DynamicDialogRef | undefined;
-
   protected month = '';
   public day = '';
+  public selectedDate = signal<string>('');
   protected _calendar = signal<CalendarResponse[]>([]);
   protected _isChecked = signal<number | null>(null);
   protected _date = signal<CalendarDay[]>([]);
@@ -60,7 +57,6 @@ export class DatePickerComponent implements OnInit {
     private readonly _calendarService: CalendarService,
     private readonly _directService: DirectsService,
     private readonly _authService: AuthService,
-    private readonly _cdr: ChangeDetectorRef,
   ) {}
 
   // Инициализация компонента (стартовый месяц и запроса получение всех дней рабочих дней юзера)
@@ -135,20 +131,15 @@ export class DatePickerComponent implements OnInit {
       .split('.')
       .reverse()
       .join('-');
-
+    this.selectedDate.set(date);
     this._directService.fetchDirectsByDate(date).subscribe((directs) => {
       this.directs.set(directs);
       console.log(this.directs());
     });
   }
 
-  //Закрытие диалога
-  protected _closeDialog() {
-    this._ref?.close();
-  }
-
   // Функция генерации календаря
-  private _daysInMonth(month: number, year: number) {
+  private _daysInMonth(month: number, year: number): string {
     const days = new Date(year, month, 0).getDate();
     this._date.set([]);
     for (let i = 1; i <= days; i++) {
@@ -157,6 +148,7 @@ export class DatePickerComponent implements OnInit {
         date: `${i > 9 ? i : '0' + i}.${this._mountCount() > 9 ? this._mountCount() : '0' + this._mountCount()}.${this._yearCount()}`,
       });
     }
+    return 'success';
   }
 
   // Установка состояния дня
@@ -175,30 +167,16 @@ export class DatePickerComponent implements OnInit {
     this._render.set(true);
   }
 
-  //Определение класса дня
-  protected _dayStateClass(day: CalendarDay): string {
-    switch (day.state) {
-      case DayState.NOT_WORKING:
-        return 'not-working';
-      case DayState.FULL:
-        return 'full-day';
-      default:
-        return '';
-    }
-  }
-
   // Метод для обновления календаря без перезагрузки страницы
   public _refreshDatePicker() {
-    this._daysInMonth(this._mountCount(), this._yearCount());
+    const result = this._daysInMonth(this._mountCount(), this._yearCount());
+    let message = undefined;
+    if (result === ProgressStatuses.SUCCESS) {
+      message = SnackStatusesUtil.getStatuses(result);
+    }
 
-    // Нужно сюда подставлять варианты в зависимости от выполнения обновления календаря
-    this._toast.add({
-      severity: 'success',
-      summary: 'Успешно',
-      detail: 'Календарь обновлён',
-      life: 3000,
-    });
+    if (message) {
+      this._toast.add(message);
+    }
   }
-
-  protected readonly DayState = DayState;
 }

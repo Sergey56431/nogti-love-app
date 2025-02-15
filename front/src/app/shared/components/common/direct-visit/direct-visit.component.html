@@ -16,6 +16,7 @@
                 [fluid]="true"
                 formControlName="dateVisit"
                 inputId="time"
+                (onChange)="_choiceTime($event.value)"
                 [options]="_timeVariant"
                 optionLabel="name"
                 styleClass="w-full" />
@@ -25,12 +26,26 @@
     <p-floatlabel class="w-full" variant="on">
       <p-select class="w-full"
                 [fluid]="true"
-                formControlName="dateVisit"
-                inputId="id"
-                [options]="_categories"
+                formControlName="category"
+                inputId="categoryId"
+                [options]="_categories()"
+                (onChange)="_fetchFavors($event.value)"
                 optionLabel="name"
                 styleClass="w-full" />
-      <label for="id">Категория услуги</label>
+      <label for="categoryId">Категория услуги</label>
+    </p-floatlabel>
+
+    <p-floatlabel class="w-full" variant="on">
+      <p-multi-select class="w-full"
+                [fluid]="true"
+                formControlName="favor"
+                inputId="favorId"
+                [options]="_favors()"
+                (onChange)="_choiceFavor.set($event.value.id)"
+                [showToggleAll]="false"
+                optionLabel="name"
+                styleClass="w-full" />
+      <label for="favorId">Услуга</label>
     </p-floatlabel>
 
     <p-floatlabel variant="on">

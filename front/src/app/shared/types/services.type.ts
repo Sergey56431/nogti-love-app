@@ -1,5 +1,5 @@
 export interface ServicesType {
-  id?: number;
+  id?: string;
   name: string;
   time: string;
   price: number;

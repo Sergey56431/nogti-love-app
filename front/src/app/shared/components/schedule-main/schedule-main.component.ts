@@ -25,7 +25,6 @@ export class ScheduleMainComponent {
 
   private _ref: DynamicDialogRef | undefined;
 
-
   protected _options = [
     { routerLink: '', label: 'Редактировать расписание' },
     { routerLink: '', label: 'Список всех записей' },
@@ -61,6 +60,7 @@ export class ScheduleMainComponent {
         overflow: 'visible',
       },
       closable: true,
+      data: this.calendar?.selectedDate(),
     });
   }
 
