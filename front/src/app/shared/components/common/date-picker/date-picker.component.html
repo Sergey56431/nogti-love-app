@@ -1,36 +1,39 @@
 <div class="calendar">
-      <div class="calendar-header">
-        <p-button [rounded]="true"
-                  [text]="true"
-                  (click)="_choiceMonth('prev')"
-                  [disabled]="!_isStartMonth()"
-                  severity="contrast"
-                  icon="pi pi-chevron-left" />
-        <h3 class="calendar-title">{{ month }}</h3>
-        <p-button [rounded]="true"
-                  [text]="true"
-                  (click)="_choiceMonth('next')"
-                  severity="contrast"
-                  icon="pi pi-chevron-right" />
-      </div>
-      <div class="calendar-date-items">
-        @for (item of _date(); track item) {
-          <input class="custom-checkbox"
-                 (change)="_isChecked.set(item.day)"
-                 [checked]="item.day === _isChecked()"
-                 type="radio"
-                 ItemChanger
-                 [day]="item"
-                 id="{{item.day}}"
-                 (click)="_choiceDay(item.day)">
-          <label for="{{item.day}}">
-            <div class="checkbox-count">
-              {{ item.day }}
-            </div>
-          </label>
-        } @empty {
-          <div class="date-error">Ошибка загрузки календаря</div>
-        }
+  <div class="calendar-header">
+    <p-button [rounded]="true"
+              [text]="true"
+              (click)="_choiceMonth('prev')"
+              [disabled]="!_isStartMonth()"
+              severity="contrast"
+              icon="pi pi-chevron-left" />
+    <h3 class="calendar-title">{{ month }}</h3>
+    <p-button [rounded]="true"
+              [text]="true"
+              (click)="_choiceMonth('next')"
+              severity="contrast"
+              icon="pi pi-chevron-right" />
+  </div>
+  @if (_render()) {
+    <div class="calendar-date-items">
+      @for (item of _date(); track item) {
+        <input class="custom-checkbox"
+               (change)="_isChecked.set(item.day)"
+               [checked]="item.day === _isChecked()"
+               type="radio"
+               ItemChanger
+               [day]="item"
+               id="{{item.day}}"
+               (click)="_choiceDay(item.day)">
+        <label for="{{item.day}}">
+          <div class="checkbox-count">
+            {{ item.day }}
+          </div>
+        </label>
+      } @empty {
+        <div class="date-error">Ошибка загрузки календаря</div>
+      }
 
-      </div>
     </div>
+  }
+
+</div>

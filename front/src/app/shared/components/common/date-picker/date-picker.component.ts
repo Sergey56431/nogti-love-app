@@ -34,7 +34,7 @@ export interface CalendarDay {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DatePickerComponent implements OnInit {
-  public loading = signal<boolean>(false);
+  protected _render = signal<boolean>(false);
 
   private _ref: DynamicDialogRef | undefined;
 
@@ -95,7 +95,7 @@ export class DatePickerComponent implements OnInit {
 
   // Функция выбора месяца с автоматическим инкрементом или декрементом года
   protected _choiceMonth(select: string) {
-    console.log(this._calendar());
+    this._render.set(false);
     switch (select) {
       case 'next':
         this._mountCount.update((value) => value + 1);
@@ -172,6 +172,7 @@ export class DatePickerComponent implements OnInit {
         }
       });
     }
+    this._render.set(true);
   }
 
   //Определение класса дня

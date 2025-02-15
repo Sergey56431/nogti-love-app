@@ -32,13 +32,13 @@ export class ItemChangerDirective implements AfterViewInit {
   ) {}
 
   ngAfterViewInit() {
-    setTimeout(() => {
+    // setTimeout(() => {
       for (const item of this._allDays()) {
         switch (item?.state) {
           case DayState.NOT_WORKING:
             this._disabledDate();
             break;
-          case DayState.WORKING:
+          case DayState.FULL:
             this._fullDay();
             break;
           default:
@@ -46,7 +46,7 @@ export class ItemChangerDirective implements AfterViewInit {
         }
         console.log(item.state);
       }
-    }, 500);
+    // }, 500);
 
   }
 
