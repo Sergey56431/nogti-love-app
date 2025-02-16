@@ -53,9 +53,9 @@
       </ul>
     </div>
   </div>
-  @if (_infoChanged()) {
+  @if (_editMode()) {
     <div class="card flex justify-start gap-4 mt-4">
-      <p-button severity="primary" [disabled]="!_isActionShow()" label="Сохранить" icon="pi pi-check" (onClick)="_saveNewInfo()" />
+      <p-button severity="primary" label="Сохранить" icon="pi pi-check" (onClick)="_saveNewInfo()" />
       <p-button severity="warn" label="Отменить" icon="pi pi-times" (onClick)="_reset()" />
     </div>
   }
