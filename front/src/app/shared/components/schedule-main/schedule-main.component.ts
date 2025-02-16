@@ -23,8 +23,6 @@ import { DirectsType } from '@shared/types/directs.type';
 export class ScheduleMainComponent {
   @ViewChild(DatePickerComponent) calendar?: DatePickerComponent;
 
-  private _ref: DynamicDialogRef | undefined;
-
   protected _options = [
     { routerLink: '', label: 'Редактировать расписание' },
     { routerLink: '', label: 'Список всех записей' },
@@ -51,7 +49,7 @@ export class ScheduleMainComponent {
 
   protected _newDirect() {
 
-    this._ref = this._dialogOpen.open(DirectVisitComponent, {
+    this._dialogOpen.open(DirectVisitComponent, {
       header: 'Добавить новую запись',
       width: '500px',
       modal: true,
