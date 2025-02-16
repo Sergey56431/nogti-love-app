@@ -65,15 +65,15 @@ export class AuthInterceptor implements HttpInterceptor {
         }
 
         this._authService.setTokens(refreshResult.accessToken);
-        console.log(refreshResult);
         const authReq = req.clone({
-          headers: req.headers.set('Authorization', 'Bearer ' + refreshResult.accessToken),
+          headers: req.headers.set('Authorization', 'bearer ' + refreshResult.accessToken),
         });
 
         return next.handle(authReq);
       }),
 
       catchError(error => {
+        this._authService.logout(this._userId);
         this._authService.removeTokens();
         // this._router.navigate(['/login']);
         window.location.reload();

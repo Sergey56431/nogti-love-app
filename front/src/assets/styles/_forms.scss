@@ -10,10 +10,6 @@
   background-size: contain;
   background: url("../../assets/images/test-bg-form.jpg") no-repeat;
 
-  .user-logo {
-    margin-bottom: 50px;
-  }
-
   .form {
     padding: 20px;
     display: flex;
@@ -21,7 +17,7 @@
     align-items: center;
     border-radius: 10px;
     box-shadow: 0 0 20px 4px rgba(0, 0, 0, 0.3);
-    background: linear-gradient($bg-color, $grey-color);
+    background: linear-gradient(#d9d9d978, #aaaaaa9e);;
 
     .input {
       width: 350px;
@@ -109,6 +105,3 @@
     }
   }
 }
-
-//adaptive styles
-

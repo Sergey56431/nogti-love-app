@@ -1,0 +1,47 @@
+<div class="p-5 rounded-3xl bg-zinc-300 max-w-96 w-full">
+  <header class="flex items-start gap-4 mb-4">
+    <div class="">
+      <img class="w-32 rounded-full" src="./assets/images/profile.png" alt="">
+    </div>
+    <ul class="list-none flex flex-col gap-3">
+      <li class="client-info flex items-center gap-1.5">
+        <span>Процедура:</span>
+        <span>{{_directInfo()?.directsServices ?? ''}}</span>
+      </li>
+      <li class="client-info flex items-center gap-1.5">
+        <span>Время:</span>
+        <span>{{_directInfo()?.time}}</span>
+      </li>
+      <li class="client-info flex items-center gap-1.5">
+        <span>Телефон:</span>
+        <span>{{_directInfo()?.phone}}</span>
+      </li>
+      <li class="client-info flex items-center gap-1.5">
+        <span>Рейтинг:</span>
+<!--        Заметить элемент и передавать в него рейтинг-->
+        <span></span>
+      </li>
+    </ul>
+  </header>
+  <div class="flex flex-col gap-4">
+    <div class="client-info flex items-center gap-1.5">
+      <span>Имя Клиента:</span>
+      <span>{{_directInfo()?.clientName}}</span>
+    </div>
+    <div class="flex justify-center">
+      <input type="text" pInputText [value]="'тестовый текст'" />
+    </div>
+    <div class="client-info">
+      <span>Дата последнего визита</span>
+      <span></span>
+    </div>
+    <div class="client-info flex flex-col gap-1.5">
+      <span>Комментарий клиента</span>
+      <textarea [autoResize]="true" disabled rows="5" cols="30" pTextarea [value]="_directInfo()?.comment"></textarea>
+    </div>
+    <div class="flex justify-end gap-2">
+      <p-button severity="primary" label="Соханить" [raised]="true"/>
+      <p-button severity="warn" label="Закрыть" (onClick)="_close()" [raised]="true" />
+    </div>
+  </div>
+</div>

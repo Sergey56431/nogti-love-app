@@ -28,10 +28,10 @@ export class ClientsState {
   @Action(ClientsAction.LoadClients)
   _loadClients(ctx: StateContext<ClientsStateModel>) {
     const state = ctx.getState();
-    if (state.clients !== null){
+    if (state.clients != null){
       return;
     }
-    this._service.getClients()
+    this._service.getAllClients()
       .subscribe((clients: ClientType[] )=> {
         ctx.setState(patch({
           clients: clients

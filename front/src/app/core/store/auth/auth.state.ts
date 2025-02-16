@@ -1,11 +1,8 @@
-import {Injectable} from '@angular/core';
-import {Action, Selector, State, StateContext} from '@ngxs/store';
-import {AuthData} from '@core/store/auth/auth.actions';
-import {CookieService} from 'ngx-cookie-service';
-import {LoginResponseType, UserInfoType} from '@shared/types';
-import {patch} from '@ngxs/store/operators';
-import {AuthService} from '@core/auth';
-import {Observable, tap} from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Selector, State } from '@ngxs/store';
+import { CookieService } from 'ngx-cookie-service';
+import { LoginResponseType } from '@shared/types';
+import { AuthService } from '@core/auth';
 
 export interface AuthenticationStateModel {
   loginInfo?: LoginResponseType;
@@ -13,13 +10,14 @@ export interface AuthenticationStateModel {
 
 @State<AuthenticationStateModel>({
   name: 'user',
-  defaults: {}
+  defaults: {},
 })
-
 @Injectable()
 export class AuthState {
-  constructor(private _authService: AuthService, private _cookiesService: CookieService) {
-  }
+  constructor(
+    private _authService: AuthService,
+    private _cookiesService: CookieService,
+  ) {}
 
   @Selector()
   static getUserInfo(state: AuthenticationStateModel) {

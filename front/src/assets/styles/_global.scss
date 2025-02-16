@@ -8,7 +8,7 @@
 
 body, html {
   height: 100vh;
-  font-family: Montserrat, sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 a {
@@ -34,7 +34,6 @@ button {
 }
 
 .page {
-  display: flex;
   margin-top: 55px;
   margin-left: 250px;
   transition: .2s ease-in-out;
@@ -52,11 +51,38 @@ button {
 }
 
 .page-content {
+  padding-inline: 15px;
   padding-top: 30px;
 
   .page-title {
     font-size: 40px;
     font-family: 'Montserrat-Bold', sans-serif;
     margin-bottom: 40px;
+  }
+}
+
+.p-inputtext {
+  width: 100%;
+}
+
+.p-breadcrumb {
+  background: none;
+  padding-inline: 0;
+  color: $grey-color;
+  font-size: 12px;
+}
+
+@media screen and (max-width: 500px) {
+  .page {
+    justify-content: center;
+
+    .page-title {
+      text-align: center;
+    }
+
+    &:has(.sidebar.close) {
+      margin-left: 0;
+      padding-bottom: 80px;
+    }
   }
 }

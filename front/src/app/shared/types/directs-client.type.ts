@@ -1,8 +1,12 @@
+import { ServicesType } from '@shared/types/services.type';
+
 export interface DirectsClientType {
-  date: string;
-  name: string;
-  image: string;
+  id?: string;
+  userId?: string;
+  clientName: string;
   phone: string;
   time: string;
-  comment: string;
+  directsServices?: ServicesType[]
+  image?: string;
+  comment?: string;
 }
