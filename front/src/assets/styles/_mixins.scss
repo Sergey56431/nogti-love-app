@@ -3,3 +3,10 @@
 @mixin transition {
   transition: .2s all ease-in-out;
 }
+
+@mixin card {
+  padding: 30px;
+  border-radius: 20px;
+  box-sizing: border-box;
+  box-shadow: 0 0 20px 4px #3d3d3d33;
+}

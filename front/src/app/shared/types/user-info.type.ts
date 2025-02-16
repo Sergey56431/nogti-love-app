@@ -1,10 +1,13 @@
 export interface UserInfoType {
-  username: string,
-  role: string,
-  points: number
+  userId: string,
+  name: string,
+  username?: string,
+  role?: string,
+  rate?: number,
+  score?: number
+  description?: string,
   birthDate?: string,
   lastName?: string,
   phoneNumber?: string,
   image?: string,
-  _id: string,
 }

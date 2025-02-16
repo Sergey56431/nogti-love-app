@@ -1,113 +1,134 @@
-import {
-    Injectable,
-    UnauthorizedException,
-    HttpException,
-    HttpStatus,
-} from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { UsersService } from '../users';
+import { LoginDto, SignupDto } from './auth-dto';
+import { UserCreateDto } from '../users';
 import { ConfigService } from '@nestjs/config';
-import {CreateUserDto} from "../users/dto/create-user.dto";
-import {UpdateUserDto} from "../users/dto/update-user.dto";
-import {TokenException, UserAlreadyException, UserNotFoundException} from "../custom-exceptions/custom-exceptions";
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+
+interface User {
+  id: string;
+  name: string;
+  role: string;
+}
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private usersService: UsersService,
-        private jwtService: JwtService,
-        private configService: ConfigService,
-    ) {}
+  constructor(
+    private readonly _usersService: UsersService,
+    private readonly _configService: ConfigService,
+    private readonly _jwtService: JwtService,
+  ) {}
 
-    async validateUser(
-        username: string,
-        pass: string,
-    ): Promise<any | null> {
-        const user = await this.usersService.findByUsername(username);
-        if (user && (await bcrypt.compare(pass, user.password))) {
-            const { password, ...result } = user;
-            return result;
-        }
-        return null;
+  async login(loginDto: LoginDto): Promise<{
+    access_token: string;
+    userId: string;
+    name: string;
+    role: string;
+  }> {
+    const user = await this.validateUser(loginDto);
+    if (!user) {
+      throw new HttpException('Неверные учетные данные', 401);
     }
 
-    async signIn(username: string, pass: string, res: any): Promise<Object> {
-        const user = await this.usersService.findByUsername(username);
-        if (
-            user &&
-            user.password &&
-            (await bcrypt.compare(pass, user.password))
-        ) {
-            const payload = {
-                username: user.username,
-                sub: user.id.toString(),
-                role: user.role,
-            };
+    const refreshTokenKey = await this.generateRefreshToken(user);
+    await this._usersService.updateUser(user.id, {
+      refreshToken: refreshTokenKey,
+    });
 
-            const refeshToken = await this.generateRefreshToken(payload);
-            await this.usersService.update(user.id, <UpdateUserDto>{ refreshToken: refeshToken});
-            res.cookie('refreshToken', refeshToken, {
-                httpOnly: true,
-                secure: true,
-                maxAge: 60 * 60 * 24 * 14 * 1000,
-                sameSite: 'none'
-            });
-            return {accessToken: await this.generateAccessToken(payload), ref:refeshToken, id:user.id}; // ВРЕМЕННО В ТЕЛЕ ПОТОМ УБРАТЬ!!!!
-        }
-        throw new UserNotFoundException();
-    }
+    return {
+      userId: user.id,
+      name: user.name,
+      role: user.role,
+      access_token: await this.generateAccessToken(user),
+    };
+  }
 
-    async logout(userId: string, res: any): Promise<any> {
-        res.clearCookie('refreshToken');
-        return await this.usersService.update(userId, <UpdateUserDto>{ refreshToken: ''});
-    }
+  public async signUp(user: SignupDto): Promise<UserCreateDto> {
+    return this._usersService.createUser(user);
+  }
 
-    async signUp(userDto: CreateUserDto): Promise<any> {
-        const existingUser = await this.usersService.findByUsername(
-            userDto.username,
-        );
-        if (existingUser) {
-            throw new UserAlreadyException();
-        }
+  public async refreshToken(userId: string): Promise<{ accessToken: string }> {
+    try {
+      const user = await this._usersService.findUserToRefresh(userId);
+      if (!user) {
+        throw new HttpException('Пользователь не найден', 404);
+      }
+      if (!user.refreshToken) {
+        throw new HttpException('Токен отсутствует', 401);
+      }
 
-        const createdUser = await this.usersService.create(userDto);
-
-        return {
-            id: createdUser.id,
-            username: createdUser.username,
-            role: createdUser.role,
-            points: createdUser.points,
-        };
-    }
-
-    async refreshToken(refreshToken: string): Promise<any> {
-        const user = await this.usersService.findOne({ refreshToken });
-        if (!user) {
-            throw new TokenException();
-        }
-
-        const payload = {
-            username: user.username,
-            sub: user.id,
-            role: user.role,
-        };
-        const accessToken = await this.generateAccessToken(payload);
-
-        return { accessToken };
-    }
-
-    private async generateAccessToken(payload: any): Promise<string> {
-        return this.jwtService.signAsync(payload, {
-            secret: this.configService.get<string>('JWT_SECRET'),
-            expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
+      try {
+        await this._jwtService.verify(user.refreshToken, {
+          secret: this._configService.get<string>('JWT_REFRESH_SECRET'),
+          ignoreExpiration: true,
         });
+      } catch (e) {
+        await this.logout(userId);
+        console.error(e);
+        throw new HttpException('Токен истек', 401);
+      }
+      return {
+        accessToken: await this.generateAccessToken({
+          id: user.id,
+          name: user.name + ' ' + user.lastName,
+          role: user.role,
+        }),
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      console.log(error);
+      throw new HttpException('Ошибка при обновлении токена', 500);
     }
+  }
 
-    private async generateRefreshToken(payload: any): Promise<string> {
-        return this.jwtService.signAsync(payload, {
-            secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-            expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
-        });
+  public async logout(userId: string) {
+    try {
+      await this._usersService.updateUser(userId, { refreshToken: '' });
+      return {
+        status: 200,
+        message: 'Успешно',
+      };
+    } catch (error) {
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code == 'P2025'
+      ) {
+        throw new HttpException('Пользователь не найден', 404);
+      }
+      throw new HttpException(error, 500);
     }
+  }
+
+  public async validateUser(
+    body: LoginDto | UserCreateDto,
+  ): Promise<User | null> {
+    const user = await this._usersService.findUniqUser(body.username);
+    if (user && (await bcrypt.compare(body.password, user.password))) {
+      return {
+        id: user.id,
+        name: user.name + ' ' + user.lastName,
+        role: user.role,
+      };
+    } else {
+      return null;
+    }
+  }
+
+  public async generateAccessToken(user: User) {
+    return this._jwtService.signAsync(user, {
+      secret: this._configService.get<string>('JWT_SECRET'),
+      expiresIn: this._configService.get<string>('JWT_EXPIRES_IN'),
+    });
+  }
+
+  public generateRefreshToken(user: User) {
+    return this._jwtService.signAsync(user, {
+      secret: this._configService.get<string>('JWT_REFRESH_SECRET'),
+      expiresIn: this._configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
+    });
+  }
 }

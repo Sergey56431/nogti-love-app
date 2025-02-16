@@ -2,13 +2,13 @@
   <div class="sidebar-body">
     <nav class="menu">
       <ul class="menu-items">
-        <li class="menu-item" [matTooltip]="'Меню'" (click)="_menuVis()">
-          <mat-icon>menu</mat-icon>
+        <li class="menu-item menu-open" [matTooltip]="'Меню'" (click)="_menuVis()">
+          <i class="pi pi-bars"></i>
           <span>Меню</span>
         </li>
         @for(item of _menuAdminItems; track item) {
           <li class="menu-item" [matTooltip]="item.routeName" routerLink="{{item.route}}" routerLinkActive="active">
-            <mat-icon>{{item.icon}}</mat-icon>
+            <i class="{{item.icon}}"></i>
             <span>{{item.routeName}}</span>
           </li>
         }

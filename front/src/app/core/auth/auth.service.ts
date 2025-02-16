@@ -6,8 +6,7 @@ import {
   DefaultResponseType,
   LoginResponseType,
   RefreshResponseType,
-  SignupResponseType,
-  UserInfoType
+  SignupResponseType, UserInfoType,
 } from '@shared/types';
 import {environment} from '../../../environments/environment';
 
@@ -17,7 +16,6 @@ import {environment} from '../../../environments/environment';
 
 export class AuthService {
   public _accessTokenKey = 'accessToken';
-  public _refreshTokenKey = 'refreshToken';
   private _userInfoKey = 'userInfo';
 
   public isLogged = signal(false);
@@ -34,45 +32,30 @@ export class AuthService {
     });
   }
 
-  signup(username: string, password: string, phone?: string, birthDay?: string): Observable<SignupResponseType> {
-    return this.http.post<SignupResponseType>(environment.api + 'auth/signup', {
-      username,
-      password,
-      phone,
-      birthDay
-    });
-  }
-
-  public getUser(id: string): Observable<UserInfoType> {
-    return this.http.get<UserInfoType>(environment.api + 'users/' + id);
+  signup(body: SignupResponseType): Observable<SignupResponseType> {
+    return this.http.post<SignupResponseType>(environment.api + 'auth/signup', { ...body });
   }
 
   logout(id: string): Observable<DefaultResponseType> {
-    return this.http.post<DefaultResponseType>(environment.api + 'auth/logout/' + id, {
-      id
-    });
+    return this.http.get<DefaultResponseType>(environment.api + 'auth/logout/' + id);
   }
 
-  refresh(refreshToken: string): Observable<RefreshResponseType> {
-    return this.http.post<RefreshResponseType>(environment.api + 'auth/refresh', {
-      refreshToken
-    });
+  refresh(userId: string): Observable<RefreshResponseType> {
+    return this.http.get<RefreshResponseType>(environment.api + 'auth/refresh/' + userId);
   }
 
   public getIsLoggedIn() {
     return this.isLogged();
   }
 
-  public setTokens(accessToken: string, refreshToken: string) {
+  public setTokens(accessToken: string,) {
     this.cookieService.set(this._accessTokenKey, accessToken);
-    this.cookieService.set(this._refreshTokenKey, refreshToken);
     this.isLogged.set(true);
     this.isLogged$.next(true);
   }
 
   public removeTokens() {
     this.cookieService.delete(this._accessTokenKey);
-    this.cookieService.delete(this._refreshTokenKey);
     this.removeUserInfo();
     this.isLogged.set(false);
     this.isLogged$.next(false);
@@ -82,22 +65,15 @@ export class AuthService {
     localStorage.removeItem(this._userInfoKey);
   }
 
-  public getUserInfo(): UserInfoType | null {
-    const userInfo: string | null = localStorage.getItem(this._userInfoKey);
-    if (userInfo) {
-      return JSON.parse(userInfo);
-    }
-    return null;
-  }
-
   public setUserInfo(info: object) {
     localStorage.setItem(this._userInfoKey, JSON.stringify(info));
   }
 
-  public getTokens(): { accessToken: string | null, refreshToken: string | null } {
-    return {
-      accessToken: this.cookieService.get(this._accessTokenKey),
-      refreshToken: this.cookieService.get(this._refreshTokenKey)
-    };
+  public getUserInfo(): UserInfoType {
+    return JSON.parse(localStorage.getItem(this._userInfoKey) ?? '');
+  }
+
+  public getTokens(): string {
+    return this.cookieService.get(this._accessTokenKey);
   }
 }

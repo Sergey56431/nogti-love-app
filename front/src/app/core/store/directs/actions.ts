@@ -1,4 +1,3 @@
-
 import {CalendarResponse} from '@shared/types';
 
 // eslint-disable-next-line @typescript-eslint/no-namespace

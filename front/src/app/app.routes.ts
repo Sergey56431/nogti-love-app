@@ -1,12 +1,10 @@
-import {Routes} from '@angular/router';
-import {LayoutComponent} from '@shared/layout/layout.component';
-import {AuthForvardGuard, AuthGuard} from '@core/auth';
-
+import { Routes } from '@angular/router';
+import { LayoutComponent } from '@shared/layout/layout.component';
+import { AuthForvardGuard, AuthGuard } from '@core/auth';
+import { NotFoundComponent } from '@views/not-found/not-found.component';
 
 export const routes: Routes = [
-  {path: '', redirectTo: 'main', pathMatch: 'full'},
-  // {path: '**' , redirectTo: '/status-error-page',},
-
+  { path: '', redirectTo: 'main', pathMatch: 'full' },
   {
     path: '',
     component: LayoutComponent,
@@ -14,8 +12,8 @@ export const routes: Routes = [
     children: [
       {
         path: 'main',
-        loadComponent:() => import('./views/page').then(c => c.MainComponent),
-        title: 'Главная'
+        loadComponent: () => import('./views').then((c) => c.MainComponent),
+        title: 'Главная',
       },
       // {
       //   path: 'settings',
@@ -23,36 +21,51 @@ export const routes: Routes = [
       // },
       {
         path: 'clients',
-        loadComponent:() => import('./views/page').then(c => c.ClientsPageComponent),
-        title: 'Клиенты'
+        loadComponent: () =>
+          import('./views').then((c) => c.ClientsPageComponent),
+        title: 'Клиенты',
       },
+
+      {
+        path: 'clients/:id',
+        title: 'Клиент',
+        loadComponent: () =>
+          import('./views').then((c) => c.ClientDetailComponent),
+      },
+
       {
         path: 'schedule',
-        loadComponent:() => import('./views/page').then(c => c.SchedulePageComponent),
-        title: 'Расписание'
+        loadComponent: () =>
+          import('./views').then((c) => c.SchedulePageComponent),
+        title: 'Расписание',
       },
       {
         path: 'employs',
-        loadComponent:() => import('./views/page').then(c => c.EmployesPageComponent),
-        title: 'Персонал'
+        loadComponent: () =>
+          import('./views').then((c) => c.EmployesPageComponent),
+        title: 'Персонал',
       },
       {
         path: 'operations',
-        loadComponent:() => import('./views/page').then(c => c.AllTransationsPageComponent),
-        title: 'Операции'
+        loadComponent: () =>
+          import('./views').then((c) => c.AllTransationsPageComponent),
+        title: 'Операции',
       },
-    ]
+    ],
   },
   {
     path: 'login',
     canActivate: [AuthForvardGuard],
-    loadComponent: () => import('./views/users/login-page/login-page.component').then(c => c.LoginPageComponent),
-    title: 'Вход в систему'
+    loadComponent: () => import('./views').then((c) => c.LoginPageComponent),
+    title: 'Вход в систему',
   },
   {
     path: 'registration',
     canActivate: [AuthForvardGuard],
-    loadComponent: () => import('./views/users/registration-page/registration-page.component').then(c => c.RegistrationPageComponent),
-    title: 'Регистрация'
+    loadComponent: () =>
+      import('./views').then((c) => c.RegistrationPageComponent),
+    title: 'Регистрация',
   },
+
+  { path: '**', component: NotFoundComponent },
 ];

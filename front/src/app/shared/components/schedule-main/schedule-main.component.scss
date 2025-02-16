@@ -1,0 +1,264 @@
+@import '../../../../assets/styles/fonts';
+@import "../../../../assets/styles/variables";
+@import "../../../../assets/styles/mixins";
+
+.date-picker {
+  border-radius: 20px;
+  width: 790px;
+  height: 432px;
+  box-shadow: 0 0 20px 4px #3d3d3d33;
+
+  .date-picker-title {
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #cccccc;
+    padding: 0 7px;
+
+    h2 {
+      font-size: 24px;
+      margin-right: 5px;
+    }
+
+    button {
+      border: none;
+      background: transparent;
+    }
+  }
+
+  .date-picker-content {
+    display: flex;
+    align-items: baseline;
+    padding: 35px 35px 40px 35px;
+
+    .no-content {
+      font-size: 26px;
+      font-family: Montserrat-SemiBold, sans-serif !important;
+      margin: auto auto;
+    }
+
+    .timetable {
+      padding-left: 31px;
+
+      .timetable-day {
+        font-family: Montserrat-SemiBold, sans-serif !important;
+        font-size: 24px;
+        margin-bottom: 23px;
+      }
+
+      .timetable-items {
+        position: relative;
+        list-style: none;
+        padding-bottom: 40px;
+        border-bottom: 1px solid #cccccc;
+
+        .loadElseDirect {
+          cursor: pointer;
+          position: absolute;
+          bottom: 5px;
+          left: calc(50% - 25px);
+          @include transition;
+
+          svg {
+            border-radius: 3px;
+          }
+
+          &:hover {
+            svg {
+              path {
+                fill: $blue-color;
+                box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+              }
+            }
+          }
+        }
+
+        .timetable-item {
+
+          .timetable-item-direct {
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 5px;
+            transition: .2s all ease-in-out;
+
+            &:hover {
+              background-color: $blue-color;
+              box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+
+              .item-profile-phone, .item-profile-name, .item-time-direct {
+                color: $busy-color;
+              }
+            }
+
+            .item-time-direct {
+              margin-right: 18px;
+              font-size: 14px;
+              font-family: Montserrat-SemiBold, sans-serif !important;
+              width: 40px;
+              text-align: end;
+            }
+
+            .item-profile-img {
+              border-radius: 5px;
+              width: 32px;
+              height: 32px;
+              background-color: $busy-color;
+              margin-right: 20px;
+            }
+
+            .item-profile-name {
+              font-size: 14px;
+              width: 138px;
+              margin-right: 16px;
+            }
+
+            .item-profile-phone {
+              font-size: 14px;
+              font-family: Montserrat-SemiBold, sans-serif !important;
+            }
+          }
+        }
+      }
+
+      button {
+        border-radius: 10px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        border: none;
+        padding: 7px 23px 7px 8px;
+        background-color: transparent;
+        margin-top: 10px;
+        @include transition;
+
+        .button-icon {
+          border-radius: 5px;
+          padding: 8px;
+          background: $bg-color;
+          margin-right: 15px;
+          @include transition;
+        }
+
+        span {
+          font-size: 18px;
+        }
+
+        &:hover {
+          background-color: $blue-color;
+
+          .button-icon {
+            background-color:transparent;
+            svg{
+              path {
+                stroke-opacity: 1;
+              }
+            }
+          }
+
+          span {
+            color: $busy-color;
+          }
+        }
+      }
+    }
+  }
+}
+
+.date-picker-annotation {
+  margin-left: 15px;
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+
+  .item {
+    display: flex;
+    align-items: center;
+
+    span {
+      margin-left: 8px;
+    }
+
+    &:not(:first-child) {
+      margin-left: 10px;
+    }
+
+    .squire {
+      border-radius: 3px;
+      box-sizing: border-box;
+      width: 15px;
+      height: 15px;
+
+      &.choiceDay {
+        border: 1px solid $white-color;
+        background-color: $blue-color;
+        padding: 1px;
+        outline: 1px solid $blue-color;
+      }
+
+      &.busy-day {
+        background-color: $busy-color;
+      }
+
+      &.no-work-day {
+        background-color: $grey-color;
+      }
+
+      &.free-day {
+        background-color: $white-color;
+        border: 1px solid $blue-color;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1100px){
+  .date-picker {
+    max-width: 340px;
+    height: unset;
+    .date-picker-content {
+      flex-direction: column;
+      padding-bottom: 30px;
+
+      .calendar {
+        padding-bottom: 30px;
+      }
+
+      .timetable {
+        padding-top: 30px;
+        border-top: 1px solid $grey-color;
+        max-width: 300px;
+        width: 100%;
+        text-align: center;
+        padding-left: 0;
+
+        .timetable-items {
+          .timetable-item {
+            .timetable-item-direct {
+
+              .item-time-direct {
+                width: 55px;
+              }
+              height: 30px;
+              .item-profile-img {
+                display: none;
+              }
+            }
+          }
+        }
+
+        button {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  .date-picker-annotation {
+    flex-direction: column;
+    align-items: baseline;
+    row-gap: 10px;
+  }
+}

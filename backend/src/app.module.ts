@@ -1,24 +1,27 @@
 import { Module } from '@nestjs/common';
-import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
-import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule } from '@nestjs/config';
-import { CalendarModule } from './calendar/calendar.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { PrismaService } from './prisma';
+import { UsersModule } from './users';
+import { AuthModule } from './auth';
+import { DirectsModule } from './directs';
+import { JwtStrategy } from './auth/jwt-strategy';
+import { CalendarModule } from './calendar';
+import { IncomExpencesModule } from './incom_expences';
+import { CategoriesModule } from './categories';
+import { ServicesModule } from './services';
 
 @Module({
   imports: [
     UsersModule,
     AuthModule,
+    DirectsModule,
     CalendarModule,
-    MongooseModule.forRoot(
-      'mongodb+srv://fignya2605:260520Zz_@cluster0.kornc6n.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
-    ),
-    ConfigModule.forRoot({
-      envFilePath: '.env',
-      isGlobal: true,
-    }),
+    IncomExpencesModule,
+    CategoriesModule,
+    ServicesModule,
   ],
-  controllers: [],
-  providers: [],
+  controllers: [AppController],
+  providers: [AppService, PrismaService, JwtStrategy],
 })
 export class AppModule {}

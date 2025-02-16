@@ -3,6 +3,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormsModule} from '@angular/forms';
 
 describe('Login Page', () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let page: LoginPageComponent;
   let fixture: ComponentFixture<LoginPageComponent>;
 

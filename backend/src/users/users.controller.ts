@@ -1,54 +1,63 @@
 import {
-    Controller,
-    Get,
-    Body,
-    Patch,
-    Param,
-    Delete,
-    UseGuards,
+  Body,
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  UseGuards,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UpdateUserDto } from './dto/update-user.dto';
-import {ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags} from '@nestjs/swagger';
+import { TUserUpdateDto, UserCreateDto } from './users-dto';
 import { TokenGuard } from '../auth/auth.guard';
-import {ApiParamUserId} from "../custom-swagger/api-responses";
+import { CustomSwaggerUserIdParam } from '../custom-swagger';
 
-
-@ApiBearerAuth()
-@ApiTags('Users')
 @UseGuards(TokenGuard)
 @Controller('users')
 export class UsersController {
-    constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly _usersService: UsersService) {}
 
-    @Get()
-    @ApiOperation({ summary: 'Получить всех пользователей' })
-    @ApiResponse({status:200, example:[{id:'66e03798d9bdb992d25d3e9c', username:'test', role:'user', points:20}, {id:'66e03798d9bdb992d25d36t3', username:'test1', role:'user', points:20}]})
-    findAll() {
-        return this.usersService.findAll();
+  @Get()
+  public async findOne(
+    @Query('id') id: string,
+    @Query('role') role: string,
+    @Query('phoneNumber') phoneNumber: string,
+    @Query('username') username: string,
+    @Query('score') score: number,
+  ) {
+    if (role || phoneNumber || username || score) {
+      return await this._usersService.findFiltred({
+        role,
+        phoneNumber,
+        username,
+        score: +score,
+      });
     }
+    if (id) {
+      return await this._usersService.findOne(id);
+    } else {
+      return this._usersService.findAll();
+    }
+  }
 
-    @Get(':id')
-    @ApiParamUserId()
-    @ApiResponse({status:200, example:{id:'66e03798d9bdb992d25d3e9c', username:'test', role:'user', points:20}})
-    @ApiOperation({ summary: 'Получить пользователя по ID' })
-    findOne(@Param('id') id: string) {
-        return this.usersService.findById(id);
-    }
+  @Post()
+  public async createUser(@Body('user') dto: UserCreateDto) {
+    return await this._usersService.createUser(dto);
+  }
 
-    @Patch(':id')
-    @ApiParamUserId()
-    @ApiResponse({status:200, example:{id:'66e03798d9bdb992d25d3e9c', username:'test Updated', role:'user', points:20}})
-    @ApiOperation({ summary: 'Изменить пользователя по ID' })
-    update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-        return this.usersService.update(id, updateUserDto);
-    }
+  @CustomSwaggerUserIdParam()
+  @Put()
+  public async updateUser(
+    @Query('id') id: string,
+    @Body('user') dto: TUserUpdateDto,
+  ) {
+    return await this._usersService.updateUser(id, dto);
+  }
 
-    @Delete(':id')
-    @ApiResponse({status:200, example:{id:'66e03798d9bdb992d25d3e9c', username:'test', role:'user', points:20}})
-    @ApiParamUserId()
-    @ApiOperation({ summary: 'Удалить пользователя по ID' })
-    remove(@Param('id') id: string) {
-        return this.usersService.remove(id);
-    }
+  @CustomSwaggerUserIdParam()
+  @Delete()
+  public async deleteUser(@Query('id') id: string) {
+    return await this._usersService.deleteUser(id);
+  }
 }

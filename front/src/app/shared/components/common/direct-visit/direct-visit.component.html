@@ -1,50 +1,79 @@
-<h2 mat-dialog-title>Новая запись</h2>
-<mat-dialog-content>
-  <form class="visit-form" [formGroup]="_newVisitor">
-    <mat-form-field class="visit-form-input">
-      <mat-label>Имя</mat-label>
-      <input type="text"
-             matInput
-             formControlName="name"
-             placeholder="Введите имя">
-      @if (_name?.errors?.['required'] && (_name?.touched || _name?.dirty)) {
-        <mat-error>Введите <strong>имя</strong> клиента</mat-error>
-      }
-    </mat-form-field>
-    <mat-form-field class="visit-form-input">
-      <mat-label>Телефон</mat-label>
-      <input type="text"
-             matInput
-             formControlName="phone"
-             placeholder="Введите телефон">
-      @if (_phone?.errors?.['required'] && (_phone?.touched || _phone?.dirty)) {
-        <mat-error>Введите <strong>телефон</strong> клиента</mat-error>
-      }
-      @if (_phone?.errors?.['pattern'] && !_phone?.errors?.['required']) {
-        <mat-error>Формат <strong>телефона</strong> 8-(999)-999-99-99) </mat-error>
-      }
-    </mat-form-field>
-    <mat-form-field class="visit-form-input">
-      <mat-label>Выберите время</mat-label>
-      <mat-select formControlName="dateVisit">
-        <mat-option value="option">09:00 - 11:00</mat-option>
-        <mat-option value="option">11:00 - 13:00</mat-option>
-        <mat-option value="option">14:00 - 17:00</mat-option>
-      </mat-select>
-      @if (_dateVisit?.errors?.['required'] || _dateVisit?.touched || _dateVisit?.dirty) {
-        <mat-error>Введите <strong>телефон</strong> клиента</mat-error>
-      }
-    </mat-form-field>
-    <mat-form-field class="visit-form-input">
-      <mat-label>Коментарий</mat-label>
-      <input type="text"
-             matInput
-             formControlName="comment"
-             placeholder="Комментарий">
-    </mat-form-field>
+<div class="p-4 w-full">
+  <form class="flex flex-col gap-3 w-full" [formGroup]="_newVisitor">
+
+    <p-floatlabel class="w-full" variant="on">
+      <input pInputText id="name" [fluid]="true" formControlName="name" autocomplete="off" />
+      <label for="name">Имя</label>
+    </p-floatlabel>
+
+    <p-floatlabel class="min-w-full" variant="on">
+      <p-inputmask class="w-full" id="phone" formControlName="phone" mask="8-999-999-99-99" />
+      <label for="phone">Телефон</label>
+    </p-floatlabel>
+
+    <p-floatlabel class="w-full" variant="on">
+      <p-select class="w-full"
+                [fluid]="true"
+                formControlName="dateVisit"
+                inputId="time"
+                (onChange)="_choiceTime($event.value)"
+                [options]="_timeVariant"
+                optionLabel="name"
+                styleClass="w-full" />
+      <label for="time">Время</label>
+    </p-floatlabel>
+
+    <p-floatlabel class="w-full" variant="on">
+      <p-select class="w-full"
+                [fluid]="true"
+                formControlName="category"
+                inputId="categoryId"
+                [options]="_categories()"
+                (onChange)="_fetchFavors($event.value)"
+                optionLabel="name"
+                styleClass="w-full" />
+      <label for="categoryId">Категория услуги</label>
+    </p-floatlabel>
+
+    <p-floatlabel class="w-full" variant="on">
+      <p-multi-select class="w-full"
+                [fluid]="true"
+                formControlName="favor"
+                inputId="favorId"
+                [options]="_favors()"
+                (onChange)="_choiceFavor.set($event.value.id)"
+                [showToggleAll]="false"
+                optionLabel="name"
+                styleClass="w-full" />
+      <label for="favorId">Услуга</label>
+    </p-floatlabel>
+
+    <p-floatlabel variant="on">
+      <textarea pTextarea id="comment"
+                formControlName="comment"
+                [fluid]="true"
+                rows="5"
+                cols="30"
+                style="resize: none"
+                class="w-full h-full">
+      </textarea>
+      <label for="comment">Комментарий</label>
+    </p-floatlabel>
+
+    <div class="flex justify-end gap-2">
+      <p-button icon="pi pi-times"
+                severity="warn"
+                type="button"
+                label="Отмена"
+                (onClick)="_closeDialog()"/>
+      <p-button icon="pi pi-check"
+                severity="info"
+                styleClass="p-button-primary"
+                type="button"
+                label="Записать"
+                [disabled]="_newVisitor.invalid || !_newVisitor.value"
+                (onClick)="_createDirect()"/>
+    </div>
   </form>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-flat-button [disabled]="_newVisitor.invalid" [mat-dialog-close]="true">Записать</button>
-  <button class="mat-warn" (click)="_sendNewDirect()" mat-flat-button mat-dialog-close>Отмена</button>
-</mat-dialog-actions>
+</div>
+

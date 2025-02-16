@@ -1,0 +1,64 @@
+@import "../../../../../assets/styles/variables";
+@import "../../../../../assets/styles/mixins";
+
+.schedule-page-content {
+  display: grid;
+  grid-template-columns: 300px 450px 370px;
+  column-gap: 75px;
+  justify-items: center;
+
+  .schedule-options {
+
+    .schedule-filter-btn {
+      border-radius: 10px;
+      padding: 10px 10px;
+      box-sizing: border-box;
+      width: 75%;
+      font-size: 16px;
+      font-family: Montserrat-Medium, sans-serif;
+      @include transition();
+
+      &:hover {
+        color: $blue-color;
+        background-color: $white-color;
+        box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+      }
+
+      &.active {
+        color: $white-color;
+        background-color: $blue-color;
+        box-shadow: inset 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+      }
+    }
+
+    .schedule-filters-check {
+      margin-top: 18px;
+      border-radius: 20px;
+      padding: 22px;
+      background-color: $bg-color;
+      box-shadow: 0 7px 13px 3px rgba(0, 0, 0, 0.25);
+
+      .filter-block {
+        margin-bottom: 15px;
+
+        .filter-name {
+          font-weight: 500;
+          font-size: 16px;
+          font-family: 'Montserrat-Medium', sans-serif;
+          margin-bottom: 15px;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .schedule-page-content {
+    grid-template-columns: minmax(320px, 600px);
+    justify-content: center;
+    justify-items: center;
+    .schedule-options {
+      padding-right: 0;
+    }
+  }
+}

@@ -1,8 +1,11 @@
 export interface ClientType {
-  id: string,
-  fullName: string,
-  score: number
-  lastVisit: string,
-  phoneNumber: string,
-  comment: string
+  id: string;
+  lastName: string;
+  name: string;
+  phoneNumber: string;
+  role: string;
+  score: number;
+  username: string;
+  comment?: string;
+  lastVisit?: string;
 }
