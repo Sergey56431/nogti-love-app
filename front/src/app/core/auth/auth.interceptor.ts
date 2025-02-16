@@ -1,33 +1,45 @@
-import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {AuthService} from '@core/auth/auth.service';
-import {Router} from '@angular/router';
-import {catchError, Observable, switchMap, throwError} from 'rxjs';
-import {DefaultResponseType, RefreshResponseType} from '@shared/types';
+import {
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+} from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { AuthService } from '@core/auth/auth.service';
+import { Router } from '@angular/router';
+import { catchError, Observable, switchMap, throwError } from 'rxjs';
+import { DefaultResponseType, RefreshResponseType } from '@shared/types';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-
   private _token = '';
   private _userId = '';
 
-  constructor(private _authService: AuthService,
-              private _router: Router) {
-  }
+  constructor(
+    private _authService: AuthService,
+    private _router: Router,
+  ) {}
 
-  public intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+  public intercept(
+    req: HttpRequest<unknown>,
+    next: HttpHandler,
+  ): Observable<HttpEvent<unknown>> {
     //вызвать лоадер
     this._token = this._authService.getTokens();
     if (this._token) {
       const authReq = req.clone({
-        headers: req.headers.set(
-          'Authorization', 'bearer ' + this._token),
+        headers: req.headers.set('Authorization', 'bearer ' + this._token),
       });
-      return next.handle(authReq)
+      return next
+        .handle(authReq)
 
         .pipe(
           catchError((error) => {
-            if (error.status === 401 && !authReq.url.includes('/login') && !authReq.url.includes('/registration')) {
+            if (
+              error.status === 401 &&
+              !authReq.url.includes('/login') &&
+              !authReq.url.includes('/registration')
+            ) {
               return this.handle401(authReq, next);
             }
             return throwError(error);
@@ -66,19 +78,22 @@ export class AuthInterceptor implements HttpInterceptor {
 
         this._authService.setTokens(refreshResult.accessToken);
         const authReq = req.clone({
-          headers: req.headers.set('Authorization', 'bearer ' + refreshResult.accessToken),
+          headers: req.headers.set(
+            'Authorization',
+            'bearer ' + refreshResult.accessToken,
+          ),
         });
 
         return next.handle(authReq);
       }),
 
-      catchError(error => {
+      catchError((error) => {
         this._authService.logout(this._userId);
         this._authService.removeTokens();
         // this._router.navigate(['/login']);
         window.location.reload();
         return throwError(() => error); // Возвращаем оригинальную ошибку
-      })
+      }),
     );
   }
 }

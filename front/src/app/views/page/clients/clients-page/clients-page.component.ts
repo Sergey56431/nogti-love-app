@@ -5,8 +5,6 @@ import { Tooltip } from 'primeng/tooltip';
 import { RouterLink } from '@angular/router';
 import { ClientsService } from '@shared/services';
 import { ClientType } from '@shared/types';
-import { Store } from '@ngxs/store';
-import { ClientsAction, ClientsState } from '@core/store';
 
 @Component({
   selector: 'app-clients-page',
@@ -23,8 +21,7 @@ import { ClientsAction, ClientsState } from '@core/store';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClientsPageComponent implements OnInit {
-  protected title = 'Клиенты';
-  protected _clients= signal<ClientType[]>([]);
+  protected title = 'Клиенты';protected _clients= signal<ClientType[]>([]);
   constructor(private readonly _clientService: ClientsService) {}
 
   public ngOnInit () {
