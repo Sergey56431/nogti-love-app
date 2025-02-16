@@ -1,6 +1,8 @@
-export type DirectsClientType = {
-  name: string,
-  phone: string,
-  time: string
-  avatar?: string
+export interface DirectsClientType {
+  date: string;
+  name: string;
+  image: string;
+  phone: string;
+  time: string;
+  comment: string;
 }

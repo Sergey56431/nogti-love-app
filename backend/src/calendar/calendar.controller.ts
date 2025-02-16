@@ -3,48 +3,152 @@ import {
   Get,
   Post,
   Body,
-  Param,
   Delete,
   Put,
+  UseGuards,
+  Query,
 } from '@nestjs/common';
 import { CalendarService } from './calendar.service';
 import { CreateCalendarDto, UpdateCalendarDto } from './dto';
+import { TokenGuard } from '../auth';
+import {
+  ApiBody,
+  ApiCreatedResponse,
+  ApiExtraModels,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+} from '@nestjs/swagger';
+import {
+  CustomSwaggerCreateCalendarResponses,
+  CustomSwaggerGetCalendarResponses,
+} from '../custom-swagger';
+import { CreateDirectDto } from '../directs';
 
+@UseGuards(TokenGuard)
 @Controller('calendar')
 export class CalendarController {
   constructor(private readonly calendarService: CalendarService) {}
 
   @Post()
-  async create(
+  create(@Body() createCalendarDto: CreateCalendarDto) {
+    return this.calendarService.create(createCalendarDto);
+  }
+
+  @ApiOperation({ summary: 'Создать календарь на месяц' })
+  @ApiBody({
+    description: 'Данные для создания календаря',
+    examples: {
+      'Пример запроса': {
+        value: {
+          noWorkDays: [{ date: '2024-03-01' }, { date: '2024-03-09' }],
+          userId: '5592c7c4-c398-435a-9b9e-bc550139e698',
+        },
+      },
+    },
+  })
+  @CustomSwaggerCreateCalendarResponses()
+  @ApiResponse({ status: 400, description: 'Отсутствует ID пользователя' })
+  @ApiResponse({
+    status: 404,
+    description: 'Дата не находится в текущем месяце / Пользователь не найден',
+  })
+  @ApiResponse({ status: 500, description: 'Ошибка при создании календаря' })
+  @Post('all')
+  create_all(
     @Body()
     data: {
-      body: CreateCalendarDto;
+      noWorkDays: CreateCalendarDto[];
       userId: string;
     },
   ) {
-    return await this.calendarService.create(data);
+    return this.calendarService.create_all(data);
   }
 
+  @ApiOperation({
+    summary:
+      'Получить календарь (по id 1 день, по пользователю его дни, без query параметров все дни)',
+  })
+  @ApiParam({
+    description: 'ID дня календаря',
+    required: false,
+    name: 'id',
+    example: 'b35d8ac4-a6de-45f6-b54d-2b9e45ce8089',
+  })
+  @ApiParam({
+    description: 'ID пользователя',
+    name: 'userId',
+    required: false,
+    example: '5592c7c4-c398-435a-9b9e-bc550139e698',
+  })
+  @CustomSwaggerGetCalendarResponses()
+  @ApiResponse({
+    status: 404,
+    description: 'День не найден / Календарь этого пользователя не найден',
+  })
+  @ApiResponse({
+    status: 500,
+    description:
+      'Ошибка при поиске всего календаря / Ошибка сервера при поиске календаря / Ошибка сервера при поиске дня календаря',
+  })
   @Get()
-  public async findAll() {
-    return this.calendarService.findAll();
+  findOne(@Query('id') id: string, @Query('userId') userId: string) {
+    if (id) {
+      return this.calendarService.findOne(id);
+    } else if (userId) {
+      return this.calendarService.findByUser(userId);
+    } else {
+      return this.calendarService.findAll();
+    }
   }
 
-  @Get(':id')
-  public async findOne(@Param('id') id: string) {
-    return this.calendarService.findOne(id);
-  }
-
-  @Put(':id')
+  @ApiOperation({ summary: 'Обновить день календаря' })
+  @ApiParam({
+    name: 'id',
+    description: 'ID дня календаря',
+    example: 'b35d8ac4-a6de-45f6-b54d-2b9e45ce8089',
+  })
+  @ApiBody({
+    description: 'Данные для обновления дня календаря (Сломалось)',
+    examples: {
+      'Пример запроса': {
+        value: {
+          date: '2024-03-15',
+          state: 'notHave',
+        },
+      },
+    },
+  })
+  @ApiOkResponse({
+    description: 'День календаря успешно обновлен',
+    content: {
+      'application/json': {
+        example: {
+          id: 'b35d8ac4-a6de-45f6-b54d-2b9e45ce8089',
+          date: '2024-03-15T10:00:00.000Z',
+          state: 'notHave',
+          userId: '5592c7c4-c398-435a-9b9e-bc550139e698',
+          directs: [],
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 404, description: 'День календаря не найден' })
+  @ApiResponse({
+    status: 500,
+    description: 'Ошибка сервера при обновлении дня календаря',
+  })
+  @Put()
   update(
-    @Param('id') id: string,
+    @Query('id') id: string,
     @Body() updateCalendarDto: UpdateCalendarDto,
   ) {
     return this.calendarService.update(id, updateCalendarDto);
   }
 
-  @Delete(':id')
-  public async remove(@Param('id') id: string) {
+  @Delete()
+  remove(@Query('id') id: string) {
     return this.calendarService.remove(id);
   }
 }

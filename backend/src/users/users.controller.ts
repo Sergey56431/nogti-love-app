@@ -2,15 +2,16 @@ import {
   Body,
   Controller,
   Get,
-  Param,
   Post,
   Put,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { TUserUpdateDto, UserCreateDto } from './users-dto';
 import { TokenGuard } from '../auth/auth.guard';
+import { CustomSwaggerUserIdParam } from '../custom-swagger';
 
 @UseGuards(TokenGuard)
 @Controller('users')
@@ -18,13 +19,26 @@ export class UsersController {
   constructor(private readonly _usersService: UsersService) {}
 
   @Get()
-  public async findAll() {
-    return this._usersService.findAll();
-  }
-
-  @Get(':id')
-  public async findOne(@Param('id') id: string) {
-    return await this._usersService.findOne(id);
+  public async findOne(
+    @Query('id') id: string,
+    @Query('role') role: string,
+    @Query('phoneNumber') phoneNumber: string,
+    @Query('username') username: string,
+    @Query('score') score: number,
+  ) {
+    if (role || phoneNumber || username || score) {
+      return await this._usersService.findFiltred({
+        role,
+        phoneNumber,
+        username,
+        score: +score,
+      });
+    }
+    if (id) {
+      return await this._usersService.findOne(id);
+    } else {
+      return this._usersService.findAll();
+    }
   }
 
   @Post()
@@ -32,16 +46,18 @@ export class UsersController {
     return await this._usersService.createUser(dto);
   }
 
-  @Put(':id')
+  @CustomSwaggerUserIdParam()
+  @Put()
   public async updateUser(
-    @Param('id') id: string,
+    @Query('id') id: string,
     @Body('user') dto: TUserUpdateDto,
   ) {
     return await this._usersService.updateUser(id, dto);
   }
 
-  @Delete(':id')
-  public async deleteUser(@Param('id') id: string) {
+  @CustomSwaggerUserIdParam()
+  @Delete()
+  public async deleteUser(@Query('id') id: string) {
     return await this._usersService.deleteUser(id);
   }
 }

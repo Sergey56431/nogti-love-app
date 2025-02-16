@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../auth.service';
 import { LoginDto } from '../auth-dto';
+import { UserCreateDto } from '../../users';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -12,7 +13,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(body: LoginDto): Promise<any> {
+  async validate(body: LoginDto | UserCreateDto): Promise<any> {
     const user = await this.authService.validateUser(body);
     if (!user) {
       throw new UnauthorizedException(); // Бросаем исключение, если пользователь не найден

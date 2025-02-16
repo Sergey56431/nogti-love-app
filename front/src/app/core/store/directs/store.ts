@@ -26,12 +26,12 @@ export class DirectsState {
   }
 
   @Action(Directs.GetDirects)
-  private _loadDirects(ctx: StateContext<DirectsStateModel>, action: Directs.GetDirects) {
+  private _loadDirects(ctx: StateContext<DirectsStateModel>) {
     const state = ctx.getState();
     if (state.directs !== null) {
       return;
     }
-    this._service.getDirects(action.id).subscribe(directs => {
+    this._service.getAllDirects().subscribe(directs => {
       ctx.setState({
         directs: directs
       });

@@ -8,7 +8,8 @@ import {DefaultResponseType, RefreshResponseType} from '@shared/types';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  private _tokens!: { accessToken: string | null; refreshToken: string | null };
+  private _token = '';
+  private _userId = '';
 
   constructor(private _authService: AuthService,
               private _router: Router) {
@@ -16,11 +17,11 @@ export class AuthInterceptor implements HttpInterceptor {
 
   public intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     //вызвать лоадер
-    this._tokens = this._authService.getTokens();
-    if (this._tokens && this._tokens.accessToken) {
+    this._token = this._authService.getTokens();
+    if (this._token) {
       const authReq = req.clone({
         headers: req.headers.set(
-          'Authorization', 'Bearer ' + this._tokens.accessToken),
+          'Authorization', 'bearer ' + this._token),
       });
       return next.handle(authReq)
 
@@ -41,12 +42,13 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   private handle401(req: HttpRequest<unknown>, next: HttpHandler) {
-    if (!this._tokens.refreshToken) {
+    if (!this._token) {
       this._router.navigate(['/login']);
       return throwError(() => new Error('Refresh token is missing'));
     }
+    this._userId = this._authService.getUserInfo().userId;
 
-    return this._authService.refresh(this._tokens.refreshToken).pipe(
+    return this._authService.refresh(this._userId).pipe(
       switchMap((result: DefaultResponseType | RefreshResponseType) => {
         let error = '';
         if ((result as DefaultResponseType).error !== undefined) {
@@ -62,7 +64,7 @@ export class AuthInterceptor implements HttpInterceptor {
           return throwError(() => new Error(error));
         }
 
-        this._authService.setTokens(refreshResult.accessToken, this._tokens.refreshToken!);
+        this._authService.setTokens(refreshResult.accessToken);
         console.log(refreshResult);
         const authReq = req.clone({
           headers: req.headers.set('Authorization', 'Bearer ' + refreshResult.accessToken),

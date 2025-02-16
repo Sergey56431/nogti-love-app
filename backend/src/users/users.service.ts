@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { TUserUpdateDto, UserCreateDto } from './users-dto';
 import * as bcrypt from 'bcrypt';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class UsersService {
@@ -20,78 +21,171 @@ export class UsersService {
   constructor(private readonly _prismaService: PrismaService) {}
 
   public async findAll() {
-    return this._prismaService.user.findMany({
-      select: this._returnUserModel,
-    });
+    try {
+      return this._prismaService.user.findMany({
+        select: this._returnUserModel,
+      });
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'Ошибка сервера при получении списка пользователей',
+        500,
+      );
+    }
   }
 
   public async findUniqUser(username: string) {
-    return this._prismaService.user.findUnique({
-      where: {
-        username: username,
-      },
-    });
+    try {
+      return this._prismaService.user.findUnique({
+        where: { username },
+      });
+    } catch (error) {
+      console.log(error);
+      throw new HttpException('Ошибка сервера при поиске пользователя', 500);
+    }
   }
 
   public async findUserToRefresh(id: string) {
-    return this._prismaService.user.findUnique({
-      where: {
-        id,
-      },
-    });
+    try {
+      return this._prismaService.user.findUnique({
+        where: { id },
+      });
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'Ошибка сервера при поиске пользователя по ID',
+        500,
+      );
+    }
   }
 
   public async findOne(id: string) {
-    return this._prismaService.user.findUnique({
-      select: this._returnUserModel,
-      where: {
-        id,
-      },
-    });
+    try {
+      const result = await this._prismaService.user.findUnique({
+        select: this._returnUserModel,
+        where: { id },
+      });
+
+      if (!result) {
+        throw new HttpException('Пользователь не найден', 404);
+      }
+
+      return result;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      console.log(error);
+      throw new HttpException(
+        'Ошибка сервера при поиске пользователя по ID',
+        500,
+      );
+    }
+  }
+
+  public async findFiltred(filter: any) {
+    if (isNaN(filter.score)) {
+      filter.score = undefined;
+    }
+
+    try {
+      const result = await this._prismaService.user.findMany({
+        where: { ...filter },
+        select: this._returnUserModel,
+      });
+
+      if (!result[0]) {
+        throw new HttpException('Пользователи не найден', 404);
+      }
+
+      return result;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      console.log(error);
+      throw new HttpException(
+        'Ошибка сервера при поиске пользователей по фильтру',
+        500,
+      );
+    }
   }
 
   public async createUser(dto: UserCreateDto) {
+    const { password, username, phoneNumber } = dto;
+    if (!password || !username || !phoneNumber) {
+      throw new HttpException(
+        'Отсутствуют необходимые данные для создания пользователя',
+        400,
+      );
+    }
+
     const existingUser = await this._prismaService.user.findUnique({
       where: {
-        username: dto.username,
-        phoneNumber: dto.phoneNumber,
+        username,
+        phoneNumber,
       },
     });
 
     if (existingUser) {
-      throw new Error('Пользователь с таким email уже существует');
+      throw new HttpException(
+        'Пользователь с таким username или phoneNumber уже существует',
+        409,
+      );
     }
 
-    const hashedPassword = await bcrypt.hash(dto.password, 10);
+    try {
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-    return this._prismaService.user
-      .create({
+      return this._prismaService.user.create({
         select: this._returnUserModel,
-        data: {
-          ...dto,
-          password: hashedPassword,
-        },
-      })
-      .then((createdUser) => {
-        return createdUser;
+        data: { ...dto, password: hashedPassword },
       });
+    } catch (error) {
+      if (error.code === 'P2002') {
+        throw new HttpException(
+          'Пользователь с таким именем уже существует',
+          409,
+        );
+      }
+      console.log(error);
+      throw new HttpException('Ошибка сервера при создании пользователя', 500);
+    }
   }
 
   public async updateUser(id: string, data: TUserUpdateDto) {
-    return this._prismaService.user.update({
-      select: this._returnUserModel,
-      where: {
-        id,
-      },
-      data: data,
-    });
+    if (!id) {
+      throw new HttpException('Отсутствует ID пользователя', 400);
+    }
+    try {
+      return this._prismaService.user.update({
+        select: this._returnUserModel,
+        where: { id },
+        data,
+      });
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        throw new HttpException('Пользователь не найден', 404);
+      }
+      console.log(error);
+      throw new HttpException(
+        'Ошибка сервера при обновлении пользователя',
+        500,
+      );
+    }
   }
 
   public async deleteUser(id: string) {
-    return this._prismaService.user.delete({
-      where: {
-        id,
-      },
-    });
+    try {
+      return this._prismaService.user.delete({
+        where: { id },
+      });
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        throw new HttpException('Пользователь не найден', 404);
+      }
+      console.log(error);
+      throw new HttpException('Ошибка сервера при удалении пользователя', 500);
+    }
   }
 }

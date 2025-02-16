@@ -1,8 +1,9 @@
 export class CreateDirectDto {
+  userId?: string;
   date: string;
-  name: string;
-  image: string;
-  phone: string;
+  clientName?: string;
+  image?: string;
+  phone?: string;
   time: string;
   comment: string;
 }

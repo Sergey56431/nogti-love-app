@@ -5,7 +5,7 @@ import {Router, RouterLink} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {AuthService} from '@core/auth';
-import {DefaultResponseType, LoginResponseType, SignupResponseType, UserInfoType} from '@shared/types';
+import {DefaultResponseType, LoginResponseType, SignupResponseType} from '@shared/types';
 
 
 @Component({
@@ -26,11 +26,10 @@ export class RegistrationPageComponent {
     password: ['', [Validators.pattern('^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,12})$'), Validators.required]],
     username: ['', [Validators.required]],
     phone: ['', [Validators.pattern('^((8|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$')]],
-    birth_day: ['', [Validators.pattern('^(?:0[1-9]|[12]\\d|3[01])([\\/.-])(?:0[1-9]|1[012])\\1(?:19|20)\\d\\d$')]],
+    name: ['', [Validators.required]],
+    lastName: ['', [Validators.required]],
     accept: [false, [Validators.requiredTrue]]
   });
-
-  private _birthDay = '';
 
   constructor(private _authService: AuthService,
               private _router: Router,
@@ -50,17 +49,23 @@ export class RegistrationPageComponent {
     return this._signupForm.get('phone');
   }
 
-  get birth_day() {
-    return this._signupForm.get('birth_day');
+  get name() {
+    return this._signupForm.get('name');
   }
 
-  signup() {
+  get lastName() {
+    return this._signupForm.get('lastName');
+  }
+
+  protected _signup() {
     if (this._signupForm.valid && this._signupForm.value) {
-      if (this._signupForm.value.birth_day) {
-        this._birthDay = this._signupForm.value.birth_day.split('.').reverse().join('.');
-      }
-      this._authService.signup(this._signupForm.value.username!, this._signupForm.value.password!.toString(),
-        this._signupForm.value.phone?.toString(), this._signupForm.value.birth_day?.toString(),
+      this._authService.signup({
+          username: this._signupForm.value.username!,
+          password: this._signupForm.value.password!.toString(),
+          name: this._signupForm.value.name!,
+          phoneNumber:  this._signupForm.value.phone?.toString() ?? '',
+          lastName: this._signupForm.value.lastName!,
+        },
       )
         .subscribe({
           next: (data: DefaultResponseType | SignupResponseType) => {
@@ -76,16 +81,17 @@ export class RegistrationPageComponent {
                 next: (data: LoginResponseType | DefaultResponseType) => {
                   if ((data as DefaultResponseType).error !== undefined) {
                     this._snackBar.open('Ошибка при авторизации');
-                    throw new Error(data.message ? data.message : 'Error with data on login');
+                    throw new Error((data as DefaultResponseType).message );
                   }
                   if (data as LoginResponseType) {
                     const loginResponse = data as LoginResponseType;
-                    if (!loginResponse.accessToken || !loginResponse.ref || loginResponse.error) {
+                    if (!loginResponse.access_token) {
                       this._snackBar.open('Что-то пошло не так');
                     } else {
-                      this._authService.setTokens(loginResponse.accessToken, loginResponse.ref);
-                      this._authService.getUser(loginResponse.id) .subscribe((user: UserInfoType) => {
-                        this._authService.setUserInfo(user);
+                      this._authService.setTokens(loginResponse.access_token,);
+                      this._authService.setUserInfo({
+                        userId: loginResponse.userId,
+                        name: loginResponse.name,
                       });
                       this._router.navigate(['/main']);
                     }

@@ -12,7 +12,7 @@ export class CalendarService {
   constructor(private http: HttpClient) {
   }
 
-  public getDirects(id: string): Observable<CalendarResponse> {
-    return this.http.get<CalendarResponse>(environment.api + 'calendar/' + id);
+  public getAllDirects(): Observable<CalendarResponse> {
+    return this.http.get<CalendarResponse>(environment.api + 'calendar');
   }
 }
