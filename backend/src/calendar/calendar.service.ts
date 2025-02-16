@@ -1,5 +1,5 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { CreateCalendarDto, UpdateCalendarDto } from './dto';
+import { UpdateCalendarDto } from './dto';
 import { PrismaService } from '../prisma';
 import { DayState } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -123,17 +123,12 @@ export class CalendarService {
 
   public async findByUser(userId: string) {
     try {
-      const result = await this._prismaService.calendar.findMany({
+      return await this._prismaService.calendar.findMany({
         where: { userId: userId },
         include: {
           directs: true,
         },
       });
-      if (!result[0]) {
-        throw new HttpException('Календарь этого пользователя не найден', 404);
-      }
-
-      return result;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -170,12 +165,33 @@ export class CalendarService {
   public async update(id: string, updateCalendarDto: UpdateCalendarDto) {
     try {
       return await this._prismaService.calendar.update({
-        where: {
-          id,
-        },
-        data: {
-          date: new Date(updateCalendarDto.date) as Date,
-          state: updateCalendarDto.state as DayState,
+        where: { id },
+        data: { state: updateCalendarDto.state },
+        include: {
+          directs: {
+            select: {
+              id: true,
+              phone: true,
+              clientName: true,
+              time: true,
+              comment: true,
+              userId: true,
+              state: true,
+              services: {
+                select: {
+                  service: {
+                    include: {
+                      category: {
+                        select: {
+                          name: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       });
     } catch (error) {

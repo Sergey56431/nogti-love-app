@@ -22,7 +22,7 @@ export class UsersService {
 
   public async findAll() {
     try {
-      return this._prismaService.user.findMany({
+      return await this._prismaService.user.findMany({
         select: this._returnUserModel,
       });
     } catch (error) {
@@ -36,7 +36,7 @@ export class UsersService {
 
   public async findUniqUser(username: string) {
     try {
-      return this._prismaService.user.findUnique({
+      return await this._prismaService.user.findUnique({
         where: { username },
       });
     } catch (error) {
@@ -47,7 +47,7 @@ export class UsersService {
 
   public async findUserToRefresh(id: string) {
     try {
-      return this._prismaService.user.findUnique({
+      return await this._prismaService.user.findUnique({
         where: { id },
       });
     } catch (error) {
@@ -158,7 +158,7 @@ export class UsersService {
       throw new HttpException('Отсутствует ID пользователя', 400);
     }
     try {
-      return this._prismaService.user.update({
+      return await this._prismaService.user.update({
         select: this._returnUserModel,
         where: { id },
         data,
@@ -177,7 +177,7 @@ export class UsersService {
 
   public async deleteUser(id: string) {
     try {
-      return this._prismaService.user.delete({
+      return await this._prismaService.user.delete({
         where: { id },
       });
     } catch (error) {

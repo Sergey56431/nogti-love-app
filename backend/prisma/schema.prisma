@@ -57,7 +57,7 @@ id         String        @id @default(uuid())
 category   String
 type       TypeOperation
 value      Float
-createDate DateTime      @default(now())
+createDate DateTime?      @default(now())
 updateDate DateTime?
 userId     String
 user       User          @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)

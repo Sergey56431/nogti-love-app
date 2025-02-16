@@ -8,7 +8,7 @@ export class UserCreateDto {
   phoneNumber: string;
   rate?: number;
   birthday?: Date;
-  description?:string;
+  description?: string;
   refreshToken?: string;
   id?: string;
   role?: Role;

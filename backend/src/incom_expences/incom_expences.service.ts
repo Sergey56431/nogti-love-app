@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { CreateIncomeExpencesDto, UpdateIncomeExpences } from './dto';
 import { PrismaService } from '../prisma';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -7,62 +7,52 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 export class IncomExpencesService {
   constructor(private readonly _prismaService: PrismaService) {}
 
-  async create(createIncomExpenceDto: CreateIncomeExpencesDto, userId: string) {
+  async create(createIncomExpenceDto: CreateIncomeExpencesDto) {
+    const { userId, ...data } = createIncomExpenceDto; // Деструктуризация и удаление userId сразу
+
+    const requiredFields = ['type', 'value', 'category'];
+    const errors = requiredFields
+      .filter((field) => !data[field])
+      .map((field) =>
+        new HttpException(
+          `Нет ${field === 'value' ? 'значения операции' : field === 'type' ? 'типа операции' : 'категории операции'}`,
+          400,
+        ).getResponse(),
+      );
+
+    if (errors.length > 0) {
+      throw new HttpException({ errors, status: 400 }, 400);
+    }
+
     try {
-      const errors = [];
-      if (!createIncomExpenceDto.type) {
-        errors.push(new HttpException('Нет типа операции', 400).getResponse());
-      }
-      if (!createIncomExpenceDto.value) {
-        errors.push(
-          new HttpException('Нет значения операции', 400).getResponse(),
-        );
-      }
-      if (!createIncomExpenceDto.category) {
-        errors.push(
-          new HttpException('Нет категории операции', 400).getResponse(),
-        );
-      }
-      if (errors[0]) {
-        throw new HttpException({ errors, status: 400 }, 400);
-      }
-      return this._prismaService.income_Expanses.create({
+      return await this._prismaService.income_Expanses.create({
         data: {
-          ...createIncomExpenceDto,
+          ...data,
           user: {
-            connect: {
-              id: userId,
-            },
+            connect: { id: userId },
           },
         },
       });
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      console.log(error);
+      console.error(error);
       throw new HttpException('Ошибка при создании операции', 500);
     }
   }
 
   async findByUser(userId: string) {
     try {
-      const result = await this._prismaService.income_Expanses.findMany({
+      return await this._prismaService.income_Expanses.findMany({
         where: {
           userId: userId,
         },
       });
-      if (!result[0]) {
-        throw new HttpException('Операции или пользователь не найдены', 404);
-      }
-      return result;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
       console.log(error);
       throw new HttpException(
-        'Ошибка при поиске категорий по пользователю',
+        'Ошибка при поиске операций по пользователю',
         500,
       );
     }
@@ -85,7 +75,7 @@ export class IncomExpencesService {
         },
       });
       if (!result) {
-        throw new HttpException('Категория не найдена', 404);
+        throw new HttpException('Операция не найдена', 404);
       }
       return result;
     } catch (error) {
@@ -99,28 +89,21 @@ export class IncomExpencesService {
 
   async update(id: string, updateIncomExpenceDto: UpdateIncomeExpences) {
     try {
-      const errors = [];
-      if (!updateIncomExpenceDto.type) {
-        errors.push(new HttpException('Нет типа операции', 400).getResponse());
+      const data: UpdateIncomeExpences = {};
+
+      if (updateIncomExpenceDto.category) {
+        data.category = updateIncomExpenceDto.category;
       }
-      if (!updateIncomExpenceDto.value) {
-        errors.push(
-          new HttpException('Нет значения операции', 400).getResponse(),
-        );
+      if (updateIncomExpenceDto.value) {
+        data.value = updateIncomExpenceDto.value;
       }
-      if (!updateIncomExpenceDto.category) {
-        errors.push(
-          new HttpException('Нет категории операции', 400).getResponse(),
-        );
+      if (updateIncomExpenceDto.type) {
+        data.type = updateIncomExpenceDto.type;
       }
-      if (errors[0]) {
-        throw new HttpException({ errors, status: 400 }, 400);
-      }
+
       const result = await this._prismaService.income_Expanses.update({
-        where: {
-          id: id,
-        },
-        data: updateIncomExpenceDto,
+        where: { id },
+        data,
       });
       return result;
     } catch (error) {
@@ -129,31 +112,27 @@ export class IncomExpencesService {
       }
       if (
         error instanceof PrismaClientKnownRequestError &&
-        error.code == 'P2025'
+        error.code === 'P2025'
       ) {
         throw new HttpException('Операция не найдена', 404);
       }
-      console.log(error);
       throw new HttpException('Ошибка при обновлении операции', 500);
     }
   }
 
-  async remove(id: string): Promise<CreateIncomeExpencesDto | HttpException> {
+  async remove(id: string): Promise<void> {
     try {
-      const result = await this._prismaService.income_Expanses.delete({
-        where: {
-          id: id,
-        },
+      await this._prismaService.income_Expanses.delete({
+        where: { id },
       });
-      return result;
     } catch (error) {
       if (
         error instanceof PrismaClientKnownRequestError &&
-        error.code == 'P2025'
+        error.code === 'P2025'
       ) {
         throw new HttpException('Операция не найдена', 404);
       }
-      console.log(error);
+      console.error(error);
       throw new HttpException('Ошибка при удалении операции', 500);
     }
   }

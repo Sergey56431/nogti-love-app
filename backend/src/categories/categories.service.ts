@@ -44,10 +44,7 @@ export class CategoryService {
 
   async findAll() {
     try {
-      const result = await this._prismaService.category.findMany();
-      if (!result[0]) {
-        throw new HttpException('Категории не найдены', 404);
-      }
+      return await this._prismaService.category.findMany();
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -79,15 +76,9 @@ export class CategoryService {
 
   async findByUser(userId: string) {
     try {
-      const result = await this._prismaService.category.findMany({
+      return await this._prismaService.category.findMany({
         where: { userId },
       });
-
-      if (!result[0]) {
-        throw new HttpException('Категории не найдена', 404);
-      }
-
-      return result;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
