@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import {CanActivate, Router, UrlTree} from '@angular/router';
 import { Observable } from 'rxjs';
-import {AuthService} from "./auth.service";
-import {MatSnackBar} from "@angular/material/snack-bar";
+import {AuthService} from './auth.service';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +19,6 @@ export class AuthGuard implements CanActivate {
       this.router.navigate(['/login']);
       this._snackBar.open('Для доступа необходимо авторизоваться');
     }
-
     return isLoggedIn;
   }
 

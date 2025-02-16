@@ -1,82 +1,212 @@
-import {Injectable, NotFoundException} from "@nestjs/common";
-import {InjectModel} from "@nestjs/mongoose";
-import {Model} from "mongoose";
-import {Calendar1, CalendarDocument} from "./schemas/calendar.schema";
-import {UpdateCalendarDto} from "./dto/update-calendar.dto";
-import {ArchivatedCalendar1, ArchivatedCalendarDocument} from "./schemas/archivated-calendar.schema";
-import {ArchiveNotFoundException, CalendarNotFoundException} from "../custom-exceptions/custom-exceptions";
+import { HttpException, Injectable } from '@nestjs/common';
+import { CreateCalendarDto, UpdateCalendarDto } from './dto';
+import { PrismaService } from '../prisma';
+import { DayState } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class CalendarService {
-    constructor(
-        @InjectModel(Calendar1.name)
-        private calendarModel: Model<CalendarDocument>,
-        @InjectModel(ArchivatedCalendar1.name)
-        private archivatedCalendarModel: Model<ArchivatedCalendarDocument>,
-    ) {}
+  constructor(private readonly _prismaService: PrismaService) {}
 
-    async create(id: string): Promise<Calendar1[]> {
+  public async create(createCalendarDto) {
+    try {
+      const date = new Date(createCalendarDto.date);
+      if (isNaN(date.getTime())) {
+        throw new HttpException('Некорректная дата', 400);
+      }
+      console.log(date);
+      return await this._prismaService.calendar.create({
+        data: {
+          date: date,
+          state: createCalendarDto.state,
+          creator: {
+            connect: {
+              id: createCalendarDto.userId.toString(),
+            },
+          },
+        },
+        include: {
+          directs: true,
+        },
+      });
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      console.log(error);
+      throw new HttpException('Ошибка при создании дня календаря', 500);
+    }
+  }
 
-        const d = new Date();
-
-        let days = [];
-        const lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
-
-        for (let day = 2; day <= lastDay+1; day++) {
-
-            days.push(new Date(new Date().getFullYear(), new Date().getMonth(), +day));
-            await this.calendarModel.create({
-                userId: id,
-                day: new Date(new Date().getFullYear(), new Date().getMonth(), +day),
-                state: 'Рабочий день'
-            })
-        }
-
-        return this.calendarModel.find({userId: id}).select(['-__v']);
+  public async create_all(data) {
+    const { noWorkDays, userId } = data;
+    if (!userId) {
+      throw new HttpException('Отсутствует ID пользователя', 400);
     }
 
-    async update(id: string, updateDto: UpdateCalendarDto): Promise<UpdateCalendarDto> {
-        return this.calendarModel.findByIdAndUpdate(id, updateDto).select(['-__v']);
+    const now = new Date();
+
+    const firstDayOfMonth = new Date(
+      Date.UTC(now.getFullYear(), now.getMonth(), 1),
+    );
+    const lastDayOfMonth = new Date(
+      Date.UTC(now.getFullYear(), now.getMonth() + 1, 0),
+    );
+
+    const daysMap = new Map<string, { state: DayState; userId: string }>();
+
+    for (
+      let date = new Date(firstDayOfMonth);
+      date <= lastDayOfMonth;
+      date.setDate(date.getDate() + 1)
+    ) {
+      const dateString = date.toISOString().slice(0, 10); // Используем строку для ключа Map
+      daysMap.set(dateString, { state: DayState.empty, userId });
     }
 
-    async findById(id: string): Promise<Calendar1[]> {
-        const days = <Calendar1[]> await this.calendarModel.find({userId: id}).select('-__v').exec();
-        const date = new Date()
-
-        if (days.length === 0) {
-            throw new CalendarNotFoundException()
-        }
-
-        if (days[0].day.getMonth() > date.getMonth() || days[0].day.getFullYear() > date.getFullYear()) {
-            await this.archivate(id);
-        }
-
-        return this.calendarModel.find({userId: id}).select('-__v');
+    for (const { date: dateString } of noWorkDays) {
+      if (daysMap.has(dateString)) {
+        daysMap.get(dateString)!.state = DayState.notHave;
+      } else {
+        throw new HttpException(
+          `Дата ${dateString} не находится в текущем месяце`,
+          404,
+        );
+      }
     }
 
-    async clearAll(id: string){
-        return this.calendarModel.deleteMany({userId:id}).select('-acknowledged');
-    }
+    try {
+      const daysToCreate = [...daysMap.entries()].map(
+        ([dateString, { state, userId }]) => ({
+          date: new Date(dateString),
+          state,
+          userId,
+        }),
+      );
 
-    async archivate(id: string): Promise<Calendar1[]> {
-        const calendar = <Calendar1[]> await this.calendarModel.find({userId: id}).select(['-_id','-__v']).exec();
-        for (let i = 0; i < calendar.length; i++) {
-            await this.archivatedCalendarModel.create({day: calendar[i].day, state: calendar[i].state, userId: calendar[i].userId})
-        }
-        await this.clearAll(id);
-        return await this.create(id);
+      return await this._prismaService.$transaction(
+        daysToCreate.map((day) =>
+          this._prismaService.calendar.upsert({
+            where: {
+              date: day.date,
+              userId: day.userId,
+            },
+            update: { state: day.state },
+            create: { date: day.date, state: day.state, userId: day.userId },
+          }),
+        ),
+      );
+    } catch (error) {
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code == 'P2003'
+      ) {
+        throw new HttpException('Пользователь не найден', 404);
+      }
+      console.error('Ошибка при создании календаря:', error);
+      throw new HttpException('Ошибка при создании календаря', 500);
     }
+  }
 
-    async clearAllArchive(id: string) {
-        return this.archivatedCalendarModel.deleteMany({userId: id}).select('-acknowledged');
+  public async findAll() {
+    try {
+      return await this._prismaService.calendar.findMany({
+        include: {
+          directs: true,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      throw new HttpException('Ошибка при поиске всего календаря', 500);
     }
+  }
 
-    async findArchivatedById(id: string): Promise<ArchivatedCalendar1[]> {
-        const archive = <ArchivatedCalendar1[]> await this.archivatedCalendarModel.find({userId: id}).select('-__v').exec();
-        if (archive.length === 0){
-            throw new ArchiveNotFoundException();
-        }
-        return archive;
+  public async findByUser(userId: string) {
+    try {
+      const result = await this._prismaService.calendar.findMany({
+        where: { userId: userId },
+        include: {
+          directs: true,
+        },
+      });
+      if (!result[0]) {
+        throw new HttpException('Календарь этого пользователя не найден', 404);
+      }
+
+      return result;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      console.log(error);
+      throw new HttpException('Ошибка сервера при поиске календаря', 500);
     }
+  }
 
+  public async findOne(id: string) {
+    try {
+      const result = await this._prismaService.calendar.findFirst({
+        where: {
+          id,
+        },
+        include: {
+          directs: true,
+        },
+      });
+      if (!result) {
+        throw new HttpException('День не найден', 404);
+      }
+
+      return result;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      console.log(error);
+      throw new HttpException('Ошибка сервера при поиске дня календаря', 500);
+    }
+  }
+
+  public async update(id: string, updateCalendarDto: UpdateCalendarDto) {
+    try {
+      return await this._prismaService.calendar.update({
+        where: {
+          id,
+        },
+        data: {
+          date: new Date(updateCalendarDto.date) as Date,
+          state: updateCalendarDto.state as DayState,
+        },
+      });
+    } catch (error) {
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code == 'P2025'
+      ) {
+        throw new HttpException('День календаря не найден', 404);
+      }
+      console.log(error);
+      throw new HttpException(
+        'Ошибка сервера при обновлении дня календаря',
+        500,
+      );
+    }
+  }
+
+  public async remove(id: string) {
+    try {
+      return await this._prismaService.calendar.delete({
+        where: { id },
+      });
+    } catch (error) {
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code == 'P2025'
+      ) {
+        throw new HttpException('День каледнаря не найден', 404);
+      }
+      console.log(error);
+      throw new HttpException('Ошибка сервера при удалении дня календаря', 500);
+    }
+  }
 }

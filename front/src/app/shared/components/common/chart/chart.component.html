@@ -1,11 +1,12 @@
 <div class="chart-content">
+  <h2 class="chart-title chart-head">Мои операции</h2>
   <canvas baseChart
-          [type]="'pie'"
+          [type]="'doughnut'"
           [datasets]="pieChartDatasets"
           [labels]="pieChartLabels.labels"
           [options]="pieChartOptions"
           [legend]="pieChartLegend"
-          [width]="400">
+          [width]="275">
   </canvas>
   <div class="chart-title-and-option">
     <h2 class="chart-title">Даходы / Расходы</h2>
@@ -13,9 +14,9 @@
       <mat-icon>more_vert</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
-      <button mat-menu-item>Детально</button>
-      <button mat-menu-item>Расходы</button>
-      <button mat-menu-item>Доходы</button>
+      <button mat-menu-item routerLink="/operations">Детально</button>
+      <button mat-menu-item routerLink="/operations/create">Расходы</button>
+      <button mat-menu-item routerLink="/operations/delete">Доходы</button>
     </mat-menu>
   </div>
 

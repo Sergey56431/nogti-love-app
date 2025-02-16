@@ -1,22 +1,29 @@
-import {
-    IsString,
-    IsPhoneNumber,
-    IsOptional,
-    IsDate, IsNumber,
-} from 'class-validator';
-import {ApiProperty} from "@nestjs/swagger";
+import { CreateDirectDto } from '../../directs';
+import { DayState } from '@prisma/client';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCalendarDto {
-    @IsString()
-    id: string
+  @ApiProperty({
+    description: 'Дата',
+    nullable: false,
+    example: '2025-03-16',
+  })
+  date: Date | string;
 
-    @ApiProperty({ description: "ID пользователя", nullable: false, example:'y4773jhrhhhhr74hr' })
-    @IsString()
-    userId: string;
+  @ApiProperty({
+    description: 'Состояние',
+    nullable: false,
+    example: 'empty',
+  })
+  state: DayState;
 
-    @IsOptional()
-    day: Date
-
-    @IsOptional()
-    state: string
+  @ApiProperty({
+    description: 'ID пользвателя (создателя календаря)',
+    nullable: false,
+    example: '5592c7c4-c398-435a-9b9e-bc550139e698',
+  })
+  userId: string;
+  directs?: CreateDirectDto[];
 }
+
+export type UpdateCalendarDto = Partial<CreateCalendarDto>;

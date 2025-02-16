@@ -1,7 +1,6 @@
 export interface LoginResponseType {
-  username: string,
-  password: string,
-  error: boolean,
-  accessToken: string,
-  message: string
+  userId: string,
+  name: string,
+  role: string,
+  access_token: string,
 }

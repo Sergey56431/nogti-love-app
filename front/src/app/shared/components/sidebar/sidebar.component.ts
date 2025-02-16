@@ -1,14 +1,13 @@
-import {Component, OnInit} from '@angular/core';
-import {MatSidenavModule} from "@angular/material/sidenav";
-import {MatListModule} from "@angular/material/list";
-import {Router, RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
-import {MatIconModule} from "@angular/material/icon";
-import {MatToolbarModule} from "@angular/material/toolbar";
-import {MatButtonModule} from "@angular/material/button";
-import {MatSnackBar} from "@angular/material/snack-bar";
-import {AuthService} from "../../../core/auth/auth.service";
-import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
-import {AdminsRoute} from "../../utils/admins-route";
+import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatListModule} from '@angular/material/list';
+import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
+import {MatIconModule} from '@angular/material/icon';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatButtonModule} from '@angular/material/button';
+import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
+import {AdminsRoute} from '@shared/utils';
+import {MatTooltip} from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-sidebar',
@@ -25,50 +24,25 @@ import {AdminsRoute} from "../../utils/admins-route";
     RouterLinkActive,
     MatMenuTrigger,
     MatMenu,
-    MatMenuItem
+    MatMenuItem,
+    MatTooltip
   ],
   templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.scss'
+  styleUrl: './sidebar.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent {
 
-  isLogged = false;
-  user = this.authService.getUserInfo();
+  protected _menuOpen = signal(true);
 
-  constructor(private authService: AuthService,
-              private router: Router,
-              private _snackBar: MatSnackBar) {
+  protected _menuVis(){
+    this._menuOpen.set(!this._menuOpen());
   }
-
-  ngOnInit(): void {
-    this.authService.isLogged$.subscribe((isLoggedIn: boolean) => {
-      this.isLogged = isLoggedIn;
-    });
-  }
-
   protected _menuAdminItems = [
     {route: AdminsRoute.main, icon: 'home', routeName: 'Главная'},
     {route: AdminsRoute.clients, icon: 'apps', routeName: 'База клиентов'},
-    {route: AdminsRoute.directs, icon: 'event_note', routeName: 'Расписание'},
+    {route: AdminsRoute.schedule, icon: 'event_note', routeName: 'Расписание'},
     {route: AdminsRoute.employs, icon: 'group', routeName: 'Персонал'},
+    {route: AdminsRoute.operations, icon: 'currency_ruble', routeName: 'Операции'},
   ];
-
-  logout() {
-    this.authService.logout()
-      .subscribe({
-        next: () => {
-          this.doLogout();
-        },
-        error: () => {
-          this.doLogout();
-        }
-      });
-  }
-
-  doLogout() {
-    this.authService.removeTokens();
-    // this.authService.userId = null;
-    this._snackBar.open('Вы успешно вышли из системы');
-    this.router.navigate(['/']);
-  }
 }

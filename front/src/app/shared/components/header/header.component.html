@@ -1,0 +1,50 @@
+<header class="header">
+  <div class="header-left-content">
+    <div class="header-header">
+      <a routerLink="/main" class="header-logo">
+        <img src="/images/logo-sidebar.png" alt="логотип">
+      </a>
+    </div>
+  </div>
+
+  <div class="header-right-content">
+
+    <div class="example-button-container">
+        <mat-icon
+          color="{{_pushCount > 0 ? 'primary' : 'secondary'}}"
+          matTooltip="{{_pushCount > 0 ? 'У вас ' + _pushCount + ' новых уведомлений' : 'Нет новых уведомлений'}}"
+          matBadge="{{_pushCount > 0 ? _pushCount : null}}">notifications</mat-icon>
+    </div>
+
+    <div class="header-profile-content">
+      @if (_isLogged()) {
+        <a [matMenuTriggerFor]="menu" class="profile">
+          <div class="profile-icon">
+            <img src="/images/profile-non-icon.png" alt="Профиль">
+          </div>
+          @defer {
+            <div class="profile-info">
+              <p class="profile-name">{{ this._user().name }}</p>
+            </div>
+          }
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="_settingsUser()">
+              <mat-icon>settings</mat-icon>
+              <span>Настройки</span>
+            </button>
+            <button mat-menu-item (click)="logout()">
+              <mat-icon>logout</mat-icon>
+              <span>Выход </span>
+            </button>
+          </mat-menu>
+        </a>
+      } @else {
+        <a routerLink="/login" class="login-ref">
+          <mat-icon>login</mat-icon>
+          <span>Войти</span>
+        </a>
+      }
+    </div>
+  </div>
+
+</header>

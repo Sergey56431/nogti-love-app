@@ -1,6 +1,19 @@
-import { AuthenticationStateModel } from './auth.state';
+import {UserInfoType} from '@shared/types';
 
-export class SetAuthData {
-  static readonly type = '[Auth] Auth data';
-  constructor(readonly payload: AuthenticationStateModel) {}
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace AuthData {
+
+  export class LoginUser {
+    static readonly type = '[User] Get User';
+    constructor(public readonly username: string, public readonly password: string) {}
+  }
+
+  export class LogoutUser {
+    static readonly type = '[User] Logout';
+  }
+
+  export class RegistrationUser {
+    static readonly type = '[User] Get User Success';
+    constructor(readonly payload: UserInfoType) {};
+  }
 }

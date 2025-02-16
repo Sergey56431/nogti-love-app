@@ -1,11 +1,11 @@
 import {Routes} from '@angular/router';
-import {LayoutComponent} from "./shared/layout/layout.component";
-import {AuthGuard} from "./core/auth/auth.guard";
-import {AuthForvardGuard} from "./core/auth/auth-forvard.guard";
+import {LayoutComponent} from '@shared/layout/layout.component';
+import {AuthForvardGuard, AuthGuard} from '@core/auth';
+
 
 export const routes: Routes = [
   {path: '', redirectTo: 'main', pathMatch: 'full'},
-  // {path: '**' , redirectTo: '', pathMatch: 'full'},
+  // {path: '**' , redirectTo: '/status-error-page',},
 
   {
     path: '',
@@ -17,10 +17,29 @@ export const routes: Routes = [
         loadComponent:() => import('./views/page').then(c => c.MainComponent),
         title: 'Главная'
       },
+      // {
+      //   path: 'settings',
+      //   loadComponent:() => import('./views/page').then(c => c.SettingsPageComponent),
+      // },
       {
         path: 'clients',
         loadComponent:() => import('./views/page').then(c => c.ClientsPageComponent),
         title: 'Клиенты'
+      },
+      {
+        path: 'schedule',
+        loadComponent:() => import('./views/page').then(c => c.SchedulePageComponent),
+        title: 'Расписание'
+      },
+      {
+        path: 'employs',
+        loadComponent:() => import('./views/page').then(c => c.EmployesPageComponent),
+        title: 'Персонал'
+      },
+      {
+        path: 'operations',
+        loadComponent:() => import('./views/page').then(c => c.AllTransationsPageComponent),
+        title: 'Операции'
       },
     ]
   },

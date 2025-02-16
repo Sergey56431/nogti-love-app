@@ -1,12 +1,11 @@
-import { Component } from '@angular/core';
-import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
-import {NgIf, NgStyle} from "@angular/common";
-import {Router, RouterLink} from "@angular/router";
-import {AuthService} from "../../../core/auth/auth.service";
-import {MatSnackBar} from "@angular/material/snack-bar";
-import {LoginResponseType} from "../../../shared/types/login-response.type";
-import {HttpErrorResponse} from "@angular/common/http";
-import {DefaultResponseType} from "../../../shared/types/default-response.type";
+import {Component} from '@angular/core';
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {NgIf, NgStyle} from '@angular/common';
+import {Router, RouterLink} from '@angular/router';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {HttpErrorResponse} from '@angular/common/http';
+import {AuthService} from '@core/auth';
+import {DefaultResponseType, LoginResponseType} from '@shared/types';
 
 @Component({
   selector: 'app-login-page',
@@ -22,47 +21,47 @@ import {DefaultResponseType} from "../../../shared/types/default-response.type";
 })
 export class LoginPageComponent {
 
-  isLogged = false;
-  loginForm = this.fb.group({
-    username: ['', [ Validators.required]],
-    password: ['', [Validators.pattern('(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,12})$'), Validators.required]],
+  protected _loginForm = this._fb.group({
+    username: ['', [Validators.required]],
+    // password:
+    // h['', [Validators.pattern('(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,12})$'), Validators.required]],
+    password: ['', [Validators.required]],
     rememberMe: false
   });
 
-  constructor(private fb: FormBuilder,
-              private authService: AuthService,
-              private router: Router,
+  constructor(private _fb: FormBuilder,
+              private _authService: AuthService,
+              private _router: Router,
               private _snackBar: MatSnackBar) {
   }
 
   get username() {
-    return this.loginForm.get('username');
+    return this._loginForm.get('username');
   }
 
   get password() {
-    return this.loginForm.get('password');
+    return this._loginForm.get('password');
   }
 
   login() {
-    if (this.loginForm.valid && this.loginForm.value.username && this.loginForm.value.password) {
-      this.authService.login(this.loginForm.value.username, this.loginForm.value.password)
+    if (this._loginForm.valid && this._loginForm.value.username && this._loginForm.value.password) {
+      this._authService.login(this._loginForm.value.username, this._loginForm.value.password)
         .subscribe({
           next: (data: LoginResponseType | DefaultResponseType) => {
-            if (!(data as LoginResponseType).accessToken) {
+            if ((data as DefaultResponseType).error !== undefined) {
               this._snackBar.open('Ошибка при авторизации');
-              throw new Error(data.message ? data.message : 'Error with data on login');
+              throw new Error((data as DefaultResponseType).message);
             }
-            this.authService.setUserInfo({
-              name: this.loginForm.value.username,
+            if (data as LoginResponseType) {
+              const loginResponse = data as LoginResponseType;
 
-            });
-            if (data && (data as LoginResponseType).accessToken){
-              this.authService.setTokens((data as LoginResponseType).accessToken);
-              this.router.navigate(['/main']);
+                this._authService.setTokens(loginResponse.access_token);
+                this._authService.setUserInfo({
+                  name: loginResponse.name,
+                  userId: loginResponse.userId,
+                });
+                this._router.navigate(['/main']);
             }
-
-
-
           },
           error: (error: HttpErrorResponse) => {
             this._snackBar.open('Ошибка при авторизации');
