@@ -1,79 +1,96 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, OnInit, signal} from '@angular/core';
-import {MatFormField, MatLabel} from '@angular/material/form-field';
-import {MatInput} from '@angular/material/input';
-import {MatIcon} from '@angular/material/icon';
-import {MatMiniFabButton} from '@angular/material/button';
-import {RouterLink} from '@angular/router';
-import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
-import {AuthService} from '@core/auth';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {MatTooltip} from '@angular/material/tooltip';
-import {MatBadge} from '@angular/material/badge';
-import {UserInfoType} from '@shared/types';
-import {createDispatchMap, select} from '@ngxs/store';
-import {AuthState} from '@core/store/auth/auth.state';
-import {AuthData} from '@core/store/auth/auth.actions';
-
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  OnInit,
+  Signal,
+  signal,
+} from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { AuthService } from '@core/auth';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { UserInfoType } from '@shared/types';
+import { createDispatchMap } from '@ngxs/store';
+import { UsersActions } from '@core/store';
+import { PrimeIcons } from 'primeng/api';
+import { Menu } from 'primeng/menu';
+import { BadgeDirective } from 'primeng/badge';
+import { Button } from 'primeng/button';
+import { Tooltip } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [
-    MatFormField,
-    MatInput,
-    MatIcon,
-    MatLabel,
-    MatMiniFabButton,
     RouterLink,
-    MatMenu,
-    MatMenuItem,
-    MatMenuTrigger,
-    MatTooltip,
-    MatBadge,
+    Menu,
+    BadgeDirective,
+    Button,
+    Tooltip,
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeaderComponent implements OnInit{
-
+export class HeaderComponent implements OnInit {
+  protected _pushCount = 3;
   protected _isLogged = signal<boolean>(false);
-  protected _user = signal<UserInfoType | null>({} as UserInfoType);
-  protected _isAdmin = select(AuthState.getUserInfo);
+  protected _user: Signal<UserInfoType> = computed(() => {
+    return this._authService.getUserInfo();
+  });
 
-  constructor(private _authService: AuthService,
-              private _snackBar: MatSnackBar,
-              private _cdr: ChangeDetectorRef,) {
-    };
+  protected _userMenu = [
+    {
+      path: '',
+      label: 'Настройки',
+      icon: PrimeIcons.COG,
+      command: () => {
+        this._settingsUser();
+      },
+    },
+    {
+      path: '',
+      label: 'Выйти',
+      icon: PrimeIcons.SIGN_OUT,
+      command: () => {
+        this.logout();
+      },
+    },
+  ];
+
+  constructor(
+    private _authService: AuthService,
+    private _snackBar: MatSnackBar,
+  ) {}
 
   private _actions = createDispatchMap({
-    loadUser: AuthData.GetUser,
+    loadUser: UsersActions.GetUser,
   });
 
   ngOnInit() {
     this._isLogged.set(this._authService.isLogged());
     if (this._isLogged()) {
-      const user = this._authService.getUserInfo()
-      this._actions.loadUser(user?._id!);
+      // const userId = localStorage.getItem('userId');
+      // this._actions.loadUser(userId!);
     }
   }
 
   logout() {
     if (this._user()) {
-      this._authService.logout(this._user()!._id)
-        .subscribe({
-          next: () => {
-            this.doLogout();
-          },
-          error: () => {
-            console.log('Ошибка выхода');
-          }
-        });
+      console.log(this._user());
+      this._authService.logout(this._user().userId).subscribe({
+        next: () => {
+          this.doLogout();
+        },
+        error: () => {
+          console.log('Ошибка выхода');
+        },
+      });
     }
   }
 
   protected _settingsUser() {
-    console.log(this._isAdmin());
+    console.log(this._user());
   }
 
   doLogout() {

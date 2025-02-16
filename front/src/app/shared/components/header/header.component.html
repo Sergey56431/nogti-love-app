@@ -10,34 +10,36 @@
   <div class="header-right-content">
 
     <div class="example-button-container">
-        <mat-icon color="primary" matTooltip="Уведомления" matBadge="15">notifications</mat-icon>
+      <p-button icon="pi pi-bell"
+                pBadge
+                value="{{_pushCount > 0 ? _pushCount : null}}"
+                pTooltip="{{_pushCount > 0 ? 'У вас ' + _pushCount + ' новых уведомлений' : 'Нет новых уведомлений'}}"
+                [rounded]="true"
+                [text]="true"
+                [disabled]="_pushCount === 0"
+                severity="secondary" />
+      <!--      Добавить окно для просмотра уведомлений -->
     </div>
 
     <div class="header-profile-content">
       @if (_isLogged()) {
-        <a [matMenuTriggerFor]="menu" class="profile">
+        <div>
+          <p-menu class="flex" #menu [model]="_userMenu" [popup]="true" />
+        </div>
+
+        <a class="profile" (click)="menu.toggle($event)">
           <div class="profile-icon">
             <img src="/images/profile-non-icon.png" alt="Профиль">
           </div>
           @defer {
             <div class="profile-info">
-              <p class="profile-name">{{ this._isAdmin()!.username }}</p>
+              <p class="profile-name">{{ this._user().name }}</p>
             </div>
           }
-          <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="_settingsUser()">
-              <mat-icon>settings</mat-icon>
-              <span>Настройки</span>
-            </button>
-            <button mat-menu-item (click)="logout()">
-              <mat-icon>logout</mat-icon>
-              <span>Выход </span>
-            </button>
-          </mat-menu>
         </a>
       } @else {
         <a routerLink="/login" class="login-ref">
-          <mat-icon>login</mat-icon>
+          <i class="pi pi-sign-in">Войти</i>
           <span>Войти</span>
         </a>
       }

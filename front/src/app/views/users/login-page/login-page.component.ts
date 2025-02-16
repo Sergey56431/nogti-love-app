@@ -5,9 +5,7 @@ import {Router, RouterLink} from '@angular/router';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {HttpErrorResponse} from '@angular/common/http';
 import {AuthService} from '@core/auth';
-import {DefaultResponseType, LoginResponseType, UserInfoType} from '@shared/types';
-import {createDispatchMap, select} from '@ngxs/store';
-import {AuthData, AuthState} from '@core/store';
+import {DefaultResponseType, LoginResponseType} from '@shared/types';
 
 @Component({
   selector: 'app-login-page',
@@ -25,7 +23,8 @@ export class LoginPageComponent {
 
   protected _loginForm = this._fb.group({
     username: ['', [Validators.required]],
-    password: ['', [Validators.pattern('(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,12})$'), Validators.required]],
+    // password: ['', [Validators.pattern('(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,12})$'), Validators.required]],
+    password: ['', [Validators.required]],
     rememberMe: false
   });
 
@@ -34,12 +33,6 @@ export class LoginPageComponent {
               private _router: Router,
               private _snackBar: MatSnackBar) {
   }
-
-  protected _isAdmin = select(AuthState.getUserInfo);
-
-  private _actions = createDispatchMap({
-    loadUser: AuthData.GetUser,
-  });
 
   get username() {
     return this._loginForm.get('username');
@@ -56,21 +49,17 @@ export class LoginPageComponent {
           next: (data: LoginResponseType | DefaultResponseType) => {
             if ((data as DefaultResponseType).error !== undefined) {
               this._snackBar.open('Ошибка при авторизации');
-              throw new Error(data.message ? data.message : 'Error with data on login');
+              throw new Error((data as DefaultResponseType).message);
             }
             if (data as LoginResponseType) {
               const loginResponse = data as LoginResponseType;
-              if (!loginResponse.accessToken || !loginResponse.ref || loginResponse.error) {
-                this._snackBar.open('Что-то пошло не так');
-              } else {
-                this._authService.setTokens(loginResponse.accessToken, loginResponse.ref);
-                this._authService.getUser(loginResponse.id) .subscribe((user: UserInfoType) => {
-                  this._actions.loadUser(user._id);
-                  this._authService.setUserInfo(user);
-                  // console.log(this._isAdmin());
+
+                this._authService.setTokens(loginResponse.access_token);
+                this._authService.setUserInfo({
+                  name: loginResponse.name,
+                  userId: loginResponse.userId,
                 });
                 this._router.navigate(['/main']);
-              }
             }
           },
           error: (error: HttpErrorResponse) => {

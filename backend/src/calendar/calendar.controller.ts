@@ -1,82 +1,154 @@
-import {ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {
-    Body,
-    Controller,
-    Delete,
-    Get, HttpCode,
-    HttpStatus,
-    Param,
-    Patch,
-    Post,
-    UseGuards
-} from "@nestjs/common";
-import { TokenGuard } from "../auth/auth.guard";
-import { CalendarService } from "./calendar.service";
-import { UpdateCalendarDto } from "./dto/update-calendar.dto";
+  Controller,
+  Get,
+  Post,
+  Body,
+  Delete,
+  Put,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
+import { CalendarService } from './calendar.service';
+import { CreateCalendarDto, UpdateCalendarDto } from './dto';
+import { TokenGuard } from '../auth';
 import {
-    ApiParamUserId,
-    ApiResponseCreateCelendar, ApiResponseDeleteCalendarOrArchiveCalendar,
-    ApiResponseFindCalendarOrArchiveCelendarById,
-    ApiResponseUpdateCelendarById
-} from "../custom-swagger/api-responses";
+  ApiBody,
+  ApiCreatedResponse,
+  ApiExtraModels,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+} from '@nestjs/swagger';
+import {
+  CustomSwaggerCreateCalendarResponses,
+  CustomSwaggerGetCalendarResponses,
+} from '../custom-swagger';
+import { CreateDirectDto } from '../directs';
 
-@ApiBearerAuth()
-@ApiTags('Calendar')
 @UseGuards(TokenGuard)
 @Controller('calendar')
 export class CalendarController {
-    constructor( private readonly calendarService: CalendarService) {}
+  constructor(private readonly calendarService: CalendarService) {}
 
-    @ApiOperation({ summary: 'Создать календарь для пользователя' })
-    @ApiParamUserId()
-    @ApiResponseCreateCelendar()
-    @HttpCode(HttpStatus.CREATED)
-    @Post(':id')
-    async create(@Param('id') id: string){
-        return await this.calendarService.create(id);
+  @Post()
+  create(@Body() createCalendarDto: CreateCalendarDto) {
+    return this.calendarService.create(createCalendarDto);
+  }
+
+  @ApiOperation({ summary: 'Создать календарь на месяц' })
+  @ApiBody({
+    description: 'Данные для создания календаря',
+    examples: {
+      'Пример запроса': {
+        value: {
+          noWorkDays: [{ date: '2024-03-01' }, { date: '2024-03-09' }],
+          userId: '5592c7c4-c398-435a-9b9e-bc550139e698',
+        },
+      },
+    },
+  })
+  @CustomSwaggerCreateCalendarResponses()
+  @ApiResponse({ status: 400, description: 'Отсутствует ID пользователя' })
+  @ApiResponse({
+    status: 404,
+    description: 'Дата не находится в текущем месяце / Пользователь не найден',
+  })
+  @ApiResponse({ status: 500, description: 'Ошибка при создании календаря' })
+  @Post('all')
+  create_all(
+    @Body()
+    data: {
+      noWorkDays: CreateCalendarDto[];
+      userId: string;
+    },
+  ) {
+    return this.calendarService.create_all(data);
+  }
+
+  @ApiOperation({
+    summary:
+      'Получить календарь (по id 1 день, по пользователю его дни, без query параметров все дни)',
+  })
+  @ApiParam({
+    description: 'ID дня календаря',
+    required: false,
+    name: 'id',
+    example: 'b35d8ac4-a6de-45f6-b54d-2b9e45ce8089',
+  })
+  @ApiParam({
+    description: 'ID пользователя',
+    name: 'userId',
+    required: false,
+    example: '5592c7c4-c398-435a-9b9e-bc550139e698',
+  })
+  @CustomSwaggerGetCalendarResponses()
+  @ApiResponse({
+    status: 404,
+    description: 'День не найден / Календарь этого пользователя не найден',
+  })
+  @ApiResponse({
+    status: 500,
+    description:
+      'Ошибка при поиске всего календаря / Ошибка сервера при поиске календаря / Ошибка сервера при поиске дня календаря',
+  })
+  @Get()
+  findOne(@Query('id') id: string, @Query('userId') userId: string) {
+    if (id) {
+      return this.calendarService.findOne(id);
+    } else if (userId) {
+      return this.calendarService.findByUser(userId);
+    } else {
+      return this.calendarService.findAll();
     }
+  }
 
+  @ApiOperation({ summary: 'Обновить день календаря' })
+  @ApiParam({
+    name: 'id',
+    description: 'ID дня календаря',
+    example: 'b35d8ac4-a6de-45f6-b54d-2b9e45ce8089',
+  })
+  @ApiBody({
+    description: 'Данные для обновления дня календаря (Сломалось)',
+    examples: {
+      'Пример запроса': {
+        value: {
+          date: '2024-03-15',
+          state: 'notHave',
+        },
+      },
+    },
+  })
+  @ApiOkResponse({
+    description: 'День календаря успешно обновлен',
+    content: {
+      'application/json': {
+        example: {
+          id: 'b35d8ac4-a6de-45f6-b54d-2b9e45ce8089',
+          date: '2024-03-15T10:00:00.000Z',
+          state: 'notHave',
+          userId: '5592c7c4-c398-435a-9b9e-bc550139e698',
+          directs: [],
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 404, description: 'День календаря не найден' })
+  @ApiResponse({
+    status: 500,
+    description: 'Ошибка сервера при обновлении дня календаря',
+  })
+  @Put()
+  update(
+    @Query('id') id: string,
+    @Body() updateCalendarDto: UpdateCalendarDto,
+  ) {
+    return this.calendarService.update(id, updateCalendarDto);
+  }
 
-    @ApiOperation({ summary: 'Получить календарь' })
-    @ApiParamUserId()
-    @ApiResponseFindCalendarOrArchiveCelendarById()
-    @Get(':id')
-    async findById(@Param('id') id: string){
-        return await this.calendarService.findById(id)
-    }
-
-    @ApiOperation({ summary: 'Получить архивный календарь' })
-    @ApiParamUserId()
-    @ApiResponseFindCalendarOrArchiveCelendarById()
-    @Get('/archive/:id')
-    async findArchiveById(@Param('id') id: string){
-        return await this.calendarService.findArchivatedById(id);
-    }
-
-    @ApiOperation({ summary: 'Обновить день календаря' })
-    @ApiBody({required:true, schema:{example:{state:'Не рабочий день'}}})
-    @ApiParam({description:'ID дня календаря', name:'id', example:'66c23742a5e4374202602bf9'})
-    @ApiResponseUpdateCelendarById()
-    @Patch(':id')
-    async updateById(@Param('id') id: string,
-               @Body('state') state: string){
-        return await this.calendarService.update(id, <UpdateCalendarDto>{state:state})
-    }
-
-    @ApiOperation({ summary: 'Удалить календарь' })
-    @ApiParamUserId()
-    @ApiResponseDeleteCalendarOrArchiveCalendar()
-    @Delete(':id')
-    async delete(@Param('id') id: string) {
-        return await this.calendarService.clearAll(id);
-    }
-
-    @ApiOperation({ summary: 'Удалить архивный календарь' })
-    @ApiParamUserId()
-    @ApiResponseDeleteCalendarOrArchiveCalendar()
-    @Delete('/archive/:id')
-    async deleteArchive(@Param('id') id: string) {
-        return await this.calendarService.clearAllArchive(id);
-    }
-
+  @Delete()
+  remove(@Query('id') id: string) {
+    return this.calendarService.remove(id);
+  }
 }

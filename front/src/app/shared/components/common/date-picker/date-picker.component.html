@@ -1,117 +1,39 @@
-<div class="date-picker">
-  <div class="date-picker-title">
-    <h2>Моё расписание</h2>
-    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-      <mat-icon>more_vert</mat-icon>
-    </button>
-    <mat-menu #menu="matMenu">
-      <button mat-menu-item>Редактировать расписание</button>
-      <button mat-menu-item>Список всех записей</button>
-      <button mat-menu-item>Обновить</button>
-    </mat-menu>
+<div class="calendar">
+  <div class="calendar-header">
+    <p-button [rounded]="true"
+              [text]="true"
+              (click)="_choiceMonth('prev')"
+              [disabled]="!_isStartMonth()"
+              severity="contrast"
+              icon="pi pi-chevron-left" />
+    <h3 class="calendar-title">{{ month }}</h3>
+    <p-button [rounded]="true"
+              [text]="true"
+              (click)="_choiceMonth('next')"
+              severity="contrast"
+              icon="pi pi-chevron-right" />
   </div>
-
-  <div class="date-picker-content">
-    <div class="calendar">
-      <h3 class="calendar-title">{{ month }}</h3>
-      <div class="calendar-date-items">
-        @for (item of _dateCount(); track item) {
-          <input class="custom-checkbox"
-                 (change)="onChange(item)"
-                 [checked]="item === isChecked"
-                 type="radio"
-                 [date]="item"
-                 ItemChanger
-                 id="{{item}}"
-                 (click)="choiceDay(item)">
-          <label for="{{item}}">
-            <div class="checkbox-count">
-              {{ item }}
-            </div>
-          </label>
-        } @empty {
-          <div class="date-error">Ошибка загрузки календаря</div>
-        }
-
-      </div>
-    </div>
-    @if(day) {
-      <div class="timetable">
-        <h3 class="timetable-day">{{ day }}</h3>
-        <ul class="timetable-items">
-
-          <li class="timetable-item">
-            <div class="timetable-item-direct">
-              <div class="item-time-direct">9:00</div>
-              <div class="item-profile-img"></div>
-              <div class="item-profile-name">Марина</div>
-              <div class="item-profile-phone">89005002424</div>
-            </div>
-          </li>
-
-          <li class="timetable-item">
-            <div class="timetable-item-direct">
-              <div class="item-time-direct">12:00</div>
-              <div class="item-profile-img"></div>
-              <div class="item-profile-name">Вера</div>
-              <div class="item-profile-phone">89005002424</div>
-            </div>
-          </li>
-
-          <li class="timetable-item">
-            <div class="timetable-item-direct">
-              <div class="item-time-direct">14:00</div>
-              <div class="item-profile-img"></div>
-              <div class="item-profile-name">Александра</div>
-              <div class="item-profile-phone">89005002424</div>
-            </div>
-          </li>
-
-          <li class="timetable-item">
-            <div class="timetable-item-direct">
-              <div class="item-time-direct">17:00</div>
-              <div class="item-profile-img"></div>
-              <div class="item-profile-name">Ирина</div>
-              <div class="item-profile-phone">89005002424</div>
-            </div>
-          </li>
-          @if(directs > 4){
-            <div class="loadElseDirect">
-              <svg width="22" height="13" viewBox="0 0 26 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M13 15L25.9904 0H0.00961876L13 15Z" fill="#D9D9D9"/>
-              </svg>
-            </div>
-          }
-        </ul>
-        <button type="button" (click)="newDirect()">
-          <div class="button-icon">
-            <svg width="15" height="14" viewBox="0 0 27 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M13.5 0V28M0 13.5H26.5" stroke="white" stroke-opacity="0.44" stroke-width="3"/>
-            </svg>
+  @if (_render()) {
+    <div class="calendar-date-items">
+      @for (item of _date(); track item) {
+        <input class="custom-checkbox"
+               (change)="_isChecked.set(item.day)"
+               [checked]="item.day === _isChecked()"
+               type="radio"
+               ItemChanger
+               [day]="item"
+               id="{{item.day}}"
+               (click)="_choiceDay(item.day)">
+        <label for="{{item.day}}">
+          <div class="checkbox-count">
+            {{ item.day }}
           </div>
-          <span>Новая запись</span>
-        </button>
-      </div>
-    } @else {
-      <div class="timetable no-content">Выберите день</div>
-    }
-  </div>
-</div>
-<div class="date-picker-annotation">
-  <div class="item">
-    <div class="squire choiceDay"></div>
-    <span>Выбранный день</span>
-  </div>
-  <div class="item ">
-    <div class="squire no-work-day"></div>
-    <span>Нерабочий день</span>
-  </div>
-  <div class="item">
-    <div class="squire busy-day"></div>
-    <span>Записей нет</span>
-  </div>
-  <div class="item">
-    <div class="squire free-day"></div>
-    <span>Свободные окна</span>
-  </div>
+        </label>
+      } @empty {
+        <div class="date-error">Ошибка загрузки календаря</div>
+      }
+
+    </div>
+  }
+
 </div>

@@ -10,14 +10,12 @@
   </canvas>
   <div class="chart-title-and-option">
     <h2 class="chart-title">Даходы / Расходы</h2>
-    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-      <mat-icon>more_vert</mat-icon>
-    </button>
-    <mat-menu #menu="matMenu">
-      <button mat-menu-item>Детально</button>
-      <button mat-menu-item>Расходы</button>
-      <button mat-menu-item>Доходы</button>
-    </mat-menu>
+    <p-menu #menu [model]="_options" [popup]="true" />
+    <p-button [rounded]="true"
+              [text]="true"
+              (click)="menu.toggle($event)"
+              severity="contrast"
+              icon="pi pi-ellipsis-v"/>
   </div>
 
 </div>

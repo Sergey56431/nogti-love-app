@@ -1,0 +1,45 @@
+name: Интеграция
+
+on:
+  pull_request:
+    branches:
+      - master
+      - frontDev
+      - backend
+jobs:
+  build_backend:
+    name: Сборка Бэкенда 
+    runs-on: ubuntu-cloud-runner
+    steps:
+      - name: Проверка кода
+        uses: actions/checkout@v2
+      - name: Установвка Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+      - name: Установка зависимостей
+        run: npm install
+        working-directory: ./backend
+      - name: Сбока бэкенда
+        run: npm run build
+        working-directory: ./backend
+
+  build_frontend:
+    runs-on: ubuntu-cloud-runner
+    name: Сборка Фронтенда
+    steps:
+      - name: Проверка кода
+        uses: actions/checkout@v2
+      - name: Установка Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+      - name: Установка зависимостей
+        run: npm install
+        working-directory: ./front
+      - name: Проверка EsLint
+        run: npm run lint
+        working-directory: ./front
+      - name: Сборка frontend
+        run: npm run build
+        working-directory: ./front

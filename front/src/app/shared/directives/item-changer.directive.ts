@@ -1,42 +1,58 @@
 import {
+  AfterViewInit,
+  computed,
   Directive,
   ElementRef,
-  HostListener,
   Input,
-  OnInit,
   Renderer2,
-  ViewContainerRef
+  signal,
 } from '@angular/core';
+import { CalendarDay } from '@shared/components';
+import { DayState } from '@shared/utils';
 
 @Directive({
   selector: '[ItemChanger]',
   standalone: true,
 })
-export class ItemChangerDirective implements OnInit {
+export class ItemChangerDirective implements AfterViewInit {
+  private days = signal<CalendarDay[]>([]) ;
+  private _allDays= computed(() => {
+    return this.days();
+  });
 
-  @Input() date = 0;
-
-  constructor(private el: ElementRef,
-              private rend: Renderer2,
-              private vewContainer: ViewContainerRef,) {
-  }
-
-  ngOnInit() {
-    this.disabledDate(this.date);
-  }
-
-  private nowDate = new Date().getDate();
-
-  disabledDate(date: number) {
-    if (date <= this.nowDate) {
-      this.rend.setProperty(this.el.nativeElement, 'disabled', true);
+  @Input() public set day(day: CalendarDay) {
+    if (day != null){
+      this.days().push(day);
     }
+  };
+
+  constructor(
+    private el: ElementRef,
+    private rend: Renderer2,
+  ) {}
+
+  ngAfterViewInit() {
+      for (const item of this._allDays()) {
+        switch (item?.state) {
+          case DayState.NOT_WORKING:
+            this._disabledDate();
+            break;
+          case DayState.FULL:
+            this._fullDay();
+            break;
+          default:
+            break;
+        }
+      }
   }
 
-  @HostListener('click')
-  onClick(): void {
-    if (this.el.nativeElement.classList.contains('disabled')) {
-      return;
-    }
+  private _disabledDate() {
+
+    this.rend.setProperty(this.el.nativeElement, 'disabled', true);
+    this.rend.addClass(this.el.nativeElement, 'disabled');
+  }
+
+  private _fullDay() {
+    this.rend.addClass(this.el.nativeElement, 'full-day');
   }
 }
