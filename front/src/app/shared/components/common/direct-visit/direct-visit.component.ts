@@ -123,7 +123,6 @@ export class DirectVisitComponent implements OnInit {
     const favorsId = this._favors().map(favors => {
       return {serviceId: favors.id ?? ''};
     });
-
     const data: DirectsType = {
       clientName: this._newVisitor.controls.name.value ?? '',
       date: this._date ?? '',
@@ -132,7 +131,6 @@ export class DirectVisitComponent implements OnInit {
       time: this._time ?? '',
       services: favorsId,
     };
-
     this._sendNewDirect(data);
   }
 
