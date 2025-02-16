@@ -24,6 +24,7 @@ import {
   CustomSwaggerGetCalendarResponses, CustomSwaggerUpdateCalendarResponse,
 } from '../custom-swagger';
 import { CreateCalendarAllDto } from './dto/create-calendar-all.dto';
+import { DayState } from '@prisma/client';
 
 @UseGuards(TokenGuard)
 @ApiTags('Calendar (Календарь)')
@@ -99,12 +100,12 @@ export class CalendarController {
     example: 'b35d8ac4-a6de-45f6-b54d-2b9e45ce8089',
   })
   @ApiBody({
-    description: 'Данные для обновления дня календаря (Сломалось)',
-    examples: {
-      'Пример запроса': {
-        value: {
-          date: '2024-03-15',
-          state: 'notHave',
+    schema: {
+      type: 'object',
+      properties: {
+        state: {
+          type: 'string',
+          enum: Object.values(DayState),
         },
       },
     },

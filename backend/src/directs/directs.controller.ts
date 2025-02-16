@@ -229,17 +229,7 @@ export class DirectsController {
     description: 'ID записи для обновления',
     example: 'bd186557-9f78-4db9-ad53-10e14dd88526',
   })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        state: {
-          type: 'string',
-          enum: Object.values(DayState),
-        },
-      },
-    },
-  })
+  @ApiBody({ type: CreateDirectDto })
   @ApiOkResponse({
     example: {
       id: 'd67dadbd-74a0-45d8-be37-a1ce31fadedf',
