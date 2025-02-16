@@ -96,7 +96,7 @@ export class DirectVisitComponent implements OnInit {
     this._date = this._dialogConfig.data;
     const user = this._authService.getUserInfo();
     try {
-      this._categoryService.getCategoryByUser(user.userId).subscribe(categories => {
+      this._categoryService.getCategoryByUser(user.userId ?? '').subscribe(categories => {
         this._categories.set(categories);
       });
     } catch (err) {

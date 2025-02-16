@@ -1,6 +1,6 @@
 export interface UserInfoType {
-  userId: string,
-  name: string,
+  userId?: string,
+  name?: string,
   username?: string,
   role?: string,
   rate?: number,
@@ -8,6 +8,7 @@ export interface UserInfoType {
   description?: string,
   birthDate?: string,
   lastName?: string,
+  password?: string
   phoneNumber?: string,
   image?: string,
 }
