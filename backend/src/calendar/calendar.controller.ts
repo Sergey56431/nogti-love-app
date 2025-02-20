@@ -12,21 +12,22 @@ import { CalendarService } from './calendar.service';
 import { CreateCalendarDto, UpdateCalendarDto } from './dto';
 import { TokenGuard } from '../auth';
 import {
-  ApiBody,
-  ApiCreatedResponse,
-  ApiExtraModels,
+  ApiBody, ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiParam,
+  ApiParam, ApiQuery,
   ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 import {
   CustomSwaggerCreateCalendarResponses,
-  CustomSwaggerGetCalendarResponses,
+  CustomSwaggerGetCalendarResponses, CustomSwaggerUpdateCalendarResponse,
 } from '../custom-swagger';
-import { CreateDirectDto } from '../directs';
+import { CreateCalendarAllDto } from './dto/create-calendar-all.dto';
+import { DayState } from '@prisma/client';
 
 @UseGuards(TokenGuard)
+@ApiTags('Calendar (Календарь)')
 @Controller('calendar')
 export class CalendarController {
   constructor(private readonly calendarService: CalendarService) {}
@@ -37,17 +38,7 @@ export class CalendarController {
   }
 
   @ApiOperation({ summary: 'Создать календарь на месяц' })
-  @ApiBody({
-    description: 'Данные для создания календаря',
-    examples: {
-      'Пример запроса': {
-        value: {
-          noWorkDays: [{ date: '2024-03-01' }, { date: '2024-03-09' }],
-          userId: '5592c7c4-c398-435a-9b9e-bc550139e698',
-        },
-      },
-    },
-  })
+  @ApiBody({ type: CreateCalendarAllDto })
   @CustomSwaggerCreateCalendarResponses()
   @ApiResponse({ status: 400, description: 'Отсутствует ID пользователя' })
   @ApiResponse({
@@ -67,8 +58,7 @@ export class CalendarController {
   }
 
   @ApiOperation({
-    summary:
-      'Получить календарь (по id 1 день, по пользователю его дни, без query параметров все дни)',
+    summary: 'Получить календарь (опционально)',
   })
   @ApiParam({
     description: 'ID дня календаря',
@@ -110,30 +100,17 @@ export class CalendarController {
     example: 'b35d8ac4-a6de-45f6-b54d-2b9e45ce8089',
   })
   @ApiBody({
-    description: 'Данные для обновления дня календаря (Сломалось)',
-    examples: {
-      'Пример запроса': {
-        value: {
-          date: '2024-03-15',
-          state: 'notHave',
+    schema: {
+      type: 'object',
+      properties: {
+        state: {
+          type: 'string',
+          enum: Object.values(DayState),
         },
       },
     },
   })
-  @ApiOkResponse({
-    description: 'День календаря успешно обновлен',
-    content: {
-      'application/json': {
-        example: {
-          id: 'b35d8ac4-a6de-45f6-b54d-2b9e45ce8089',
-          date: '2024-03-15T10:00:00.000Z',
-          state: 'notHave',
-          userId: '5592c7c4-c398-435a-9b9e-bc550139e698',
-          directs: [],
-        },
-      },
-    },
-  })
+  @CustomSwaggerUpdateCalendarResponse()
   @ApiResponse({ status: 404, description: 'День календаря не найден' })
   @ApiResponse({
     status: 500,
@@ -147,6 +124,14 @@ export class CalendarController {
     return this.calendarService.update(id, updateCalendarDto);
   }
 
+  @ApiOperation({ summary: 'Удалить день календаря' })
+  @ApiQuery({
+    name: 'id',
+    description: 'ID дня календаря для удаления',
+    example: 'b35d8ac4-a6de-45f6-b54d-2b9e45ce8089',
+  })
+  @ApiOkResponse({ description: 'День календаря успешно удален' })
+  @ApiNotFoundResponse({ description: 'День календаря не найден' })
   @Delete()
   remove(@Query('id') id: string) {
     return this.calendarService.remove(id);

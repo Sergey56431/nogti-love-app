@@ -40,14 +40,6 @@ export const appConfig: ApplicationConfig = {
       theme: {
         preset: Aura,
         options: {
-          palette: {
-            primary: '#003cff',
-            secondary: '#6c757d',
-            success: '#28a745',
-            warning: '#ffc107',
-            info: '#17a2b8',
-            danger: '#dc3545',
-          },
           prefix: 'p',
           darkModeSelector: false,
           cssLayer: false,

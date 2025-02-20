@@ -1,0 +1,30 @@
+<form class="flex flex-col gap-2" [formGroup]="_newClientForm">
+  <p-floatlabel variant="on">
+    <input pInputText id="name" formControlName="name" autocomplete="off" />
+    <label for="name">Имя</label>
+  </p-floatlabel>
+  <p-floatlabel variant="on">
+    <input pInputText id="lastName" formControlName="lastName" autocomplete="off" />
+    <label for="lastName">Фамилия</label>
+  </p-floatlabel>
+  <p-floatlabel variant="on">
+    <input pInputText id="username" formControlName="username" autocomplete="off" />
+    <label for="username">Username</label>
+  </p-floatlabel>
+  <p-floatlabel variant="on">
+    <p-inputmask id="phoneNumber" formControlName="phoneNumber" mask="8_999-999-99-99" />
+    <label for="phoneNumber">Номер телефона</label>
+  </p-floatlabel>
+  <p-floatlabel variant="on">
+    <p-password fluid id="password" formControlName="password" autocomplete="off" />
+    <label for="password">Пароль</label>
+  </p-floatlabel>
+  <p-floatlabel variant="on">
+    <input pInputText id="score" formControlName="score" autocomplete="off" />
+    <label for="score">Балы</label>
+  </p-floatlabel>
+  <div class="flex justify-end gap-2">
+    <p-button label="Добавить" icon="pi pi-check" (onClick)="_createClient()" />
+    <p-button label="Отменить" severity="warn" icon="pi pi-times" (onClick)="_close()" />
+  </div>
+</form>

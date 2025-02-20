@@ -31,4 +31,8 @@ export class ClientsService {
       },
     });
   }
+
+  public createClient(data: UserInfoType): Observable<UserInfoType | undefined> {
+    return this.http.post<UserInfoType | undefined>(environment.api + 'users', { user : data});
+  }
 }

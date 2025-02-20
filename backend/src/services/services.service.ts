@@ -1,9 +1,9 @@
 import {
-  Injectable,
-  NotFoundException,
   BadRequestException,
-  InternalServerErrorException,
   HttpException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma';
 import { CreateServicesDto, UpdateServicesDto } from './dto';
@@ -23,7 +23,7 @@ export class ServicesService {
         throw new NotFoundException(`Категория не найдена`);
       }
 
-      return this.prisma.services.create({
+      return await this.prisma.services.create({
         data: { ...data },
       });
     } catch (error) {
@@ -40,7 +40,7 @@ export class ServicesService {
 
   async findAll() {
     try {
-      return this.prisma.services.findMany();
+      return await this.prisma.services.findMany();
     } catch (error) {
       console.error('Ошибка поиска:', error);
       throw new InternalServerErrorException('Ошибка поиска');
@@ -53,7 +53,7 @@ export class ServicesService {
         where: { id },
       });
       if (!service) {
-        throw new NotFoundException(`Услуга не найдена`);
+        throw new HttpException('Услуга не найдена', 404);
       }
       return service;
     } catch (error) {
@@ -64,13 +64,9 @@ export class ServicesService {
 
   async findByCategory(id: string) {
     try {
-      const service = await this.prisma.services.findMany({
+      return await this.prisma.services.findMany({
         where: { categoryId: id },
       });
-      if (!service) {
-        throw new NotFoundException(`Услуга не найдена`);
-      }
-      return service;
     } catch (error) {
       console.error('Ошибка поиска:', error);
       throw new InternalServerErrorException('Ошибка поиска');

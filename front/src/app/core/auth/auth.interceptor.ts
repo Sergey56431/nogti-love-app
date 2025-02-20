@@ -58,9 +58,9 @@ export class AuthInterceptor implements HttpInterceptor {
       this._router.navigate(['/login']);
       return throwError(() => new Error('Refresh token is missing'));
     }
-    this._userId = this._authService.getUserInfo().userId;
+    this._userId = this._authService.getUserInfo().userId ?? '';
 
-    return this._authService.refresh(this._userId).pipe(
+    return this._authService.refresh(this._userId ?? '').pipe(
       switchMap((result: DefaultResponseType | RefreshResponseType) => {
         let error = '';
         if ((result as DefaultResponseType).error !== undefined) {

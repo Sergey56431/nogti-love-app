@@ -78,15 +78,17 @@ export class DatePickerComponent implements OnInit {
 
   // Запрос всего календаря для пользователя
   private _fetchUserFullCalendar(): void {
-    const user = this._authService.getUserInfo();
-    this._calendarService
-      .fetchCalendarByUser(user.userId)
-      .subscribe((calendar) => {
-        if ((calendar as DefaultResponseType).error === undefined) {
-          this._calendar.set(calendar as CalendarResponse[]);
-          this._setStateOfDate(calendar as CalendarResponse[]);
-        }
-      });
+    const user = this._authService.getUserInfo() ;
+    if (user && user.userId) {
+      this._calendarService
+        .fetchCalendarByUser(user.userId)
+        .subscribe((calendar) => {
+          if ((calendar as DefaultResponseType).error === undefined) {
+            this._calendar.set(calendar as CalendarResponse[]);
+            this._setStateOfDate(calendar as CalendarResponse[]);
+          }
+        });
+    }
   }
 
   // Функция выбора месяца с автоматическим инкрементом или декрементом года

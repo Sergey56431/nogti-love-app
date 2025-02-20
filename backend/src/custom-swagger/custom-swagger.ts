@@ -7,6 +7,86 @@ import {
   ApiResponseOptions,
   getSchemaPath,
 } from '@nestjs/swagger';
+import { DayState } from '@prisma/client';
+
+export function CustomSwaggerUpdateCalendarResponse(
+  options?: ApiResponseOptions,
+): MethodDecorator {
+  return ApiOkResponse(
+    options || {
+      schema: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            example: 'efb59de3-6a4d-4b8e-bab2-85a012535cb8',
+          },
+          date: { type: 'string', format: 'date-time' },
+          state: { type: 'string', enum: Object.values(DayState) },
+          userId: {
+            type: 'string',
+            example: 'efb59de3-6a4d-4b8e-bab2-85a012535cb8',
+          },
+          directs: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                id: {
+                  type: 'string',
+                  example: 'efb59de3-6a4d-4b8e-bab2-85a012535cb8',
+                },
+                phone: { type: 'string', example: '89502151980' },
+                clientName: { type: 'string', example: 'Влад' },
+                time: { type: 'string', example: '15:00' },
+                comment: { type: 'string', example: 'Поярче ногти' },
+                userId: {
+                  type: 'string',
+                  example: 'efb59de3-6a4d-4b8e-bab2-85a012535cb8',
+                },
+                state: {
+                  type: 'string',
+                  enum: ['notConfirmed', 'confirmed', 'cancelled'],
+                }, // Enum для DirectsState
+                services: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      service: {
+                        type: 'object',
+                        properties: {
+                          id: {
+                            type: 'string',
+                            example: 'efb59de3-6a4d-4b8e-bab2-85a012535cb8',
+                          },
+                          name: { type: 'string', example: 'Без покрытия' },
+                          time: { type: 'string', example: '2:00' },
+                          price: { type: 'number', example: 2000 },
+                          categoryId: {
+                            type: 'string',
+                            example: 'efb59de3-6a4d-4b8e-bab2-85a012535cb8',
+                          },
+                          category: {
+                            type: 'object',
+                            properties: {
+                              name: { type: 'string', example: 'Маникюр' },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      description: 'День календаря успешно обновлен',
+    },
+  );
+}
 
 export function CustomSwaggerCreateCalendarResponses(
   options?: ApiResponseOptions,

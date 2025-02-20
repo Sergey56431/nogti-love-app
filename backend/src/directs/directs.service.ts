@@ -4,7 +4,6 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { CreateDirectDto, UpdateDirectDto } from './dto';
 import { PrismaService } from '../prisma';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { DirectsState } from '@prisma/client';
@@ -15,7 +14,11 @@ export class DirectsService {
 
   public async findByDate(date: string) {
     try {
-      const result = await this._prismaService.directs.findMany({
+      const date_ = new Date(date);
+      if (isNaN(date_.getTime())) {
+        throw new HttpException('Некорректная дата', 400);
+      }
+      return await this._prismaService.directs.findMany({
         where: {
           calendar: {
             date: new Date(date),
@@ -35,21 +38,8 @@ export class DirectsService {
               },
             },
           },
-          user: {
-            select: {
-              name: true,
-              lastName: true,
-              phoneNumber: true,
-            },
-          },
         },
       });
-
-      if (!result[0]) {
-        throw new HttpException('Записи не найдены', 404);
-      }
-
-      return result;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -81,8 +71,9 @@ export class DirectsService {
         );
       }
       if (
-        !createDirectDto.userId &&
-        (!createDirectDto.phone || !createDirectDto.clientName)
+        !createDirectDto.userId ||
+        !createDirectDto.phone ||
+        !createDirectDto.clientName
       ) {
         errors.push(
           new HttpException(
@@ -145,7 +136,7 @@ export class DirectsService {
 
   public async findAll() {
     try {
-      return this._prismaService.directs.findMany();
+      return await this._prismaService.directs.findMany();
     } catch (error) {
       console.error('Ошибка при получении всех записей:', error);
       throw new HttpException('Ошибка при получении всех записей', 500);
@@ -154,7 +145,7 @@ export class DirectsService {
 
   public async findByUser(id: string) {
     try {
-      const result = await this._prismaService.directs.findMany({
+      return await this._prismaService.directs.findMany({
         where: { userId: id },
         include: {
           services: {
@@ -170,21 +161,8 @@ export class DirectsService {
               },
             },
           },
-          user: {
-            select: {
-              name: true,
-              lastName: true,
-              phoneNumber: true,
-            },
-          },
         },
       });
-
-      if (!result[0]) {
-        throw new HttpException('Записи не найдены', 404);
-      }
-
-      return result;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -212,13 +190,6 @@ export class DirectsService {
               },
             },
           },
-          user: {
-            select: {
-              name: true,
-              lastName: true,
-              phoneNumber: true,
-            },
-          },
         },
       });
 
@@ -243,7 +214,7 @@ export class DirectsService {
         throw new HttpException('Некорректная дата', 400);
       }
       const calendarId = await this._prismaService.calendar.findUnique({
-        where: { date: date },
+        where: { date: date, userId: updateDirectDto.userId },
         select: { id: true },
       });
       if (!calendarId) {
@@ -251,9 +222,8 @@ export class DirectsService {
       }
 
       if (
-        updateDirectDto.state !== DirectsState.notConfirmed &&
-        updateDirectDto.state !== DirectsState.confirmed &&
-        updateDirectDto.state !== DirectsState.cancelled
+        updateDirectDto.state &&
+        !Object.values(DirectsState).includes(updateDirectDto.state)
       ) {
         throw new HttpException('Неверный статус записи', 400);
       }
@@ -263,7 +233,7 @@ export class DirectsService {
       delete updateDirect.date;
 
       const direct = await this._prismaService.directs.update({
-        where: { id },
+        where: { id: id },
         data: {
           ...updateDirect,
           calendarId: calendarId.id,
@@ -294,7 +264,7 @@ export class DirectsService {
 
         const servicePromises = updateDirectDto.services.map(
           async (service) => {
-            return this._prismaService.directsServices.create({
+            return await this._prismaService.directsServices.create({
               data: {
                 serviceId: service.serviceId,
                 directId: direct.id,
@@ -306,7 +276,7 @@ export class DirectsService {
         await Promise.all(servicePromises);
       }
 
-      return this.findOne(direct.id);
+      return await this.findOne(direct.id);
     } catch (error) {
       if (
         error instanceof HttpException ||
