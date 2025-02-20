@@ -4,7 +4,7 @@ WORKDIR /backend
 RUN npm install -g @nestjs/cli
 COPY package.json .
 RUN npm install
-RUN npx prisma generate
+RUN npx prisma generate --schema.prisma
 COPY . .
 RUN npm run start
 
