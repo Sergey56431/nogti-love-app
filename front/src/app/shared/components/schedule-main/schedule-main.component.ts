@@ -7,7 +7,7 @@ import {
   DirectVisitComponent,
 } from '@shared/components';
 import { DirectsClientType } from '@shared/types/directs-client.type';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DialogService } from 'primeng/dynamicdialog';
 import { DirectsService } from '@shared/services';
 import { Tooltip } from 'primeng/tooltip';
 import { DirectsType } from '@shared/types/directs.type';

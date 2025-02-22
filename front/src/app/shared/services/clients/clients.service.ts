@@ -35,4 +35,12 @@ export class ClientsService {
   public createClient(data: UserInfoType): Observable<UserInfoType | undefined> {
     return this.http.post<UserInfoType | undefined>(environment.api + 'users', { user : data});
   }
+
+  public deleteClient(id: string): Observable<UserInfoType | undefined> {
+    return this.http.delete<UserInfoType | undefined>(environment.api + 'users', {
+      params: {
+        id: id,
+      },
+    });
+  }
 }

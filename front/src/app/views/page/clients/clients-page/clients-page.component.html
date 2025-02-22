@@ -12,10 +12,11 @@
              [rows]="10"
              [rowsPerPageOptions]="[10, 25, 50]"
              [paginator]="true"
-             sortMode="single"
-             [lazy]="true"
+             [sortOrder]="-1"
+             sortField="name"
+             sortMode="multiple"
              [tableStyle]="{'min-width': '60rem'}">
-      <ng-template #header>
+      <ng-template #header >
         <tr>
           <th pSortableColumn="name">
             Имя
@@ -60,7 +61,7 @@
                         pTooltip="Удалить клиента {{client.name}}"
                         [rounded]="true"
                         size="small"
-                        (click)="_deleteClient(client.id)"
+                        (click)="_deleteClient(client)"
                         [text]="true" severity="danger" />
             </div>
           </td>
@@ -68,4 +69,6 @@
       </ng-template>
     </p-table>
   </div>
+  <p-confirm-dialog />
 </div>
+

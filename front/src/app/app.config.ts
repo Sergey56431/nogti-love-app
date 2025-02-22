@@ -26,11 +26,13 @@ import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
 import { DialogService } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
+import { ConfirmDialog } from 'primeng/confirmdialog';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     DialogService,
     MessageService,
+    ConfirmDialog,
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideNativeDateAdapter(),
     provideRouter(routes, withDebugTracing()),
