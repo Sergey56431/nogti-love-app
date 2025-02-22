@@ -26,7 +26,7 @@ import { providePrimeNG } from 'primeng/config';
 import { DialogService } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { MyPreset } from '@shared/utils';
+import { Localization, MyPreset } from '@shared/utils';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -39,17 +39,7 @@ export const appConfig: ApplicationConfig = {
     provideStore([]),
     provideAnimationsAsync(),
     providePrimeNG({
-      translation: {
-        dayNames: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда',
-          'Четверг', 'Пятница', 'Суббота'],
-        dayNamesMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
-        dayNamesShort: ['Вск', 'Пнд', 'Втр', 'Срд', 'Чтв', 'Птн', 'Сбт'],
-        weekHeader: 'Нед.',
-        monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-                    'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
-        monthNamesShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн',
-                          'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
-      },
+      translation: Localization,
       theme: {
         preset: MyPreset,
         options: {
