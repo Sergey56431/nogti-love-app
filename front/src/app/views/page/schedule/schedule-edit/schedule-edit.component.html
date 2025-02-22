@@ -1,0 +1,33 @@
+<div class="page-content">
+  <h1 class="page-title"> {{ _title }}</h1>
+  <div class="breadcrumb">
+    <p-breadcrumb class="max-w-full" [model]="_breadcrumb()" [home]="_home"></p-breadcrumb>
+  </div>
+
+  <div class="schedule-content w-full">
+    <header class="flex items-center justify-center py-1">
+      <span >Расписание</span>
+    </header>
+    <div class="schedule-content-body">
+      <app-date-picker (emitDate)="_checkDayState($event)" #calendar></app-date-picker>
+
+      <div class="flex flex-col items-start gap-3">
+        <div class="font-bold">{{ calendar.day }}</div>
+        @if(calendar.day) {
+          <div class="flex flex-col gap-1">
+            <p>Укажите статус</p>
+            <p-toggleswitch [(ngModel)]="_dayState" [name]="'Укажите статус'" [falseValue]="false" [trueValue]="true"
+                            (onChange)="_choiceDay($event.checked)"/>
+          </div>
+
+          @if (_pageParam() === SchedulePage.edit) {
+
+          }
+        }
+
+      </div>
+    </div>
+
+  </div>
+</div>
+

@@ -39,6 +39,13 @@ export const routes: Routes = [
           import('./views').then((c) => c.SchedulePageComponent),
         title: 'Расписание',
       },
+
+      {
+        path: 'schedule/:action',
+        loadComponent: () =>
+          import('./views').then((c) => c.ScheduleEditComponent),
+      },
+
       {
         path: 'employs',
         loadComponent: () =>
