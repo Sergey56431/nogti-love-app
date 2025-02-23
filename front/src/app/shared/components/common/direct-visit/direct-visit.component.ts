@@ -13,7 +13,7 @@ import { Textarea } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { DirectsType } from '@shared/types/directs.type';
-import { DirectsService, FavorsServiceService } from '@shared/services';
+import { DirectsService, FavorsService } from '@shared/services';
 import { CategoriesService } from '@shared/services/categories';
 import { CategoriesType } from '@shared/types/categories.type';
 import { AuthService } from '@core/auth';
@@ -73,7 +73,7 @@ export class DirectVisitComponent implements OnInit {
               private readonly _directsService: DirectsService,
               private readonly _categoryService: CategoriesService,
               private readonly _authService: AuthService,
-              private readonly _favorService: FavorsServiceService,
+              private readonly _favorService: FavorsService,
               private readonly _dialogConfig: DynamicDialogConfig,
               private readonly _ref: DynamicDialogRef) {}
 

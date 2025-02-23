@@ -35,6 +35,12 @@
               </svg>
             </div>
           }
+
+          @if (_directsList().length === 0) {
+            <h3 class="no-directs-title">
+              Нет записей на день
+            </h3>
+          }
         </ul>
         <button type="button" (click)="_newDirect()">
           <div class="button-icon">

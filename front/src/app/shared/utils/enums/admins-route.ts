@@ -4,4 +4,6 @@ export enum AdminsRoute {
   schedule = '/schedule',
   employs = '/employs',
   operations = '/operations',
+  favors = '/favors',
+  settings = '/settings'
 }

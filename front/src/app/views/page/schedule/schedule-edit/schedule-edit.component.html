@@ -4,30 +4,63 @@
     <p-breadcrumb class="max-w-full" [model]="_breadcrumb()" [home]="_home"></p-breadcrumb>
   </div>
 
-  <div class="schedule-content w-full">
-    <header class="flex items-center justify-center py-1">
-      <span >Расписание</span>
-    </header>
-    <div class="schedule-content-body">
-      <app-date-picker (emitDate)="_checkDayState($event)" #calendar></app-date-picker>
+  <div class="flex flex-col items-center gap-4 lg:flex-row lg:items-start">
+    <div class="schedule-content w-full">
+      <header class="flex items-center justify-center py-1">
+        <span>Расписание</span>
+      </header>
+      <div class="schedule-content-body">
+        <app-date-picker (emitDate)="_checkDayState($event)" #calendar></app-date-picker>
 
-      <div class="flex flex-col items-start gap-3">
-        <div class="font-bold">{{ calendar.day }}</div>
-        @if(calendar.day) {
-          <div class="flex flex-col gap-1">
-            <p>Укажите статус</p>
-            <p-toggleswitch [(ngModel)]="_dayState" [name]="'Укажите статус'" [falseValue]="false" [trueValue]="true"
-                            (onChange)="_choiceDay($event.checked)"/>
-          </div>
+        <div class="flex flex-col items-start gap-3">
+          <div class="font-bold">{{ calendar.day }}</div>
+          @if (calendar.day) {
+            <div class="flex flex-col gap-1">
+              <p>Укажите статус</p>
+              <p-toggleswitch [(ngModel)]="_dayState" [name]="'Укажите статус'" [falseValue]="false" [trueValue]="true"
+                              (onChange)="_choiceDay($event.checked)" />
+            </div>
 
-          @if (_pageParam() === SchedulePage.edit) {
+            @if (_pageParam() === SchedulePage.edit) {
 
+            }
           }
-        }
 
+        </div>
+        <div class="flex justify-end gap-1 mt-2">
+          <p-button severity="warn" (onClick)="_resetDays()" [disabled]="_mySchedule.noWorkDays.length === 0"
+                    label="Сбросить" icon="pi pi-refresh" class="w-full" />
+
+          <p-button severity="primary" (onClick)="_saveDays()" [disabled]="_mySchedule.noWorkDays.length === 0"
+                    label="Сохранить" icon="pi pi-check" class="w-full" />
+        </div>
       </div>
     </div>
 
+    <div class="card-editing-date w-full">
+      @if (_mySchedule.noWorkDays.length > 0) {
+        <h3 class="flex justify-center">Нерабочие дни</h3>
+
+        <p-table [value]="_mySchedule.noWorkDays">
+          <ng-template #header>
+            <tr>
+              <th>День</th>
+              <th>Состояние</th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-item>
+            <tr>
+              <td>{{ item.date }}</td>
+              <td>Не рабочий</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      } @else {
+        <h3 class="flex justify-center">Выберите нерабочие дни</h3>
+      }
+
+    </div>
   </div>
+
 </div>
 

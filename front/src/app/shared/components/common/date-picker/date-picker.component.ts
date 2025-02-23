@@ -123,7 +123,7 @@ export class DatePickerComponent implements OnInit {
 
   // функция выбора даты с последующей отправкой запроса на получение всех записей в  этот день
   protected _choiceDay(day: number) {
-    this.choiceDate.set(`${day}.${this._mountCount()}.${this._yearCount()}`);
+    this.choiceDate.set(`${this._yearCount()}-${this._mountCount() > 9 ? this._mountCount() : '0' + this._mountCount()}-${day > 9 ? day : '0' + day}`);
     this.day = `${day} ${this.month}`;
     const options = {
       year: 'numeric',

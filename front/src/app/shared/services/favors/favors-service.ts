@@ -8,7 +8,7 @@ import { environment } from '../../../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class FavorsServiceService {
+export class FavorsService {
 
   constructor(private readonly _http: HttpClient) { }
 

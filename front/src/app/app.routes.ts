@@ -45,7 +45,12 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./views').then((c) => c.ScheduleEditComponent),
       },
-
+      {
+        path: 'favors',
+        loadComponent: () =>
+          import('./views').then((c) => c.FavorsPageComponent),
+        title: 'Услуги',
+      },
       {
         path: 'employs',
         loadComponent: () =>
