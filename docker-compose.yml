@@ -13,12 +13,6 @@ services:
     networks:
       - prod
 
-  backend:
-    build:
-      context: ./backend
-    networks:
-      - prod
-
   frontend:
     build:
       context: ./front
