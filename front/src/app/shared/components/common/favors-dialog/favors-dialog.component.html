@@ -1,6 +1,6 @@
 <form class="mt-2" [formGroup]="_favorsListForm">
   <p-floatlabel class="w-full mb-2" variant="on">
-    <p-select [options]="_categories" placeholder="Выберите категорию"
+    <p-select fluid [options]="_categories"
               inputId="category" (onChange)="_choiceCategory.set($event.value)"></p-select>
     <label for="category">Категория</label>
   </p-floatlabel>
@@ -15,17 +15,18 @@
             <label for="name">Наименование</label>
           </p-floatlabel>
 
-          <p-floatlabel variant="on">
-            <p-inputnumber inputId="price" mode="currency" currency="RUB"
-                           locale="ru-RU" formControlName="price"></p-inputnumber>
-            <label for="price">Стоимость</label>
-          </p-floatlabel>
+          <div class="flex gap-1">
+            <p-floatlabel variant="on">
+              <p-inputnumber inputId="price" mode="currency" currency="RUB"
+                             locale="ru-RU" formControlName="price"></p-inputnumber>
+              <label for="price">Стоимость</label>
+            </p-floatlabel>
 
-          <p-floatlabel variant="on">
-            <p-inputmask mask="99:99" inputId="time" formControlName="time" />
-            <label for="time">Время оказания</label>
-          </p-floatlabel>
-
+            <p-floatlabel variant="on">
+              <p-inputmask mask="99:99" inputId="time" formControlName="time" />
+              <label for="time">Время оказания</label>
+            </p-floatlabel>
+          </div>
         </div>
       </ng-container>
 
