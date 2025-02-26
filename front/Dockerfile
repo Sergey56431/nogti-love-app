@@ -12,7 +12,7 @@ RUN npm install
 
 # Copy the rest of the source code and build the application
 COPY . .
-RUN npm run build
+RUN npm run build --prod
 
 # Production stage
 FROM nginx
