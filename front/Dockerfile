@@ -17,7 +17,7 @@ RUN npm run build --prod
 # Production stage
 FROM nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /front/dist/front/browser /usr/share/nginx/html
+COPY --from=build /home/admin/cashBack-app/front/dist/front/browser /usr/share/nginx/html
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
