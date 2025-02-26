@@ -1,3 +1,5 @@
+version: '3.8'
+
 networks:
   prod:
 
@@ -16,5 +18,7 @@ services:
   frontend:
     build:
       context: ./front
+    ports:
+      - "4200:4200" # Подключение к порту `4200`
     networks:
       - prod
