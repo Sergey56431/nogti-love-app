@@ -97,7 +97,9 @@ export class DirectVisitComponent implements OnInit {
     const user = this._authService.getUserInfo();
     try {
       this._categoryService.getCategoryByUser(user.userId ?? '').subscribe(categories => {
-        this._categories.set(categories);
+        if ((categories as DefaultResponseType).error === undefined) {
+          this._categories.set(categories as CategoriesType[]);
+        }
       });
     } catch (err) {
       console.log(err);

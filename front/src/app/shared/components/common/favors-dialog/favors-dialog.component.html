@@ -1,44 +1,47 @@
 <form class="mt-2" [formGroup]="_favorsListForm">
   <p-floatlabel class="w-full mb-2" variant="on">
-    <p-select fluid [options]="_categories"
+    <p-select fluid [options]="_categories()" optionLabel="name" optionValue="id"
               inputId="category" (onChange)="_choiceCategory.set($event.value)"></p-select>
     <label for="category">Категория</label>
   </p-floatlabel>
 
-  <div formArrayName="favors">
-    @for (favor of _favors.controls; track favor; let i = $index) {
-      <ng-container [formGroupName]="i">
-        <div class="flex flex-col gap-2 border-b-2 border-blue-900 pb-2 mb-2">
-
-          <p-floatlabel variant="on">
-            <input pInputText id="name" autocomplete="off" formControlName="name" />
-            <label for="name">Наименование</label>
-          </p-floatlabel>
-
-          <div class="flex gap-1">
-            <p-floatlabel variant="on">
-              <p-inputnumber inputId="price" mode="currency" currency="RUB"
-                             locale="ru-RU" formControlName="price"></p-inputnumber>
-              <label for="price">Стоимость</label>
-            </p-floatlabel>
+  @if (_choiceCategory()) {
+    <div formArrayName="favors">
+      @for (favor of _favors.controls; track favor; let i = $index) {
+        <ng-container [formGroupName]="i">
+          <div class="flex flex-col gap-2 border-b-2 border-blue-900 pb-2 mb-2">
 
             <p-floatlabel variant="on">
-              <p-inputmask mask="99:99" inputId="time" formControlName="time" />
-              <label for="time">Время оказания</label>
+              <input pInputText id="name" autocomplete="off" formControlName="name" />
+              <label for="name">Наименование</label>
             </p-floatlabel>
+
+            <div class="flex gap-1">
+              <p-floatlabel variant="on">
+                <p-inputnumber inputId="price" mode="currency" currency="RUB"
+                               locale="ru-RU" formControlName="price"></p-inputnumber>
+                <label for="price">Стоимость</label>
+              </p-floatlabel>
+
+              <p-floatlabel variant="on">
+                <p-inputmask mask="99:99" inputId="time" formControlName="time" />
+                <label for="time">Время оказания</label>
+              </p-floatlabel>
+            </div>
           </div>
-        </div>
-      </ng-container>
+        </ng-container>
 
+      }
+    </div>
+
+    @if(!_isEdit()) {
+      <p-button icon="pi pi-plus" [raised]="true" [rounded]="true"
+                pTooltip="Добавить услугу" [outlined]="true" (onClick)="_createNewFields()" />
     }
-  </div>
-
-
-  <p-button icon="pi pi-plus" [raised]="true" [rounded]="true"
-            pTooltip="Добавить услугу" [outlined]="true" (onClick)="_createNewFields()" />
+  }
 </form>
 
 <div class="flex justify-end gap-1">
   <p-button severity="warn" [raised]="true" label="Отмена" icon="pi pi-times" />
-  <p-button severity="primary" [raised]="true" label="Сохранить" icon="pi pi-check" />
+  <p-button severity="primary" (onClick)="_sendNewFavorsList()" [raised]="true" label="Сохранить" icon="pi pi-check" />
 </div>

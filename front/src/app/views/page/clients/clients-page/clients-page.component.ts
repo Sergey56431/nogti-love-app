@@ -25,7 +25,14 @@ import { orderBy } from 'lodash';
 @Component({
   selector: 'app-clients-page',
   standalone: true,
-  imports: [TableModule, Tooltip, RouterLink, ConfirmDialogModule, ToastModule, ButtonModule],
+  imports: [
+    TableModule,
+    Tooltip,
+    RouterLink,
+    ConfirmDialogModule,
+    ToastModule,
+    ButtonModule,
+  ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './clients-page.component.html',
   styleUrl: './clients-page.component.scss',
@@ -44,11 +51,10 @@ export class ClientsPageComponent implements OnInit {
   ) {}
 
   public ngOnInit() {
-   this._fetchAllClients();
+    this._fetchAllClients();
   }
 
   private _fetchAllClients() {
-
     this._clientService.getAllClients().subscribe((clients) => {
       if (clients && clients.length > 0) {
         this._clients.set(orderBy(clients, 'name', 'asc'));
@@ -57,7 +63,7 @@ export class ClientsPageComponent implements OnInit {
   }
 
   protected _addNewClient() {
-   this._ref = this._dialogService.open(AddNewClientCardComponent, {
+    this._ref = this._dialogService.open(AddNewClientCardComponent, {
       width: '500px',
       header: 'Добавить нового клиента',
       modal: true,
@@ -68,9 +74,9 @@ export class ClientsPageComponent implements OnInit {
         overflow: 'unset',
       },
     });
-   this._ref.onClose.subscribe(() => {
-     this._fetchAllClients();
-   });
+    this._ref.onClose.subscribe(() => {
+      this._fetchAllClients();
+    });
   }
 
   protected _deleteClient(client: ClientType) {
@@ -98,31 +104,36 @@ export class ClientsPageComponent implements OnInit {
           try {
             this._clientService.deleteClient(client.id!).subscribe({
               next: (user) => {
-                message = SnackStatusesUtil.getStatuses('success', `Клиент ${user?.name} успешно удалён`,)!;
+                message = SnackStatusesUtil.getStatuses(
+                  'success',
+                  `Клиент ${user?.name} успешно удалён`,
+                )!;
               },
               error: (err) => {
-                message = SnackStatusesUtil.getStatuses('error', 'Невозможно удалить клиента',)!;
+                message = SnackStatusesUtil.getStatuses(
+                  'error',
+                  'Невозможно удалить клиента',
+                )!;
                 this.messageService.add(message);
                 console.log(err);
               },
               complete: () => {
                 this.messageService.add(message);
                 this._fetchAllClients();
-              }
+              },
             });
           } catch (e) {
-            message = SnackStatusesUtil.getStatuses('error', 'Невозможно выполнит операцию',)!;
+            message = SnackStatusesUtil.getStatuses(
+              'error',
+              'Невозможно выполнит операцию',
+            )!;
             this.messageService.add(message);
             console.log(e);
           }
         }
       },
       reject: () => {
-
-        // this.messageService.add({
-        //   severity: 'info'
-        //
-        // });
+        //empty
       },
     });
   }

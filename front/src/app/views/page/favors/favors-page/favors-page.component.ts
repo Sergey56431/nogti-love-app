@@ -55,7 +55,7 @@ export class FavorsPageComponent implements OnInit {
       modal: true,
       width: '450px',
       contentStyle: {
-        overflow: 'none',
+        overflow: 'visible',
         maxWidth: '450px',
         maxHeight: '600px',
       },
@@ -71,9 +71,7 @@ export class FavorsPageComponent implements OnInit {
       modal: true,
       width: '450px',
       contentStyle: {
-        overflow: 'none',
-        maxWidth: '450px',
-        maxHeight: '600px',
+        overflow: 'visible',
       },
       data: favor,
     });
