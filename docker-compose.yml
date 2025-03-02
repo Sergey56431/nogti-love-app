@@ -1,3 +1,5 @@
+version: '3.8'
+
 networks:
   prod:
 
@@ -7,21 +9,16 @@ services:
     ports:
       - "80:80"
     volumes:
-      - './nginx/nginx.conf:/etc/nginx/nginx.conf'
+      - './nginx.conf:/etc/nginx.conf'
     depends_on:
-      - backend
       - frontend
-    networks:
-      - prod
-
-  backend:
-    build:
-      context: ./backend
     networks:
       - prod
 
   frontend:
     build:
       context: ./front
+    ports:
+      - "4200:4200" # Подключение к порту `4200`
     networks:
       - prod

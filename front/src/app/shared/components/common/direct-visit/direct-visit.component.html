@@ -41,9 +41,10 @@
                 formControlName="favor"
                 inputId="favorId"
                 [options]="_favors()"
-                (onChange)="_choiceFavor.set($event.value.id)"
+                (onChange)="_choiceFavor.set($event.value)"
                 [showToggleAll]="false"
                 optionLabel="name"
+                optionValue="id"
                 styleClass="w-full" />
       <label for="favorId">Услуга</label>
     </p-floatlabel>

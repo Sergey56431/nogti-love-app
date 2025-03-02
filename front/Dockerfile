@@ -1,15 +1,23 @@
 FROM node:20-alpine3.20 AS build
 LABEL authors="nikanorov-sv"
+
 WORKDIR /front
+
+# Install Angular CLI
 RUN npm install -g @angular/cli
+
+# Copy package.json and install dependencies
 COPY package.json .
 RUN npm install
-COPY . .
-RUN npm run build
 
+# Copy the rest of the source code and build the application
+COPY . .
+RUN npm run build --prod -deploy
+
+# Production stage
 FROM nginx
-COPY nginx.conf /ect/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /front/dist/front/browser /usr/share/nginx/html
-EXPOSE 4200
+EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
