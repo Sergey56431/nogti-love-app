@@ -12,16 +12,19 @@ import { CalendarService } from './calendar.service';
 import { CreateCalendarDto, UpdateCalendarDto } from './dto';
 import { TokenGuard } from '../auth';
 import {
-  ApiBody, ApiNotFoundResponse,
+  ApiBody,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiParam, ApiQuery,
+  ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import {
   CustomSwaggerCreateCalendarResponses,
-  CustomSwaggerGetCalendarResponses, CustomSwaggerUpdateCalendarResponse,
+  CustomSwaggerGetCalendarResponses,
+  CustomSwaggerUpdateCalendarResponse,
 } from '../custom-swagger';
 import { CreateCalendarAllDto } from './dto/create-calendar-all.dto';
 import { DayState } from '@prisma/client';
@@ -83,11 +86,18 @@ export class CalendarController {
       'Ошибка при поиске всего календаря / Ошибка сервера при поиске календаря / Ошибка сервера при поиске дня календаря',
   })
   @Get()
-  findOne(@Query('id') id: string, @Query('userId') userId: string) {
+  find(
+    @Query('id') id: string,
+    @Query('userId') userId: string,
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+  ) {
     if (id) {
       return this.calendarService.findOne(id);
     } else if (userId) {
       return this.calendarService.findByUser(userId);
+    } else if (startDate && endDate) {
+      return this.calendarService.findInterval(startDate, endDate);
     } else {
       return this.calendarService.findAll();
     }
