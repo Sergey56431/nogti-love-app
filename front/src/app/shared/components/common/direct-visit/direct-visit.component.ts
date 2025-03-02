@@ -12,13 +12,9 @@ import { Select } from 'primeng/select';
 import { Textarea } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { DirectsType } from '@shared/types/directs.type';
-import { DirectsService, FavorsService } from '@shared/services';
-import { CategoriesService } from '@shared/services/categories';
-import { CategoriesType } from '@shared/types/categories.type';
+import { CategoriesService, DirectsService, FavorsService } from '@shared/services';
 import { AuthService } from '@core/auth';
-import { ServicesType } from '@shared/types/services.type';
-import { DefaultResponseType } from '@shared/types';
+import { CategoriesType, DefaultResponseType, DirectsType, ServicesType, UserInfoType } from '@shared/types';
 import { MultiSelect } from 'primeng/multiselect';
 import { MessageService } from 'primeng/api';
 import { ProgressStatuses, SnackStatusesUtil } from '@shared/utils';
@@ -43,9 +39,10 @@ export class DirectVisitComponent implements OnInit {
 
   private _date = '';
   private _time = '';
-  protected _categories =  signal<CategoriesType[]>([]);
-  protected _choiceFavor = signal<ServicesType[] | undefined>(undefined);
+  protected _categories = signal<CategoriesType[]>([]);
+  protected _choiceFavor = signal<string[]>([]);
   protected _favors = signal<ServicesType[]>([]);
+  private _userInfo = signal<UserInfoType | undefined>(undefined);
 
   // Нужен запрос с временем записей
 
@@ -75,7 +72,8 @@ export class DirectVisitComponent implements OnInit {
               private readonly _authService: AuthService,
               private readonly _favorService: FavorsService,
               private readonly _dialogConfig: DynamicDialogConfig,
-              private readonly _ref: DynamicDialogRef) {}
+              private readonly _ref: DynamicDialogRef) {
+  }
 
   protected _newVisitor = this._fb.group({
     name: new FormControl('', [Validators.required]),
@@ -94,9 +92,9 @@ export class DirectVisitComponent implements OnInit {
   // Инициализация
   public ngOnInit() {
     this._date = this._dialogConfig.data;
-    const user = this._authService.getUserInfo();
+    this._userInfo.set(this._authService.getUserInfo());
     try {
-      this._categoryService.getCategoryByUser(user.userId ?? '').subscribe(categories => {
+      this._categoryService.getCategoryByUser(this._userInfo()?.userId ?? '').subscribe(categories => {
         if ((categories as DefaultResponseType).error === undefined) {
           this._categories.set(categories as CategoriesType[]);
         }
@@ -107,13 +105,13 @@ export class DirectVisitComponent implements OnInit {
   }
 
   // Функция форматирования объекта времени в строку для отправки на сервер
-  protected _choiceTime(time:{name: string, code: number}) {
+  protected _choiceTime(time: { name: string, code: number }) {
     this._time = time.name;
   }
 
   // Получение всех услуг
   protected _fetchFavors(category: CategoriesType) {
-    this._favorService.getFavorsByCategory(category.id).subscribe((favors)  => {
+    this._favorService.getFavorsByCategory(category.id).subscribe((favors) => {
       if ((favors as DefaultResponseType).error == null) {
         this._favors.set(favors as ServicesType[]);
       }
@@ -122,10 +120,11 @@ export class DirectVisitComponent implements OnInit {
 
   // Создание новой записи с последующей отправкой
   protected _createDirect() {
-    const favorsId = this._favors().map(favors => {
-      return {serviceId: favors.id ?? ''};
+    const favorsId = this._choiceFavor()?.map(favors => {
+      return { serviceId: favors ?? '' };
     });
     const data: DirectsType = {
+      userId: this._userInfo()?.userId ?? '',
       clientName: this._newVisitor.controls.name.value ?? '',
       date: this._date ?? '',
       comment: this._newVisitor.controls.comment.value ?? '',
@@ -150,7 +149,7 @@ export class DirectVisitComponent implements OnInit {
         const _snack = SnackStatusesUtil.getStatuses(ProgressStatuses.ERROR, message);
         this._toast.add(_snack!);
         console.log(err);
-      }
+      },
     });
   }
 

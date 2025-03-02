@@ -1,7 +1,7 @@
-<div>
+@if(!_isEdit()) {
   <p-select-button [options]="_dialogOptions" (onChange)="_choiceDialogVariant.set($event.value)"
-                   [allowEmpty]="false" optionLabel="label" optionValue="value" />
-</div>
+                   [allowEmpty]="false" optionLabel="label" optionValue="value" [(ngModel)]="_dialogVariant" />
+}
 
 @if (_choiceDialogVariant() === _dialogVariants.SERVICE) {
   <ng-container *ngTemplateOutlet="modalFavorsDialog"></ng-container>
@@ -13,12 +13,12 @@
 <ng-template #modalFavorsDialog>
   <form class="mt-3" [formGroup]="_favorsListForm">
     <p-floatlabel class="w-full mb-2" variant="on">
-      <p-select fluid [options]="_categoriesList()" [autofocus]="false" optionLabel="name" optionValue="id"
+      <p-select fluid [options]="_categoriesList()" (onChange)="_choiceCategory.set($event.value)" [autofocus]="false" optionLabel="name" optionValue="id"
                 inputId="category" formControlName="category" ></p-select>
       <label for="category">Категория</label>
     </p-floatlabel>
 
-    @if (_choiceCategory) {
+    @if (_choiceCategory()) {
       <div formArrayName="favors">
         @for (favor of _favors.controls; track favor; let i = $index) {
           <ng-container [formGroupName]="i">
@@ -55,7 +55,7 @@
   </form>
 
   <div class="flex justify-end gap-1">
-    <p-button severity="warn" [raised]="true" label="Отмена" icon="pi pi-times" />
+    <p-button severity="warn" (onClick)="_close()" [raised]="true" label="Отмена" icon="pi pi-times" />
     @if (_isEdit()) {
       <p-button severity="primary" (onClick)="_updateFavor()" [raised]="true" label="Редактировать"
                 icon="pi pi-check" />
@@ -87,7 +87,7 @@
       }
 
       <div class="flex justify-end gap-1">
-        <p-button severity="warn" [raised]="true" label="Отмена" icon="pi pi-times" />
+        <p-button severity="warn" (onClick)="_close()" [raised]="true" label="Отмена" icon="pi pi-times" />
         @if (_isEdit()) {
           <p-button severity="primary" (onClick)="_updateCategory()" [raised]="true" label="Редактировать"
                     icon="pi pi-check" />
