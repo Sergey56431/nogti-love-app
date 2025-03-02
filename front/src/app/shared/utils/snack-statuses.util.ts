@@ -2,7 +2,7 @@ import { ToastMessageOptions } from 'primeng/api';
 
 
 export class SnackStatusesUtil {
-  static getStatuses(status: string, message?: string): ToastMessageOptions | undefined {
+  static getStatuses(status: string, message?: string): ToastMessageOptions {
     if (status === 'success') {
       return {
         severity: 'success',
@@ -19,7 +19,12 @@ export class SnackStatusesUtil {
         life: 3000
       };
     } else {
-      return undefined;
+      return {
+        severity: 'secondary',
+        summary: 'Ничего не произошло',
+        detail: message ?? 'Неизвестная ошибка', // Сюда можно будет подставлять свою строку
+        life: 3000
+      };
     }
   }
 }

@@ -5,11 +5,11 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { FavorsService } from '@shared/services';
+import { CategoriesService, FavorsService } from '@shared/services';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Button } from 'primeng/button';
 import { TableModule } from 'primeng/table';
-import { DefaultResponseType, ServicesType } from '@shared/types';
+import { CategoriesType, DefaultResponseType, ServicesType } from '@shared/types';
 import { MessageService } from 'primeng/api';
 import { SnackStatusesUtil } from '@shared/utils';
 import { Tooltip } from 'primeng/tooltip';
@@ -24,28 +24,53 @@ import { FavorsDialogComponent } from '@shared/components';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FavorsPageComponent implements OnInit {
-  protected _title = 'Услуги';
+  protected _title = 'Услуги и категории';
 
   protected _favorsList = signal<ServicesType[]>([]);
+  protected _categoriesList = signal<CategoriesType[]>([]);
 
   private readonly _favorsService = inject(FavorsService);
+  private readonly _categoryService = inject(CategoriesService);
   private readonly _dialogService = inject(DialogService);
   private readonly _snackService = inject(MessageService);
 
   public ngOnInit(): void {
+    try {
+      this._getAllFavors();
+      this._getAllCategories();
+    } catch (err) {
+      const status = SnackStatusesUtil.getStatuses('error', 'Ошибка получения данных');
+      this._snackService.add(status);
+      console.log(err);
+    }
+
+  }
+
+  // Запрос на получение всех услуг
+  private _getAllFavors(): void {
     this._favorsService.getAllFavors().subscribe((result) => {
       if ((result as DefaultResponseType).error === undefined) {
         this._favorsList.set(result as ServicesType[]);
       } else {
-        const error = SnackStatusesUtil.getStatuses(
-          'error',
-          (result as DefaultResponseType).message,
-        )!;
+        const error = SnackStatusesUtil.getStatuses('error', (result as DefaultResponseType).message,)!;
         this._snackService.add(error);
       }
     });
   }
 
+  // Запрос на получение всех категорий
+  private _getAllCategories(): void {
+    this._categoryService.getAllCategories().subscribe((result) => {
+      if ((result as DefaultResponseType).error === undefined) {
+        this._categoriesList.set(result as CategoriesType[]);
+      } else {
+        const error = SnackStatusesUtil.getStatuses('error');
+        this._snackService.add(error!);
+      }
+    });
+  }
+
+  // Вызов модального окна для добавления услуг
   protected _addFavors() {
     this._dialogService.open(FavorsDialogComponent, {
       header: 'Добавить услуги / категории',
@@ -62,7 +87,8 @@ export class FavorsPageComponent implements OnInit {
     });
   }
 
-  protected _editFavors(favor: ServicesType): void {
+  // Вызов модального окна для добавления категорий
+  protected _editFavors(favor: ServicesType, edit: string): void {
     this._dialogService.open(FavorsDialogComponent, {
       header: 'Редактировать услуги / категории',
       draggable: true,
@@ -72,8 +98,45 @@ export class FavorsPageComponent implements OnInit {
       width: '450px',
       contentStyle: {
         overflow: 'visible',
+        maxWidth: '450px',
+        maxHeight: '600px',
       },
-      data: favor,
+      data: Object.assign(favor, { edit: edit }),
     });
+  }
+
+  // Удаление выбранной услуги
+  protected _removeFavor(favor: ServicesType): void {
+    this._favorsService.deleteFavors(favor.id ?? '').subscribe(result => {
+      if ((result as DefaultResponseType).error === undefined) {
+        this._favorsList.update((prev) =>
+          prev.filter((item) => item.id !== favor.id),
+        );
+        this._showMessage('success', `Услуга "${favor.name}" успешно удалена`);
+      } else {
+        this._showMessage('error', `Ошибка удаления услуги "${favor.name}"`);
+      }
+    });
+  }
+
+  // Удаление выбранной категории
+  protected _removeCategory(category: CategoriesType): void {
+    this._categoryService.deleteCategory(category.id ?? '').subscribe(result => {
+      if ((result as DefaultResponseType).error === undefined) {
+        this._categoriesList.update((prev) =>
+          prev.filter((item) => item.id !== category.id),
+        );
+
+        this._showMessage('success', `Категория "${category}.name}" успешно удалена`);
+      } else {
+        this._showMessage('error', `Ошибка удаления услуги "${category}.name}"`);
+      }
+    });
+  }
+
+  // Вывод информационного сообщения с результатом операции
+  private _showMessage(status: string, msg: string): void {
+    const toast = SnackStatusesUtil.getStatuses(status, msg)!;
+    this._snackService.add(toast);
   }
 }
