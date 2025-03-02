@@ -8,14 +8,13 @@ export class IncomExpencesService {
   constructor(private readonly _prismaService: PrismaService) {}
 
   async create(createIncomExpenceDto: CreateIncomeExpencesDto) {
-    const { userId, ...data } = createIncomExpenceDto; // Деструктуризация и удаление userId сразу
-
-    const requiredFields = ['type', 'value', 'category'];
+    const { userId, categoryId, ...data } = createIncomExpenceDto;
+    const requiredFields = ['type', 'value'];
     const errors = requiredFields
       .filter((field) => !data[field])
       .map((field) =>
         new HttpException(
-          `Нет ${field === 'value' ? 'значения операции' : field === 'type' ? 'типа операции' : 'категории операции'}`,
+          `Нет ${field === 'value' ? 'значения операции' : field === 'type' ? 'типа операции' : 'categoryId'}`,
           400,
         ).getResponse(),
       );
@@ -31,9 +30,18 @@ export class IncomExpencesService {
           user: {
             connect: { id: userId },
           },
+          categoryOperations: {
+            connect: { id: categoryId },
+          },
         },
       });
     } catch (error) {
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        throw new HttpException('Категория или пользователь не найден', 404);
+      }
       console.error(error);
       throw new HttpException('Ошибка при создании операции', 500);
     }
@@ -91,8 +99,8 @@ export class IncomExpencesService {
     try {
       const data: UpdateIncomeExpences = {};
 
-      if (updateIncomExpenceDto.category) {
-        data.category = updateIncomExpenceDto.category;
+      if (updateIncomExpenceDto.categoryId) {
+        data.categoryId = updateIncomExpenceDto.categoryId;
       }
       if (updateIncomExpenceDto.value) {
         data.value = updateIncomExpenceDto.value;

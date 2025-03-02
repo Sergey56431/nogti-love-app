@@ -10,28 +10,30 @@ datasource db {
 }
 
 model User {
-  id              String            @id @default(uuid())
-  name            String            @db.VarChar(100)
-  lastName        String?           @db.VarChar(100)
-  username        String            @unique @db.VarChar(100)
-  phoneNumber     String            @unique @db.VarChar(20)
-  score           Int?              @default(100)
-  rate            Int?              @default(100)
-  birthday        DateTime?
-  description     String?           @db.VarChar(200)
-  password        String            @db.VarChar(60)
-  role            Role              @default(CLIENT)
-  calendar        Calendar[]
-  refreshToken    String?
-  directs         Directs[]
-  category        Category[]
-  Income_Expanses Income_Expanses[]
+  id                 String            @id @default(uuid())
+  name               String            @db.VarChar(100)
+  lastName           String?           @db.VarChar(100)
+  username           String            @unique @db.VarChar(100)
+  phoneNumber        String            @unique @db.VarChar(20)
+  score              Int?              @default(100)
+  rate               Int?              @default(100)
+  birthday           DateTime?
+  description        String?           @db.VarChar(200)
+  password           String            @db.VarChar(60)
+  role               Role              @default(CLIENT)
+  calendar           Calendar[]
+  refreshToken       String?
+  directs            Directs[]
+  categoryOperations CategoryOperations[]
+  category           Category[]
+  income_Expanses    Income_Expanses[]
 }
 
 model Calendar {
   id      String    @id @default(uuid())
   date    DateTime  @unique @db.Date
   directs Directs[]
+  time    String?
   state   DayState  @default(empty)
   userId  String
   creator User      @relation(fields: [userId], references: [id])
@@ -56,14 +58,23 @@ model Directs {
 }
 
 model Income_Expanses {
-  id         String        @id @default(uuid())
-  category   String
-  type       TypeOperation
-  value      Float
-  createDate DateTime?     @default(now())
-  updateDate DateTime?
-  userId     String
-  user       User          @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  id                   String               @id @default(uuid())
+  categoryId           String
+  type                 TypeOperation
+  value                Float
+  createDate           DateTime?            @default(now())
+  updateDate           DateTime?
+  userId               String
+  categoryOperations   CategoryOperations   @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  user                 User                 @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model CategoryOperations {
+  id                String              @id @default(uuid())
+  name              String
+  userId            String
+  income_Expanses   Income_Expanses[]
+  user              User                @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Category {
