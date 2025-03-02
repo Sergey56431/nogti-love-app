@@ -1,3 +1,14 @@
 <div class="page-content">
-  <h1 class="page-title">{{title}}</h1>
+  <h1 class="page-title">{{ _title }}</h1>
+
+  <div class="operations-cards flex items-center gap-5">
+    @for (category of _categories; track category) {
+      <a [routerLink]="'/' + category.route">
+        <div class="operation-card"
+             [ngStyle]="{ 'background-image': 'url(../../../../assets/images/operations/' + category.img + '.png)', 'width': '358px', 'height': '234px'}">
+          <span>{{ category.name }}</span>
+        </div>
+      </a>
+    }
+  </div>
 </div>

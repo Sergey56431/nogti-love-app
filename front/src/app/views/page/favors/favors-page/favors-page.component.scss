@@ -1,0 +1,20 @@
+@import "../../../../../assets/styles/mixins";
+
+.favors-list {
+  max-width: 650px;
+  max-height: 600px;
+  @include card();
+
+  p-table {
+
+    tr > th, tr > td {
+      text-align: center;
+    }
+  }
+
+}
+
+.category-list {
+  @include card();
+}
+

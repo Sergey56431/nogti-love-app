@@ -1,7 +1,12 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import { CalendarResponse, DefaultResponseType } from '@shared/types';
+import {
+  CalendarResponse,
+  CreateCalendarType,
+  DefaultResponseType,
+  NotWorksDaysCalendarType,
+} from '@shared/types';
 import {environment} from '../../../../environments/environment';
 
 @Injectable({
@@ -32,15 +37,15 @@ export class CalendarService {
     });
   }
 
-  public createDate(data: any):Observable<any> {
+  public createDate(data: CreateCalendarType):Observable<CalendarResponse | DefaultResponseType> {
     return this.http.post<CalendarResponse | DefaultResponseType>(environment.api + 'calendar', data);
   }
 
-  public createSchedule(data: any):Observable<any> {
-    return this.http.post<CalendarResponse | DefaultResponseType>(environment.api + 'calendar', data);
+  public createSchedule(data: NotWorksDaysCalendarType):Observable<CalendarResponse[] | DefaultResponseType> {
+    return this.http.post<CalendarResponse[] | DefaultResponseType>(environment.api + 'calendar/all', data);
   }
 
-  public updateDate(data: any, id: string):Observable<any> {
+  public updateDate(data: Partial<CalendarResponse>, id: string):Observable<CalendarResponse | DefaultResponseType> {
     return this.http.put<CalendarResponse | DefaultResponseType>(environment.api + 'calendar', {
       params: {
         id: id,
@@ -49,7 +54,7 @@ export class CalendarService {
     });
   }
 
-  public deleteDate(id: string):Observable<any> {
+  public deleteDate(id: string):Observable<CalendarResponse | DefaultResponseType> {
     return this.http.delete<CalendarResponse | DefaultResponseType>(environment.api + 'calendar', {
       params: {
         id: id,

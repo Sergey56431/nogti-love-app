@@ -39,6 +39,7 @@
     }
 
     .timetable {
+      border-left: 1px solid $bg-color;
       padding-left: 31px;
 
       .timetable-day {
@@ -72,6 +73,11 @@
               }
             }
           }
+        }
+
+        .no-directs-title {
+          font-family: 'Montserrat-SemiBold', sans-serif;
+          font-size: 20px;
         }
 
         .timetable-item {

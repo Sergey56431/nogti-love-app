@@ -72,6 +72,13 @@ button {
   font-size: 12px;
 }
 
+.schedule-content {
+  .calendar {
+    padding-bottom: 15px !important;
+  }
+}
+
+
 @media screen and (max-width: 500px) {
   .page {
     justify-content: center;

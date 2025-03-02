@@ -1,8 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
-  OnInit,
+  computed, EventEmitter,
+  OnInit, Output,
   signal,
 } from '@angular/core';
 import { CalendarService, DirectsService } from '@shared/services';
@@ -36,12 +36,13 @@ export class DatePickerComponent implements OnInit {
 
   protected month = '';
   public day = '';
+  public choiceDate = signal<string>('');
   public selectedDate = signal<string>('');
   protected _calendar = signal<CalendarResponse[]>([]);
   protected _isChecked = signal<number | null>(null);
   protected _date = signal<CalendarDay[]>([]);
-  protected _mountCount = signal<number>(0);
-  private _yearCount = signal<number>(0);
+  public _mountCount = signal<number>(0);
+  public _yearCount = signal<number>(0);
   protected _isStartMonth = computed(() => {
     return this._mountCount() > new Date().getMonth() + 1;
   });
@@ -51,6 +52,8 @@ export class DatePickerComponent implements OnInit {
   private _actions = createDispatchMap({
     loadDirects: Directs.GetDirects,
   });
+
+  @Output() emitDate = new EventEmitter<string>();
 
   constructor(
     private readonly _toast: MessageService,
@@ -120,12 +123,14 @@ export class DatePickerComponent implements OnInit {
 
   // функция выбора даты с последующей отправкой запроса на получение всех записей в  этот день
   protected _choiceDay(day: number) {
+    this.choiceDate.set(`${this._yearCount()}-${this._mountCount() > 9 ? this._mountCount() : '0' + this._mountCount()}-${day > 9 ? day : '0' + day}`);
     this.day = `${day} ${this.month}`;
     const options = {
       year: 'numeric',
       month: 'numeric',
       day: 'numeric',
     };
+    this.emitDate.emit(this.choiceDate());
     const date = new Date(`${this._yearCount()}-${this._mountCount()}-${day}`)
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
@@ -182,4 +187,5 @@ export class DatePickerComponent implements OnInit {
       this._toast.add(message);
     }
   }
+
 }

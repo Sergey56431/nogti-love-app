@@ -3,8 +3,8 @@ LABEL authors="vladislav-nik"
 WORKDIR /backend
 RUN npm install -g @nestjs/cli
 COPY package.json .
+COPY .env .
 RUN npm install
-RUN npx prisma generate
 COPY . .
 RUN npm run start
 

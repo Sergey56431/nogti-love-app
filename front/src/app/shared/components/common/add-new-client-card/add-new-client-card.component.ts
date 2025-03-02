@@ -90,7 +90,7 @@ export class AddNewClientCardComponent {
     this._clientService.createClient(body).subscribe({
       next: client => {
         message = SnackStatusesUtil.getStatuses('success', `Клиент "$${client?.name}" успешно добавлен`)!;
-        this._close();
+        this._close('cancel');
       },
       error: err => {
         message = SnackStatusesUtil.getStatuses('success', 'Клиент не добавлен, проиошла ошибка')!;
@@ -102,7 +102,7 @@ export class AddNewClientCardComponent {
     });
   }
 
-  protected _close() {
-    this._ref.close();
+  protected _close(cancel?: string): void {
+    this._ref.close(cancel);
   }
 }

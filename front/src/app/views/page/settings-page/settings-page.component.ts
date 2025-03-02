@@ -9,5 +9,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SettingsPageComponent {
+  protected readonly _title = 'Настройки';
 
 }

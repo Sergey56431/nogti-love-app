@@ -23,22 +23,25 @@ import {
 import { provideServiceWorker } from '@angular/service-worker';
 import { AuthInterceptor } from '@core/auth';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeng/themes/aura';
 import { DialogService } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
+import { ConfirmDialog } from 'primeng/confirmdialog';
+import { Localization, MyPreset } from '@shared/utils';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     DialogService,
     MessageService,
+    ConfirmDialog,
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideNativeDateAdapter(),
     provideRouter(routes, withDebugTracing()),
     provideStore([]),
     provideAnimationsAsync(),
     providePrimeNG({
+      translation: Localization,
       theme: {
-        preset: Aura,
+        preset: MyPreset,
         options: {
           prefix: 'p',
           darkModeSelector: false,

@@ -47,9 +47,9 @@ export class SidebarComponent {
       routeName: 'Расписание',
     },
     {
-      route: AdminsRoute.employs,
-      icon: PrimeIcons.USERS,
-      routeName: 'Персонал',
+      route: AdminsRoute.favors,
+      icon: PrimeIcons.TAGS,
+      routeName: 'Услуги',
     },
     {
       route: AdminsRoute.operations,
