@@ -4,16 +4,16 @@
     <div class="user-logo">
       <img src="/images/logo.png" alt="Логотип">
     </div>
-    <input class="input" formControlName="username"
-           [ngStyle]="{'border-color': username?.invalid && (username?.dirty ) ? 'red' : '' }"
-           type="text" placeholder="Имя">
+    <input class="input" formControlName="phoneNumber"
+           [ngStyle]="{'border-color': phoneNumber?.invalid && (phoneNumber?.dirty ) ? 'red' : '' }"
+           type="text" placeholder="Номер телефона">
 
-    <div *ngIf="username?.invalid && (username?.dirty)">
-      <div class="text-danger" *ngIf="username?.errors?.['required']">
-        Введите имя
+    <div *ngIf="phoneNumber?.invalid && (phoneNumber?.dirty)">
+      <div class="text-danger" *ngIf="phoneNumber?.errors?.['required']">
+        Введите номер телефона
       </div>
-      <div class="text-danger" *ngIf="username?.errors?.['pattern']">
-        Неверно введено имя
+      <div class="text-danger" *ngIf="phoneNumber?.errors?.['pattern']">
+        Неверно введен номер телефона
       </div>
     </div>
 
