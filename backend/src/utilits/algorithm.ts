@@ -1,4 +1,7 @@
+import { PrismaService } from '../prisma';
+
 export class Algorithm {
+  private readonly _prismaService: PrismaService;
   private async _convertTimeToMinutes(time: string): Promise<number> {
     const time1: string[] = time.split(':');
     return +time1[0] * 60 + +time1[1];
@@ -14,13 +17,15 @@ export class Algorithm {
     return `${time[0]}:${time[1]}`;
   }
   private async _getServicesDuration(serviceIds: string[]): Promise<number> {
-    serviceIds.forEach((id) => {
-      const time_servise = prisma.Services.findUnique({
+    let alltime: number = 0;
+    serviceIds.forEach(async (id) => {
+      const time_servise = await this._prismaService.Services.findUnique({
         where: {
           id,
         },
       });
-      time_servise.time;
+      alltime += await this._convertTimeToMinutes(time_servise.time.ToString());
     });
+    return alltime;
   }
 }
