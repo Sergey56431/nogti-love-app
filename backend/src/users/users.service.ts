@@ -34,10 +34,10 @@ export class UsersService {
     }
   }
 
-  public async findUniqUser(username: string) {
+  public async findUniqUser(phoneNumber: string) {
     try {
       return await this._prismaService.user.findUnique({
-        where: { username },
+        where: { phoneNumber },
       });
     } catch (error) {
       console.log(error);
@@ -122,14 +122,13 @@ export class UsersService {
 
     const existingUser = await this._prismaService.user.findUnique({
       where: {
-        username,
         phoneNumber,
       },
     });
 
     if (existingUser) {
       throw new HttpException(
-        'Пользователь с таким username или phoneNumber уже существует',
+        'Пользователь с таким phoneNumber уже существует',
         409,
       );
     }
@@ -137,10 +136,21 @@ export class UsersService {
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      return this._prismaService.user.create({
+      const user = await this._prismaService.user.create({
         select: this._returnUserModel,
         data: { ...dto, password: hashedPassword },
       });
+
+      await this._prismaService.settings.create({
+        data: {
+          userId: user.id,
+          defaultBreakTime: '00:30',
+          timeGranularity: '00:30',
+          defaultWorkTime: '09:00-16:00',
+        },
+      });
+
+      return user;
     } catch (error) {
       if (error.code === 'P2002') {
         throw new HttpException(
