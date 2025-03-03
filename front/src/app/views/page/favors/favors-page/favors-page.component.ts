@@ -80,7 +80,7 @@ export class FavorsPageComponent implements OnInit {
       modal: true,
       width: '450px',
       contentStyle: {
-        overflow: 'visible',
+        overflow: 'auto',
         maxWidth: '450px',
         maxHeight: '600px',
       },

@@ -22,7 +22,7 @@ import {DefaultResponseType, LoginResponseType} from '@shared/types';
 export class LoginPageComponent {
 
   protected _loginForm = this._fb.group({
-    username: ['', [Validators.required]],
+    phoneNumber: ['', [Validators.required]],
     // password: ['', [Validators.pattern('(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,12})$'), Validators.required]],
     password: ['', [Validators.required]],
     rememberMe: false
@@ -34,8 +34,8 @@ export class LoginPageComponent {
               private _snackBar: MatSnackBar) {
   }
 
-  get username() {
-    return this._loginForm.get('username');
+  get phoneNumber() {
+    return this._loginForm.get('phoneNumber');
   }
 
   get password() {
@@ -43,8 +43,8 @@ export class LoginPageComponent {
   }
 
   login() {
-    if (this._loginForm.valid && this._loginForm.value.username && this._loginForm.value.password) {
-      this._authService.login(this._loginForm.value.username, this._loginForm.value.password)
+    if (this._loginForm.valid && this._loginForm.value.phoneNumber && this._loginForm.value.password) {
+      this._authService.login(this._loginForm.value.phoneNumber, this._loginForm.value.password)
         .subscribe({
           next: (data: LoginResponseType | DefaultResponseType) => {
             if ((data as DefaultResponseType).error !== undefined) {
@@ -56,6 +56,7 @@ export class LoginPageComponent {
 
                 this._authService.setTokens(loginResponse.access_token);
                 this._authService.setUserInfo({
+                  phoneNumber: loginResponse.phoneNumber,
                   name: loginResponse.name,
                   userId: loginResponse.userId,
                 });

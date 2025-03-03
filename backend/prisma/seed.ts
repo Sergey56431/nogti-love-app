@@ -37,9 +37,16 @@ async function main() {
     },
   });
 
+  const categoryOperations = await prisma.categoryOperations.create({
+    data: {
+      name: 'Зарплата',
+      userId: user1.id,
+    },
+  });
+
   await prisma.income_Expanses.create({
     data: {
-      category: 'Зарплата',
+      categoryId: categoryOperations.id,
       type: 'income',
       value: 50000,
       userId: user1.id,

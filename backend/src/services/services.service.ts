@@ -11,11 +11,11 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class ServicesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private _prismaService: PrismaService) {}
 
   async create(data: CreateServicesDto) {
     try {
-      const categoryExists = await this.prisma.category.findUnique({
+      const categoryExists = await this._prismaService.category.findUnique({
         where: { id: data.categoryId },
       });
 
@@ -23,7 +23,7 @@ export class ServicesService {
         throw new NotFoundException(`Категория не найдена`);
       }
 
-      return await this.prisma.services.create({
+      return await this._prismaService.services.create({
         data: { ...data },
       });
     } catch (error) {
@@ -40,7 +40,7 @@ export class ServicesService {
 
   async findAll() {
     try {
-      return await this.prisma.services.findMany();
+      return await this._prismaService.services.findMany();
     } catch (error) {
       console.error('Ошибка поиска:', error);
       throw new InternalServerErrorException('Ошибка поиска');
@@ -49,7 +49,7 @@ export class ServicesService {
 
   async findOne(id: string) {
     try {
-      const service = await this.prisma.services.findUnique({
+      const service = await this._prismaService.services.findUnique({
         where: { id },
       });
       if (!service) {
@@ -64,7 +64,7 @@ export class ServicesService {
 
   async findByCategory(id: string) {
     try {
-      return await this.prisma.services.findMany({
+      return await this._prismaService.services.findMany({
         where: { categoryId: id },
       });
     } catch (error) {
@@ -76,7 +76,7 @@ export class ServicesService {
   async update(id: string, data: UpdateServicesDto) {
     try {
       if (data.categoryId) {
-        const categoryExists = await this.prisma.category.findUnique({
+        const categoryExists = await this._prismaService.category.findUnique({
           where: { id: data.categoryId },
         });
         if (!categoryExists) {
@@ -84,12 +84,12 @@ export class ServicesService {
         }
       }
 
-      const service = await this.prisma.services.findUnique({ where: { id } });
+      const service = await this._prismaService.services.findUnique({ where: { id } });
       if (!service) {
         throw new NotFoundException(`Услуга не найдена`);
       }
 
-      return this.prisma.services.update({
+      return this._prismaService.services.update({
         where: { id },
         data: { ...data },
       });
@@ -107,7 +107,7 @@ export class ServicesService {
 
   async remove(id: string) {
     try {
-      const result = await this.prisma.services.delete({
+      const result = await this._prismaService.services.delete({
         where: { id },
       });
       return result;

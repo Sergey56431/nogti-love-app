@@ -162,6 +162,32 @@ export class CalendarService {
     }
   }
 
+  public async findInterval(startDate: string, endDate: string) {
+    try {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        throw new HttpException('Некорректная дата', 400);
+      }
+
+      return await this._prismaService.calendar.findMany({
+        where: {
+          date: {
+            gte: start,
+            lte: end,
+          },
+        },
+      });
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      console.log(error);
+      throw new HttpException('Ошибка сервера при поиске интервала дней', 500);
+    }
+  }
+
   public async update(id: string, updateCalendarDto: UpdateCalendarDto) {
     try {
       return await this._prismaService.calendar.update({

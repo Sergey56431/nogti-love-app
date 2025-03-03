@@ -10,11 +10,11 @@ export class CreateIncomeExpencesDto {
   userId: string;
 
   @ApiProperty({
-    description: 'Категория операции',
+    description: 'ID категории операции',
     nullable: false,
-    example: 'Кредит',
+    example: '5592c7c4-c398-435a-9b9e-bc550139e698',
   })
-  category: string;
+  categoryId: string;
 
   @ApiProperty({
     description: 'Сумма операции',

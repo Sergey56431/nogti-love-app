@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, ErrorHandler, inject, OnInit, signal } from '@angular/core';
 import { DefaultResponseType, ServicesType, CategoriesType } from '@shared/types';
-import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FavorsService, CategoriesService } from '@shared/services';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Button } from 'primeng/button';
@@ -40,13 +40,16 @@ export class FavorsDialogComponent implements OnInit {
   protected readonly _dialogVariants = DialogVariants;
   protected _choiceDialogVariant = signal<string>(DialogVariants.SERVICE);
 
-  protected _choiceCategory = '';
+  protected _choiceCategory = signal<string>('');
+  protected _dialogVariant = '';
+
   protected _categoriesList = signal<CategoriesType[]>([]);
   protected _favorEdit = signal<ServicesType | undefined>(undefined);
   protected _categoryEdit = signal<CategoriesType | undefined>(undefined);
 
   protected _isEdit = signal<boolean>(false);
 
+  private readonly _ref = inject(DynamicDialogRef);
   private readonly _dataFavor = inject(DynamicDialogConfig);
   private readonly _favorService = inject(FavorsService);
   private readonly _categoryService = inject(CategoriesService);
@@ -90,6 +93,7 @@ export class FavorsDialogComponent implements OnInit {
   }
 
   public ngOnInit(): void {
+    this._dialogVariant = DialogVariants.SERVICE;
     this._categoryService
       .getAllCategories()
       .pipe(
@@ -106,8 +110,10 @@ export class FavorsDialogComponent implements OnInit {
     if (this._dataFavor.data !== undefined) {
       this._isEdit.set(true);
       if (this._dataFavor.data.edit === 'favors') {
+        this._choosingVariantDialog(DialogVariants.SERVICE);
         this._editingFavorInit();
       } else {
+        this._choosingVariantDialog(DialogVariants.CATEGORY);
         this._editingCategoryInit();
       }
     } else {
@@ -115,15 +121,20 @@ export class FavorsDialogComponent implements OnInit {
     }
   }
 
+  protected _choosingVariantDialog(value: string): void {
+    this._choiceDialogVariant.set(value);
+    this._dialogVariant = value;
+  }
+
   protected _choosingCategory(value: string) {
-    this._choiceCategory = value;
+    this._choiceCategory.set(value);
   }
 
   // Функция для инициализации редактирования услуги
   private _editingFavorInit() {
     this._favors.clear();
-    this._choiceDialogVariant.set(DialogVariants.SERVICE);
     this._favorEdit.set(this._dataFavor.data);
+    this._dialogVariant = DialogVariants.SERVICE;
     this._choosingCategory(this._favorEdit()?.categoryId ?? '');
     try {
       this._favorService.getFavorsById(this._favorEdit()?.id ?? '').subscribe((favor) => {
@@ -150,7 +161,7 @@ export class FavorsDialogComponent implements OnInit {
   // Функция для инициализации редактирования категорий
   private _editingCategoryInit(): void {
     this._categories.clear();
-    this._choiceDialogVariant.set(DialogVariants.CATEGORY);
+    this._dialogVariant = DialogVariants.CATEGORY;
     this._categoryEdit.set(this._dataFavor.data);
     try {
       this._categoryService.getCategoryById(this._categoryEdit()?.id ?? '').subscribe(category => {
@@ -193,7 +204,7 @@ export class FavorsDialogComponent implements OnInit {
   protected _sendNewFavorsList(): void {
     const favors = this._favors?.value;
     favors?.forEach((favor: ServicesType) => {
-      Object.assign(favor, { categoryId: this._choiceCategory });
+      Object.assign(favor, { categoryId: this._choiceCategory() });
     });
 
     from(favors).subscribe({
@@ -232,6 +243,7 @@ export class FavorsDialogComponent implements OnInit {
   }
 
   protected _updateCategory(): void {
+
   }
 
   private _showMessage(status: string, msg: string): void {
@@ -239,5 +251,9 @@ export class FavorsDialogComponent implements OnInit {
     if (message) {
       this._snackBar.add(message);
     }
+  }
+
+  protected _close() {
+    this._ref.close();
   }
 }

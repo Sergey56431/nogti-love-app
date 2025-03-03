@@ -25,22 +25,24 @@ export class AuthService {
     this.isLogged.set(!!this.cookieService.get(this._accessTokenKey));
   }
 
-  login(username: string, password: string): Observable<LoginResponseType | DefaultResponseType> {
+  public login(phoneNumber: string, password: string): Observable<LoginResponseType | DefaultResponseType> {
     return this.http.post<LoginResponseType>(environment.api + 'auth/login', {
-      username,
+      phoneNumber,
       password
     });
   }
 
-  signup(body: SignupResponseType): Observable<SignupResponseType> {
+  public signup(body: SignupResponseType): Observable<SignupResponseType> {
     return this.http.post<SignupResponseType>(environment.api + 'auth/signup', { ...body });
   }
 
-  logout(id: string): Observable<DefaultResponseType> {
-    return this.http.get<DefaultResponseType>(environment.api + 'auth/logout/' + id);
+  public logout(userId: string): Observable<DefaultResponseType> {
+    return this.http.get<DefaultResponseType>(environment.api + 'auth/logout', {
+      params: { id: userId }
+    });
   }
 
-  refresh(userId: string): Observable<RefreshResponseType> {
+  public refresh(userId: string): Observable<RefreshResponseType> {
     return this.http.get<RefreshResponseType>(environment.api + 'auth/refresh/' + userId);
   }
 

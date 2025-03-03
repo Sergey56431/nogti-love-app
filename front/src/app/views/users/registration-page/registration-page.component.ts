@@ -91,6 +91,7 @@ export class RegistrationPageComponent {
                       this._authService.setTokens(loginResponse.access_token,);
                       this._authService.setUserInfo({
                         userId: loginResponse.userId,
+                        phoneNumber: loginResponse.phoneNumber,
                         name: loginResponse.name,
                       });
                       this._router.navigate(['/main']);

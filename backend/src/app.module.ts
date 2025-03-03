@@ -10,6 +10,7 @@ import { CalendarModule } from './calendar';
 import { IncomExpencesModule } from './incom_expences';
 import { CategoriesModule } from './categories';
 import { ServicesModule } from './services';
+import { SettingsModule } from './settings/settings.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ServicesModule } from './services';
     IncomExpencesModule,
     CategoriesModule,
     ServicesModule,
+    SettingsModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, JwtStrategy],
