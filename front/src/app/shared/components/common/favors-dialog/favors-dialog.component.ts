@@ -32,8 +32,6 @@ enum DialogVariants {
 })
 
 /* TODO
- * - В случае редактирования отправлять одиночные запросы
- * - Переключение на создание категорий/услуг
  * - Редактирование выбранной услуги/категории
  * - Удаление выбранной услуги/категории
  */
@@ -207,7 +205,7 @@ export class FavorsDialogComponent implements OnInit {
   }
 
   protected _sendNewFavorsList(): void {
-    const favors = this._favors?.value;
+    const favors = this._favors?.value[0];
     favors?.forEach((favor: ServicesType) => {
       Object.assign(favor, { categoryId: this._choiceCategory() });
     });
@@ -225,10 +223,6 @@ export class FavorsDialogComponent implements OnInit {
         this._close();
       },
     });
-  }
-
-  protected _updateFavor(): void {
-    console.log(this._favorEdit());
   }
 
   protected _sendNewCategoriesList(): void {
@@ -253,8 +247,36 @@ export class FavorsDialogComponent implements OnInit {
     });
   }
 
-  protected _updateCategory(): void {
+  protected _updateFavor(): void {
+    const favorEdit = this._favors?.value[0];
+    Object.assign(favorEdit, { categoryId: this._choiceCategory() });
 
+    this._favorService.updateFavors(favorEdit, this._favorEdit()?.id ?? '').subscribe({
+      error: err =>{
+        this._showMessage('error', 'Ошибка при обновлении услуги' + err);
+        console.log(err);
+      },
+      complete: () => {
+        this._showMessage('success', 'Услуга обновлена');
+        this._close();
+      }
+    });
+  }
+
+  protected _updateCategory(): void {
+    const categoryEdit = this._categories?.value[0];
+    Object.assign(categoryEdit, { userId: this._userInfo()?.userId });
+
+    this._categoryService.updateCategory(categoryEdit, this._categoryEdit()?.id ?? '').subscribe({
+      error: err =>{
+        this._showMessage('error', 'Ошибка при обновлении категории' + err);
+        console.log(err);
+      },
+      complete: () => {
+        this._showMessage('success', 'Категория обновлена');
+        this._close();
+      }
+    });
   }
 
   private _showMessage(status: string, msg: string): void {

@@ -38,12 +38,7 @@ export class CategoriesService {
   }
 
   public updateCategory(category: Partial<CategoriesType>, id: string): Observable<CategoriesType | DefaultResponseType> {
-    return this.http.put<CategoriesType | DefaultResponseType>(environment.api + 'category', {
-      params: {
-        id: id,
-      },
-      body: category,
-    });
+    return this.http.put<CategoriesType | DefaultResponseType>(environment.api + 'category?id=' + id, category);
   }
 
   public deleteCategory(id: string): Observable<CategoriesType | DefaultResponseType> {
