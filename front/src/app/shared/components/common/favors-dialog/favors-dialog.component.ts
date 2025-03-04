@@ -222,6 +222,7 @@ export class FavorsDialogComponent implements OnInit {
       },
       complete: () => {
         this._showMessage('success', 'Услуга добавлена');
+        this._close();
       },
     });
   }
@@ -247,6 +248,7 @@ export class FavorsDialogComponent implements OnInit {
       },
       complete: () => {
         this._showMessage('success', 'Категория добавлена');
+        this._close();
       },
     });
   }
