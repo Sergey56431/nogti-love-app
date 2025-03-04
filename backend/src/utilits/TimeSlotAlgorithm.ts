@@ -1,5 +1,5 @@
-import { PrismaService } from '../prisma';
-import { ServicesService } from '../services/';
+import { ServicesService } from '../services';
+import { SettingsService } from '../settings';
 
 interface UserSettings {
   userId: string;
@@ -8,9 +8,9 @@ interface UserSettings {
   timeGranularity: string; // "00:30"
 }
 
-export class Algorithm {
+export class TimeSlotAlgorithm {
   constructor(private readonly _servicesService: ServicesService) {}
-  private readonly _prismaService: PrismaService;
+  constructor(private readonly _settingsService: SettingsService) {}
   private async _convertTimeToMinutes(time: string): Promise<number> {
     const time1: string[] = time.split(':');
     return +time1[0] * 60 + +time1[1];
@@ -35,11 +35,7 @@ export class Algorithm {
   }
 
   private async _getUserSettings(userId: string): Promise<UserSettings> {
-    const user: UserSettings = await this._prismaService.Settings.findUnique({
-      where: {
-        userId,
-      },
-    });
+    const user: UserSettings = await this._settingsService.find(userId);
     return user;
   }
 }
