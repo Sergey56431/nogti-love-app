@@ -24,6 +24,8 @@ import { FavorsDialogComponent } from '@shared/components';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FavorsPageComponent implements OnInit {
+  public _isOverflow = signal<boolean>(false);
+
   protected _title = 'Услуги и категории';
 
   private _ref: DynamicDialogRef | undefined;
@@ -85,6 +87,7 @@ export class FavorsPageComponent implements OnInit {
       contentStyle: {
         overflow: 'auto',
         maxWidth: '450px',
+        minHeight: '384px',
         maxHeight: '600px',
       },
     });

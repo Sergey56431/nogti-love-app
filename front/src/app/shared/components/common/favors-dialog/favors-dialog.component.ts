@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, ErrorHandler, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ErrorHandler,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { DefaultResponseType, ServicesType, CategoriesType, UserInfoType } from '@shared/types';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FavorsService, CategoriesService } from '@shared/services';
@@ -36,6 +43,7 @@ enum DialogVariants {
  * - Удаление выбранной услуги/категории
  */
 export class FavorsDialogComponent implements OnInit {
+  public formsCount = signal<number>(0);
   protected readonly _dialogVariants = DialogVariants;
   protected _choiceDialogVariant = signal<string>(DialogVariants.SERVICE);
 
@@ -293,6 +301,7 @@ export class FavorsDialogComponent implements OnInit {
   }
 
   protected _close() {
+    this.formsCount.set(0);
     this._ref.close();
   }
 }
