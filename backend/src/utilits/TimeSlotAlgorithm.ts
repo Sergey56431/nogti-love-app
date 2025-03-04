@@ -9,7 +9,7 @@ interface UserSettings {
 }
 
 export class Algorithm {
-  constructor(private readonly servicesService: ServicesService) {}
+  constructor(private readonly _servicesService: ServicesService) {}
   private readonly _prismaService: PrismaService;
   private async _convertTimeToMinutes(time: string): Promise<number> {
     const time1: string[] = time.split(':');
@@ -28,24 +28,18 @@ export class Algorithm {
   private async _getServicesDuration(serviceIds: string[]): Promise<number> {
     let alltime: number = 0;
     serviceIds.forEach(async (id) => {
-      const time_servise = await servicesService.findOne(id);
+      const time_servise = await this._servicesService.findOne(id);
       alltime += await this._convertTimeToMinutes(time_servise.time.ToString());
     });
     return alltime;
   }
 
   private async _getUserSettings(userId: string): Promise<UserSettings> {
-    const user = await this._prismaService.Settings.findUnique({
+    const user: UserSettings = await this._prismaService.Settings.findUnique({
       where: {
         userId,
       },
     });
-    const userSett: UserSettings = {
-      userId: user.userId,
-      defaultWorkTime: user.defaultWorkTime,
-      defaultBreakTime: user.defaultBreakTime,
-      timeGranularity: user.timeGranularity,
-    };
-    return userSett;
+    return user;
   }
 }
