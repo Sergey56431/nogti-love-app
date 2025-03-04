@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, ErrorHandler, inject, OnInit, signal } from '@angular/core';
-import { DefaultResponseType, ServicesType, CategoriesType } from '@shared/types';
+import { DefaultResponseType, ServicesType, CategoriesType, UserInfoType } from '@shared/types';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FavorsService, CategoriesService } from '@shared/services';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -15,6 +15,7 @@ import { SnackStatusesUtil } from '@shared/utils';
 import { MessageService } from 'primeng/api';
 import { NgTemplateOutlet } from '@angular/common';
 import { SelectButton } from 'primeng/selectbutton';
+import { AuthService } from '@core/auth';
 
 enum DialogVariants {
   SERVICE = 'service',
@@ -47,11 +48,14 @@ export class FavorsDialogComponent implements OnInit {
   protected _favorEdit = signal<ServicesType | undefined>(undefined);
   protected _categoryEdit = signal<CategoriesType | undefined>(undefined);
 
+  private _userInfo = signal<UserInfoType | undefined>(undefined);
+
   protected _isEdit = signal<boolean>(false);
 
   private readonly _ref = inject(DynamicDialogRef);
   private readonly _dataFavor = inject(DynamicDialogConfig);
   private readonly _favorService = inject(FavorsService);
+  private readonly _authService = inject(AuthService);
   private readonly _categoryService = inject(CategoriesService);
   private readonly _snackBar = inject(MessageService);
   private readonly _fb = inject(FormBuilder);
@@ -93,6 +97,7 @@ export class FavorsDialogComponent implements OnInit {
   }
 
   public ngOnInit(): void {
+    this._userInfo.set(this._authService.getUserInfo());
     this._dialogVariant = DialogVariants.SERVICE;
     this._categoryService
       .getAllCategories()
@@ -227,17 +232,21 @@ export class FavorsDialogComponent implements OnInit {
 
   protected _sendNewCategoriesList(): void {
     const categories = this._categories?.value;
+    categories.forEach((category: CategoriesType) => {
+      Object.assign(category, { userId: this._userInfo()?.userId });
+    });
 
     from(categories).subscribe({
-      next: (favor) => {
-        this._favorService.createFavors(favor as ServicesType).subscribe({});
+      next: (category) => {
+        this._categoryService.createCategory(category as CategoriesType).subscribe({
+        });
       },
       error: (err) => {
         this._showMessage('error', 'Ошибка при добавлении услуги');
         console.log(err);
       },
       complete: () => {
-        this._showMessage('success', 'Услуга добавлена');
+        this._showMessage('success', 'Категория добавлена');
       },
     });
   }
