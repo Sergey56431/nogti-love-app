@@ -1,5 +1,10 @@
 import { PrismaService } from '../prisma';
-
+interface UserSettings {
+  userId: string;
+  defaultWorkTime: string; // "09:00-17:00"
+  defaultBreakTime: string; // "00:10"
+  timeGranularity: string; // "00:30"
+}
 export class Algorithm {
   private readonly _prismaService: PrismaService;
   private async _convertTimeToMinutes(time: string): Promise<number> {
@@ -27,5 +32,20 @@ export class Algorithm {
       alltime += await this._convertTimeToMinutes(time_servise.time.ToString());
     });
     return alltime;
+  }
+
+  private async _getUserSettings(userId: string): Promise<UserSettings> {
+    const user = await this._prismaService.Settings.findUnique({
+      where: {
+        userId,
+      },
+    });
+    const userSett: UserSettings = {
+      userId: user.userId,
+      defaultWorkTime: user.defaultWorkTime,
+      defaultBreakTime: user.defaultBreakTime,
+      timeGranularity: user.timeGranularity,
+    };
+    return userSett;
   }
 }
