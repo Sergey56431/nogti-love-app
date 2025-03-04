@@ -43,9 +43,7 @@ export class CategoriesService {
 
   public deleteCategory(id: string): Observable<CategoriesType | DefaultResponseType> {
     return this.http.delete<CategoriesType>(environment.api + 'category', {
-      params: {
-        id: id,
-      },
+      params: { id: id, },
     });
   }
 }

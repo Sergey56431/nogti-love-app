@@ -6,7 +6,7 @@ import {
   signal,
 } from '@angular/core';
 import { CategoriesService, FavorsService } from '@shared/services';
-import { DialogService } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Button } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { CategoriesType, DefaultResponseType, ServicesType } from '@shared/types';
@@ -26,6 +26,8 @@ import { FavorsDialogComponent } from '@shared/components';
 export class FavorsPageComponent implements OnInit {
   protected _title = 'Услуги и категории';
 
+  private _ref: DynamicDialogRef | undefined;
+
   protected _favorsList = signal<ServicesType[]>([]);
   protected _categoriesList = signal<CategoriesType[]>([]);
 
@@ -33,6 +35,7 @@ export class FavorsPageComponent implements OnInit {
   private readonly _categoryService = inject(CategoriesService);
   private readonly _dialogService = inject(DialogService);
   private readonly _snackService = inject(MessageService);
+
 
   public ngOnInit(): void {
     try {
@@ -70,9 +73,9 @@ export class FavorsPageComponent implements OnInit {
     });
   }
 
-  // Вызов модального окна для добавления услуг
-  protected _addFavors() {
-    this._dialogService.open(FavorsDialogComponent, {
+  // Вызов модального окна для добавления услуг/категорий
+  protected _addPosition() {
+    this._ref = this._dialogService.open(FavorsDialogComponent, {
       header: 'Добавить услуги / категории',
       draggable: true,
       closable: true,
@@ -85,11 +88,15 @@ export class FavorsPageComponent implements OnInit {
         maxHeight: '600px',
       },
     });
+    this._ref.onClose.subscribe(() => {
+      this._getAllFavors();
+      this._getAllCategories();
+    });
   }
 
   // Вызов модального окна для добавления категорий
-  protected _editFavors(favor: ServicesType, edit: string): void {
-    this._dialogService.open(FavorsDialogComponent, {
+  protected _editPosition(favor: ServicesType, edit: string): void {
+    this._ref = this._dialogService.open(FavorsDialogComponent, {
       header: 'Редактировать услуги / категории',
       draggable: true,
       closable: true,
@@ -102,6 +109,14 @@ export class FavorsPageComponent implements OnInit {
         maxHeight: '600px',
       },
       data: Object.assign(favor, { edit: edit }),
+    });
+
+    this._ref.onClose.subscribe(() => {
+      if (edit === 'favors'){
+        this._getAllFavors();
+      } else {
+        this._getAllCategories();
+      }
     });
   }
 
