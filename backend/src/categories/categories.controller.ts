@@ -98,7 +98,7 @@ export class CategoryController {
     return this.categoryService.update(id, updateCategoryDto);
   }
 
-  @Delete(':id')
+  @Delete()
   remove(@Query('id') id: string) {
     return this.categoryService.remove(id);
   }
