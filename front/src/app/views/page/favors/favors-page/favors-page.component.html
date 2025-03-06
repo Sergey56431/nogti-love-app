@@ -4,7 +4,7 @@
   <div class="flex flex-col gap-2">
     <div>
       <p-button label="Добавить услуги" icon="pi pi-plus"
-                (click)="_addFavors()" pTooltip="Добавить услуги или категори"></p-button>
+                (click)="_addPosition()" pTooltip="Добавить услуги или категори"></p-button>
     </div>
 
     <div class="flex flex-col gap-4 lg:flex-row">
@@ -27,7 +27,7 @@
                 <td>{{ favor.time }}</td>
                 <td>
                   <div class="flex items-center gap-2">
-                    <p-button icon="pi pi-pencil" [rounded]="true" (click)="_editFavors(favor, 'favors')"
+                    <p-button icon="pi pi-pencil" [rounded]="true" (click)="_editPosition(favor, 'favors')"
                               [text]="true" pTooltip="Редактировать услугу" />
                     <p-button icon="pi pi-trash" severity="danger" [rounded]="true" (click)="_removeFavor(favor)"
                               [text]="true" pTooltip="Удалить услугу" />
@@ -59,7 +59,7 @@
                 <td>{{ item.name }}</td>
                 <td>
                   <div class="flex">
-                    <p-button icon="pi pi-pencil" [rounded]="true" (click)="_editFavors(item, 'category')"
+                    <p-button icon="pi pi-pencil" [rounded]="true" (click)="_editPosition(item, 'category')"
                               [text]="true" pTooltip="Редактировать категорию" />
                     <p-button icon="pi pi-trash" severity="danger" [rounded]="true" (click)="_removeCategory(item)"
                               [text]="true" pTooltip="Удалить категорию" />

@@ -32,8 +32,8 @@ export class FavorsService {
     return this._http.post<ServicesType | DefaultResponseType>(environment.api + 'services', body);
   }
 
-  public updateFavors(body: ServicesType): Observable<ServicesType | DefaultResponseType> {
-    return this._http.put<ServicesType | DefaultResponseType>(environment.api + 'services', body);
+  public updateFavors(body: ServicesType, serviceId: string): Observable<ServicesType | DefaultResponseType> {
+    return this._http.put<ServicesType | DefaultResponseType>(environment.api + 'services?id=' + serviceId, body);
   }
 
   public deleteFavors(id: string): Observable<ServicesType | DefaultResponseType> {

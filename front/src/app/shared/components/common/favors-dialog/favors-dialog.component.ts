@@ -1,5 +1,12 @@
-import { ChangeDetectionStrategy, Component, ErrorHandler, inject, OnInit, signal } from '@angular/core';
-import { DefaultResponseType, ServicesType, CategoriesType } from '@shared/types';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ErrorHandler,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
+import { DefaultResponseType, ServicesType, CategoriesType, UserInfoType } from '@shared/types';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FavorsService, CategoriesService } from '@shared/services';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -15,6 +22,7 @@ import { SnackStatusesUtil } from '@shared/utils';
 import { MessageService } from 'primeng/api';
 import { NgTemplateOutlet } from '@angular/common';
 import { SelectButton } from 'primeng/selectbutton';
+import { AuthService } from '@core/auth';
 
 enum DialogVariants {
   SERVICE = 'service',
@@ -31,12 +39,11 @@ enum DialogVariants {
 })
 
 /* TODO
- * - В случае редактирования отправлять одиночные запросы
- * - Переключение на создание категорий/услуг
  * - Редактирование выбранной услуги/категории
  * - Удаление выбранной услуги/категории
  */
 export class FavorsDialogComponent implements OnInit {
+  public formsCount = signal<number>(0);
   protected readonly _dialogVariants = DialogVariants;
   protected _choiceDialogVariant = signal<string>(DialogVariants.SERVICE);
 
@@ -47,11 +54,14 @@ export class FavorsDialogComponent implements OnInit {
   protected _favorEdit = signal<ServicesType | undefined>(undefined);
   protected _categoryEdit = signal<CategoriesType | undefined>(undefined);
 
+  private _userInfo = signal<UserInfoType | undefined>(undefined);
+
   protected _isEdit = signal<boolean>(false);
 
   private readonly _ref = inject(DynamicDialogRef);
   private readonly _dataFavor = inject(DynamicDialogConfig);
   private readonly _favorService = inject(FavorsService);
+  private readonly _authService = inject(AuthService);
   private readonly _categoryService = inject(CategoriesService);
   private readonly _snackBar = inject(MessageService);
   private readonly _fb = inject(FormBuilder);
@@ -61,6 +71,7 @@ export class FavorsDialogComponent implements OnInit {
     { label: 'Категория', value: DialogVariants.CATEGORY },
   ];
 
+  // Форма для создания услуг
   protected _favorsListForm: FormGroup = this._fb.group({
     category: ['', Validators.required],
     favors: this._fb.array([
@@ -72,6 +83,7 @@ export class FavorsDialogComponent implements OnInit {
     ]),
   });
 
+  // Форма для создания категорий
   protected _categoriesListForm = this._fb.group({
     categories: this._fb.array([
       this._fb.group({
@@ -80,19 +92,18 @@ export class FavorsDialogComponent implements OnInit {
     ]),
   });
 
-  protected get _category() {
-    return this._favorsListForm.get('category');
-  }
-
+  // Гетер для получения списка услуг
   protected get _favors(): FormArray {
     return this._favorsListForm.get('favors') as FormArray;
   }
 
+  // Гетер для получения списка категорий
   protected get _categories(): FormArray {
     return this._categoriesListForm.get('categories') as FormArray;
   }
 
   public ngOnInit(): void {
+    this._userInfo.set(this._authService.getUserInfo());
     this._dialogVariant = DialogVariants.SERVICE;
     this._categoryService
       .getAllCategories()
@@ -121,11 +132,13 @@ export class FavorsDialogComponent implements OnInit {
     }
   }
 
+  // Функция для выбора варианта диалогового окна (либо создание категорий либо создание услуг)
   protected _choosingVariantDialog(value: string): void {
     this._choiceDialogVariant.set(value);
     this._dialogVariant = value;
   }
 
+  // Функция для выбора категории (нужна для выбора при инициализации)
   protected _choosingCategory(value: string) {
     this._choiceCategory.set(value);
   }
@@ -140,7 +153,6 @@ export class FavorsDialogComponent implements OnInit {
       this._favorService.getFavorsById(this._favorEdit()?.id ?? '').subscribe((favor) => {
         // Убедитесь, что favor имеет правильный тип
         if (favor) {
-          this._category?.setValue(this._favorEdit()?.categoryId);
           const favorGroup = this._fb.group({
             name: [(favor as ServicesType).name ?? '', Validators.required],
             price: [(favor as ServicesType).price ?? 0, Validators.required],
@@ -201,6 +213,7 @@ export class FavorsDialogComponent implements OnInit {
     );
   }
 
+  // Функция для потоковой отправки списка новых услуг
   protected _sendNewFavorsList(): void {
     const favors = this._favors?.value;
     favors?.forEach((favor: ServicesType) => {
@@ -217,35 +230,69 @@ export class FavorsDialogComponent implements OnInit {
       },
       complete: () => {
         this._showMessage('success', 'Услуга добавлена');
+        this._close();
       },
     });
   }
 
-  protected _updateFavor(): void {
-    console.log(this._favorEdit());
-  }
-
+  // Функция для потоковой отправки списка новых категорий
   protected _sendNewCategoriesList(): void {
     const categories = this._categories?.value;
+    categories.forEach((category: CategoriesType) => {
+      Object.assign(category, { userId: this._userInfo()?.userId });
+    });
 
     from(categories).subscribe({
-      next: (favor) => {
-        this._favorService.createFavors(favor as ServicesType).subscribe({});
+      next: (category) => {
+        this._categoryService.createCategory(category as CategoriesType).subscribe({
+        });
       },
       error: (err) => {
         this._showMessage('error', 'Ошибка при добавлении услуги');
         console.log(err);
       },
       complete: () => {
-        this._showMessage('success', 'Услуга добавлена');
+        this._showMessage('success', 'Категория добавлена');
+        this._close();
       },
     });
   }
 
-  protected _updateCategory(): void {
+  // Функция для обновления выбранной услуги
+  protected _updateFavor(): void {
+    const favorEdit = this._favors?.value[0];
+    Object.assign(favorEdit, { categoryId: this._choiceCategory() });
 
+    this._favorService.updateFavors(favorEdit, this._favorEdit()?.id ?? '').subscribe({
+      error: err =>{
+        this._showMessage('error', 'Ошибка при обновлении услуги' + err);
+        console.log(err);
+      },
+      complete: () => {
+        this._showMessage('success', 'Услуга обновлена');
+        this._close();
+      }
+    });
   }
 
+  // Функция для обновления выбранной категории
+  protected _updateCategory(): void {
+    const categoryEdit = this._categories?.value[0];
+    Object.assign(categoryEdit, { userId: this._userInfo()?.userId });
+
+    this._categoryService.updateCategory(categoryEdit, this._categoryEdit()?.id ?? '').subscribe({
+      error: err =>{
+        this._showMessage('error', 'Ошибка при обновлении категории' + err);
+        console.log(err);
+      },
+      complete: () => {
+        this._showMessage('success', 'Категория обновлена');
+        this._close();
+      }
+    });
+  }
+
+  // Функция для вывода информационного сообщения с результатом операции
   private _showMessage(status: string, msg: string): void {
     const message = SnackStatusesUtil.getStatuses(status, msg);
     if (message) {
@@ -254,6 +301,7 @@ export class FavorsDialogComponent implements OnInit {
   }
 
   protected _close() {
+    this.formsCount.set(0);
     this._ref.close();
   }
 }
