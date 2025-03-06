@@ -11,6 +11,7 @@ import {
 import { ServicesService } from './services.service';
 import { CreateServicesDto, UpdateServicesDto } from './dto';
 import { TokenGuard } from '../auth';
+import {query} from "express";
 
 @UseGuards(TokenGuard)
 @Controller('services')
@@ -32,7 +33,6 @@ export class ServicesController {
       return this.servicesService.findAll();
     }
   }
-
   @Put()
   update(
     @Body() updateServicesDto: UpdateServicesDto,
