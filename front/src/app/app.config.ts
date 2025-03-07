@@ -12,7 +12,6 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from '@angular/common/http';
-import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { provideStore } from '@ngxs/store';
 import {
@@ -53,11 +52,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptorsFromDi()),
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
-
-    {
-      provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
-      useValue: { duration: 2500 },
-    },
     provideCharts(withDefaultRegisterables()),
     provideStore([]),
     provideServiceWorker('ngsw-worker.js', {

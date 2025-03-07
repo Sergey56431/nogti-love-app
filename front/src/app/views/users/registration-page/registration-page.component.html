@@ -4,19 +4,19 @@
       <img src="/images/logo.png" alt="Логотип">
     </div>
     <input class="input" formControlName="username" [class.error]="username?.invalid && (username?.dirty)"
-           type="text" placeholder="Имя">
+           type="text" placeholder="username">
 
     <div class="input-error">
       @if (username?.invalid && (username?.dirty)) {
         <div>
           @if (username?.errors?.['required']) {
             <div class="text-danger">
-              Заполните Имя
+              Введите username
             </div>
           }
           @if (username?.errors?.['pattern']) {
             <div class="text-danger">
-              Неверное имя
+              Некорректный username
             </div>
           }
         </div>

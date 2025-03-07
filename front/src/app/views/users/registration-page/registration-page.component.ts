@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { NgIf, NgStyle } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '@core/auth';
@@ -13,10 +12,8 @@ import { SnackStatusesUtil } from '@shared/utils';
   standalone: true,
   imports: [
     FormsModule,
-    NgIf,
     ReactiveFormsModule,
     RouterLink,
-    NgStyle,
   ],
   templateUrl: './registration-page.component.html',
 })
@@ -74,7 +71,7 @@ export class RegistrationPageComponent {
             console.log(err);
           },
           complete: () => {
-            this._authService.login(this._signupForm.value.username!, this._signupForm.value.password!)
+            this._authService.login(this._signupForm.value.phone!, this._signupForm.value.password!)
               .subscribe({
                 next: (data: LoginResponseType | DefaultResponseType) => {
                   if (data as LoginResponseType) {
