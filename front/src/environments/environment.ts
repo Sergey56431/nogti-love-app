@@ -1,3 +1,3 @@
 export const environment = {
-  api: 'http://localhost:3000/api/',
+  api: 'https://nogti-love.ru/api/',
 };

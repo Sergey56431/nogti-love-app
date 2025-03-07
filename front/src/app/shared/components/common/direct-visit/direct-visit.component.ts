@@ -111,7 +111,7 @@ export class DirectVisitComponent implements OnInit {
 
   // Получение всех услуг
   protected _fetchFavors(category: CategoriesType) {
-    this._favorService.getFavorsByCategory(category.id).subscribe((favors) => {
+    this._favorService.getFavorsByCategory(category.id ?? '').subscribe((favors) => {
       if ((favors as DefaultResponseType).error == null) {
         this._favors.set(favors as ServicesType[]);
       }

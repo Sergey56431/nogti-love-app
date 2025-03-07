@@ -15,10 +15,10 @@ export const routes: Routes = [
         loadComponent: () => import('./views').then((c) => c.MainComponent),
         title: 'Главная',
       },
-      // {
-      //   path: 'settings',
-      //   loadComponent:() => import('./views/page').then(c => c.SettingsPageComponent),
-      // },
+      {
+        path: 'settings',
+        loadComponent:() => import('./views').then(c => c.SettingsPageComponent),
+      },
       {
         path: 'clients',
         loadComponent: () =>
@@ -62,6 +62,21 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./views').then((c) => c.AllTransationsPageComponent),
         title: 'Операции',
+      },
+      {
+        path: 'operations/all-transactions',
+        loadComponent: () => import('./views').then((c) => c.AllTransationsPageComponent),
+        title: 'Список операций',
+      },
+      {
+        path: 'operations/category-operations',
+        loadComponent: () => import('./views').then((c) => c.OperationsCategoryComponent),
+        title: 'Категории операций',
+      },
+      {
+        path: 'operations/transactions-details/:id',
+        loadComponent: () => import('./views').then((c) => c.TransactionsDetailsComponent),
+        title: 'Детали операции',
       },
     ],
   },
