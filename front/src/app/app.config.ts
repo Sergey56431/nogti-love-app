@@ -14,11 +14,6 @@ import {
 } from '@angular/common/http';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { provideStore } from '@ngxs/store';
-import {
-  ErrorStateMatcher,
-  provideNativeDateAdapter,
-  ShowOnDirtyErrorStateMatcher,
-} from '@angular/material/core';
 import { provideServiceWorker } from '@angular/service-worker';
 import { AuthInterceptor } from '@core/auth';
 import { providePrimeNG } from 'primeng/config';
@@ -33,7 +28,6 @@ export const appConfig: ApplicationConfig = {
     MessageService,
     ConfirmDialog,
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideNativeDateAdapter(),
     provideRouter(routes, withDebugTracing()),
     provideStore([]),
     provideAnimationsAsync(),
@@ -51,7 +45,6 @@ export const appConfig: ApplicationConfig = {
     { provide: LOCALE_ID, useValue: 'ru' },
     provideHttpClient(withInterceptorsFromDi()),
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
     provideCharts(withDefaultRegisterables()),
     provideStore([]),
     provideServiceWorker('ngsw-worker.js', {

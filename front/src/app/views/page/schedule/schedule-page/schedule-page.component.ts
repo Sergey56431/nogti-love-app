@@ -1,6 +1,4 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DatePicker } from 'primeng/datepicker';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Checkbox } from 'primeng/checkbox';
@@ -12,8 +10,6 @@ import { RouterLink } from '@angular/router';
   selector: 'app-schedule-page',
   standalone: true,
   imports: [
-    MatFormFieldModule,
-    MatDatepickerModule,
     DatePicker,
     ReactiveFormsModule,
     Checkbox,
