@@ -78,6 +78,7 @@ export class CategoryService {
     try {
       return await this._prismaService.category.findMany({
         where: { userId },
+        include: { services: true },
       });
     } catch (error) {
       if (error instanceof HttpException) {
