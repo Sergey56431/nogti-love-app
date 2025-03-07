@@ -35,8 +35,8 @@ export class ServicesController {
 
   @Put()
   update(
-    @Body() updateServicesDto: UpdateServicesDto,
-    @Query('id') id: string,
+      @Body() updateServicesDto: UpdateServicesDto,
+      @Query('id') id: string,
   ) {
     return this.servicesService.update(id, updateServicesDto);
   }
