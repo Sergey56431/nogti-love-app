@@ -19,7 +19,9 @@ export class TimeSlotAlgorithm {
     return ((+time1[0]) * 60) + (+time1[1]);
   }
   private async _formatMinutesToTime(minutes: number): Promise<string> {
-    return `${`${Math.floor(minutes / 60)}`.padStart(2, '0')}:${`${minutes % 60}`.padStart(2, '0')}`; //возвращает строку типа "02:23"; `округляем/только в меньшую(minutes / 60):остаток при делении minutes на 60`
+    return `${Math.floor(minutes / 60)
+      .toString()
+      .padStart(2, '0')}:${(minutes % 60).toString().padStart(2, '0')}`; //возвращает строку типа "02:23"; `округляем/только в меньшую(minutes / 60):остаток при делении minutes на 60`
   }
   private async _getServicesDuration(serviceIds: string[]): Promise<number> {
     let alltime: number = 0;
