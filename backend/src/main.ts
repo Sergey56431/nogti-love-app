@@ -32,7 +32,7 @@ async function bootstrap() {
     origin: (origin, callback) => {
       const allowedOrigins = [
         'https://sergey-frontenddev-cashback-app-d231.twc1.net',
-        'http://localhost:3000',
+        'http://localhost:4200',
       ];
 
       if (!origin || allowedOrigins.includes(origin)) {
