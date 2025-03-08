@@ -9,11 +9,12 @@ import { CategoriesService, FavorsService } from '@shared/services';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Button } from 'primeng/button';
 import { TableModule } from 'primeng/table';
-import { CategoriesType, DefaultResponseType, ServicesType } from '@shared/types';
+import { CategoriesType, DefaultResponseType, ServicesType, UserInfoType } from '@shared/types';
 import { MessageService } from 'primeng/api';
 import { SnackStatusesUtil } from '@shared/utils';
 import { Tooltip } from 'primeng/tooltip';
 import { FavorsDialogComponent } from '@shared/components';
+import { AuthService } from '@core/auth';
 
 @Component({
   selector: 'app-favors-page',
@@ -26,6 +27,7 @@ import { FavorsDialogComponent } from '@shared/components';
 export class FavorsPageComponent implements OnInit {
   public _isOverflow = signal<boolean>(false);
 
+  private _userInfo: UserInfoType = {} as UserInfoType;
   protected _title = 'Услуги и категории';
 
   private _ref: DynamicDialogRef | undefined;
@@ -37,37 +39,32 @@ export class FavorsPageComponent implements OnInit {
   private readonly _categoryService = inject(CategoriesService);
   private readonly _dialogService = inject(DialogService);
   private readonly _snackService = inject(MessageService);
+  private readonly _authService = inject(AuthService);
 
 
   public ngOnInit(): void {
+    this._userInfo = this._authService.getUserInfo();
     try {
-      this._getAllFavors();
       this._getAllCategories();
     } catch (err) {
       const status = SnackStatusesUtil.getStatuses('error', 'Ошибка получения данных');
       this._snackService.add(status);
       console.log(err);
     }
-
   }
 
-  // Запрос на получение всех услуг
-  private _getAllFavors(): void {
-    this._favorsService.getAllFavors().subscribe((result) => {
-      if ((result as DefaultResponseType).error === undefined) {
-        this._favorsList.set(result as ServicesType[]);
-      } else {
-        const error = SnackStatusesUtil.getStatuses('error', (result as DefaultResponseType).message,)!;
-        this._snackService.add(error);
-      }
-    });
-  }
-
-  // Запрос на получение всех категорий
+  // Запрос на получение всех категорий и услуг
   private _getAllCategories(): void {
-    this._categoryService.getAllCategories().subscribe((result) => {
+    this._categoryService.getCategoryByUser(this._userInfo.userId ?? '').subscribe((result) => {
       if ((result as DefaultResponseType).error === undefined) {
         this._categoriesList.set(result as CategoriesType[]);
+        (result as CategoriesType[]).forEach((item) => {
+          item.services?.forEach((favor) => {
+            if(favor) {
+              this._favorsList().push(favor);
+            }
+          });
+        });
       } else {
         const error = SnackStatusesUtil.getStatuses('error');
         this._snackService.add(error!);

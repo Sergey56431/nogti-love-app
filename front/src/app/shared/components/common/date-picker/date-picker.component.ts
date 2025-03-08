@@ -139,6 +139,10 @@ export class DatePickerComponent implements OnInit {
       .reverse()
       .join('-');
     this.selectedDate.set(date);
+    this.fetchDirectsToDay(date);
+  }
+
+  public fetchDirectsToDay(date: string) {
     this._directService.fetchDirectsByDate(date).subscribe((directs) => {
       this.directs.set(directs);
       console.log(this.directs());

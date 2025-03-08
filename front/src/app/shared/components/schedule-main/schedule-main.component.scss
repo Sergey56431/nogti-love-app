@@ -87,7 +87,7 @@
             cursor: pointer;
             display: flex;
             align-items: center;
-            padding: 5px;
+            padding: 15px 5px;
             transition: .2s all ease-in-out;
 
             &:hover {
@@ -107,17 +107,9 @@
               text-align: end;
             }
 
-            .item-profile-img {
-              border-radius: 5px;
-              width: 32px;
-              height: 32px;
-              background-color: $busy-color;
-              margin-right: 20px;
-            }
-
             .item-profile-name {
               font-size: 14px;
-              width: 138px;
+              width: 128px;
               margin-right: 16px;
             }
 

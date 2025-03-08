@@ -5,6 +5,7 @@ import { Checkbox } from 'primeng/checkbox';
 import { Slider } from 'primeng/slider';
 import { Status } from '@shared/utils';
 import { RouterLink } from '@angular/router';
+import { Button } from 'primeng/button';
 
 @Component({
   selector: 'app-schedule-page',
@@ -16,6 +17,7 @@ import { RouterLink } from '@angular/router';
     Slider,
     FormsModule,
     RouterLink,
+    Button,
   ],
   templateUrl: './schedule-page.component.html',
   styleUrl: './schedule-page.component.scss',
