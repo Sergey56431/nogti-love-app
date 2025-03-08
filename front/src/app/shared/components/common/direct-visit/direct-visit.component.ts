@@ -14,7 +14,14 @@ import { ButtonModule } from 'primeng/button';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CategoriesService, DirectsService, FavorsService } from '@shared/services';
 import { AuthService } from '@core/auth';
-import { CategoriesType, DefaultResponseType, DirectsType, ServicesType, UserInfoType } from '@shared/types';
+import {
+  CategoriesType,
+  DefaultResponseType,
+  DirectsClientType,
+  DirectsType,
+  ServicesType,
+  UserInfoType,
+} from '@shared/types';
 import { MultiSelect } from 'primeng/multiselect';
 import { MessageService } from 'primeng/api';
 import { ProgressStatuses, SnackStatusesUtil } from '@shared/utils';
@@ -112,7 +119,7 @@ export class DirectVisitComponent implements OnInit {
   private _sendNewDirect(data: DirectsType) {
     this._directsService.createDirect(data).subscribe({
       next: direct => {
-        const message = `Пользователь ${direct.clientName} успешно записан!`;
+        const message = `Пользователь ${(direct as DirectsClientType).clientName} успешно записан!`;
         const _snack = SnackStatusesUtil.getStatuses(ProgressStatuses.SUCCESS, message);
         this._toast.add(_snack!);
         this._ref?.close();
