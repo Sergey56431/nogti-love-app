@@ -68,26 +68,32 @@ export class FavorsPageComponent implements OnInit {
 
   // Запрос на получение всех категорий
   private _getAllCategories(): void {
-    this._categoryService.getCategoryByUser(this._userInfo.userId ?? '').subscribe((result) => {
-      if ((result as DefaultResponseType).error === undefined) {
+    const userId = this._userInfo.userId ?? ''; // Кэшируем userId для повторного использования
 
+    this._categoryService.getCategoryByUser(userId).subscribe((result) => {
+      const response = result as DefaultResponseType;
+
+      // Проверяем наличие ошибки в ответе
+      if (response.error === undefined) {
+        // Устанавливаем категории и очищаем список услуг
         this._categoriesList.set(result as CategoriesType[]);
-        (result as CategoriesType[]).forEach((item) => {
-          item.services?.forEach((favor) => {
-            if (favor) {
-              const foundFavor = this._favorsList().some(f => f.service?.id === favor.service?.id);
-              if (!foundFavor) {
-                this._favorsList().push(favor);
-              }
-            }
-          });
-        });
+        this._favorsList.set([]);
+
+        // Извлекаем услуги из категорий и добавляем их в список
+        const favorsToAdd = (result as CategoriesType[])
+          .flatMap(item => item.services || []) // Используем flatMap для извлечения всех услуг
+          .filter(favor => favor); // Фильтруем только существующие услуги
+
+        // Добавляем все услуги за один раз
+        this._favorsList().push(...favorsToAdd);
       } else {
+        // Обрабатываем ошибку
         const error = SnackStatusesUtil.getStatuses('error');
         this._snackService.add(error!);
       }
     });
   }
+
 
   // Вызов модального окна для добавления услуг/категорий
   protected _addPosition() {
