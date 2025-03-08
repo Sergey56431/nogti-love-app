@@ -90,7 +90,8 @@ export class ScheduleEditComponent implements OnInit {
     this._date.set(date);
     const findedDay: { date: string} | undefined = this._mySchedule?.noWorkDays.find(
       (d) => d.date === date,);
-    !findedDay ? (this._dayState = true) : (this._dayState = false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    findedDay ? (this._dayState = false) : (this._dayState = true);
     console.log(this._date());
   }
 
@@ -115,8 +116,8 @@ export class ScheduleEditComponent implements OnInit {
     if (this._userId != null) {
       this._mySchedule.userId = this._userId;
       try {
-       this._pageParam() === SchedulePage.create ?
-          this._createNotWorkDays() : this._editSchedule() ;
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        this._pageParam() !== SchedulePage.create ? this._editSchedule() : this._createNotWorkDays();
       }
       catch (e) {
         console.log(e);

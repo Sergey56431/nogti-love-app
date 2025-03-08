@@ -10,7 +10,6 @@ import { DirectsClientType } from '@shared/types/directs-client.type';
 import { DialogService } from 'primeng/dynamicdialog';
 import { DirectsService } from '@shared/services';
 import { Tooltip } from 'primeng/tooltip';
-import { DirectsType } from '@shared/types/directs.type';
 import { orderBy } from 'lodash';
 import { ConfirmationService, MessageService, ToastMessageOptions } from 'primeng/api';
 import { SnackStatusesUtil } from '@shared/utils';
@@ -40,7 +39,7 @@ export class ScheduleMainComponent {
     },
   ];
 
-  protected _directsList: Signal<DirectsType[]> = computed(() => {
+  protected _directsList: Signal<DirectsClientType[]> = computed(() => {
     return orderBy(this.calendar?.directs(), x => x.time, ['asc']) ?? [];
   });
 

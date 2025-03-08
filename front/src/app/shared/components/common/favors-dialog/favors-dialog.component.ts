@@ -148,15 +148,15 @@ export class FavorsDialogComponent implements OnInit {
     this._favors.clear();
     this._favorEdit.set(this._dataFavor.data);
     this._dialogVariant = DialogVariants.SERVICE;
-    this._choosingCategory(this._favorEdit()?.categoryId ?? '');
+    this._choosingCategory(this._favorEdit()?.service.categoryId ?? '');
     try {
-      this._favorService.getFavorsById(this._favorEdit()?.id ?? '').subscribe((favor) => {
+      this._favorService.getFavorsById(this._favorEdit()?.service.id ?? '').subscribe((favor) => {
         // Убедитесь, что favor имеет правильный тип
         if (favor) {
           const favorGroup = this._fb.group({
-            name: [(favor as ServicesType).name ?? '', Validators.required],
-            price: [(favor as ServicesType).price ?? 0, Validators.required],
-            time: [(favor as ServicesType).time ?? '', Validators.required],
+            name: [(favor as ServicesType).service.name ?? '', Validators.required],
+            price: [(favor as ServicesType).service.price ?? 0, Validators.required],
+            time: [(favor as ServicesType).service.time ?? '', Validators.required],
           });
 
           // Добавляем новую группу в FormArray
@@ -263,7 +263,7 @@ export class FavorsDialogComponent implements OnInit {
     const favorEdit = this._favors?.value[0];
     Object.assign(favorEdit, { categoryId: this._choiceCategory() });
 
-    this._favorService.updateFavors(favorEdit, this._favorEdit()?.id ?? '').subscribe({
+    this._favorService.updateFavors(favorEdit, this._favorEdit()?.service.id ?? '').subscribe({
       error: err =>{
         this._showMessage('error', 'Ошибка при обновлении услуги' + err);
         console.log(err);

@@ -21,7 +21,7 @@ export class ClientsService {
   }
 
   public getClient(id: string): Observable<UserInfoType | undefined> {
-    return this.http.get<UserInfoType | undefined>(environment.api + 'users/?id=' + id);
+    return this.http.get<UserInfoType | undefined>(environment.api + 'users?id=' + id);
   }
 
   public updateClient(userId: string, data: Partial<UserInfoType>): Observable<UserInfoType | undefined> {

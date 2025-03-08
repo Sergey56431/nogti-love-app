@@ -6,7 +6,7 @@
     <ul class="list-none flex flex-col gap-3">
       <li class="client-info flex items-center gap-1.5">
         <span>Процедура:</span>
-        <span>{{_directInfo()?.directsServices ?? ''}}</span>
+        <span>{{_usersFavorsList()?? ''}}</span>
       </li>
       <li class="client-info flex items-center gap-1.5">
         <span>Время:</span>
@@ -18,8 +18,7 @@
       </li>
       <li class="client-info flex items-center gap-1.5">
         <span>Рейтинг:</span>
-<!--        Заметить элемент и передавать в него рейтинг-->
-        <span></span>
+        <p-rating [readonly]="true" [ngModel]="_userInfo()?.rate ?? 0 / 20 "></p-rating>
       </li>
     </ul>
   </header>
@@ -28,11 +27,12 @@
       <span>Имя Клиента:</span>
       <span>{{_directInfo()?.clientName}}</span>
     </div>
-    <div class="flex justify-center">
+    <div class="client-info flex flex-col gap-1.5">
+      <span>Ваши пометки:</span>
       <input type="text" pInputText [value]="'тестовый текст'" />
     </div>
     <div class="client-info">
-      <span>Дата последнего визита</span>
+      <span>Дата последнего визита:</span>
       <span></span>
     </div>
     <div class="client-info flex flex-col gap-1.5">

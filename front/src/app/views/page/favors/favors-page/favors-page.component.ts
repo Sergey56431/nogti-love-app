@@ -70,11 +70,12 @@ export class FavorsPageComponent implements OnInit {
   private _getAllCategories(): void {
     this._categoryService.getCategoryByUser(this._userInfo.userId ?? '').subscribe((result) => {
       if ((result as DefaultResponseType).error === undefined) {
+
         this._categoriesList.set(result as CategoriesType[]);
         (result as CategoriesType[]).forEach((item) => {
           item.services?.forEach((favor) => {
             if (favor) {
-              const foundFavor = this._favorsList().find(f => f.id === favor.id);
+              const foundFavor = this._favorsList().some(f => f.service?.id === favor.service?.id);
               if (!foundFavor) {
                 this._favorsList().push(favor);
               }
@@ -133,14 +134,14 @@ export class FavorsPageComponent implements OnInit {
 
   // Удаление выбранной услуги
   protected _removeFavor(favor: ServicesType): void {
-    this._favorsService.deleteFavors(favor.id ?? '').subscribe(result => {
+    this._favorsService.deleteFavors(favor.service.id ?? '').subscribe(result => {
       if ((result as DefaultResponseType).error === undefined) {
         this._favorsList.update((prev) =>
-          prev.filter((item) => item.id !== favor.id),
+          prev.filter((item) => item.service.id !== favor.service.id),
         );
-        this._showMessage('success', `Услуга "${favor.name}" успешно удалена`);
+        this._showMessage('success', `Услуга "${favor.service.name}" успешно удалена`);
       } else {
-        this._showMessage('error', `Ошибка удаления услуги "${favor.name}"`);
+        this._showMessage('error', `Ошибка удаления услуги "${favor.service.name}"`);
       }
     });
   }
