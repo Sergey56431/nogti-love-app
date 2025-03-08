@@ -3,6 +3,7 @@ export * from './calendar-response';
 export * from './categories.type';
 export * from './default-response.type';
 export * from './directs.type';
+export * from './directs-client.type';
 export * from './login-response.type';
 export * from './refresh-response.type';
 export * from './signup-response.type';

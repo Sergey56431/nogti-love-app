@@ -11,9 +11,9 @@
 
     <div class="example-button-container">
       <p-button icon="pi pi-bell"
-                pBadge
-                value="{{_pushCount > 0 ? _pushCount : null}}"
+                badge="{{_pushCount > 0 ? _pushCount : ''}}"
                 pTooltip="{{_pushCount > 0 ? 'У вас ' + _pushCount + ' новых уведомлений' : 'Нет новых уведомлений'}}"
+                tooltipPosition="bottom"
                 [rounded]="true"
                 [text]="true"
                 [disabled]="_pushCount === 0"
@@ -25,18 +25,19 @@
       @if (_isLogged()) {
         <div>
           <p-menu class="flex" #menu [model]="_userMenu" [popup]="true" />
-        </div>
 
-        <a class="profile" (click)="menu.toggle($event)">
-          <div class="profile-icon">
-            <img src="/images/profile-non-icon.png" alt="Профиль">
-          </div>
-          @defer {
-            <div class="profile-info">
-              <p class="profile-name">{{ this._user().name }}</p>
+
+          <a class="profile" (click)="menu.toggle($event)">
+            <div class="profile-icon">
+              <img src="/images/profile-non-icon.png" alt="Профиль">
             </div>
-          }
-        </a>
+            @defer {
+              <div class="profile-info hidden md:block">
+                <p class="profile-name">{{ this._user().name }}</p>
+              </div>
+            }
+          </a>
+        </div>
       } @else {
         <a routerLink="/login" class="login-ref">
           <i class="pi pi-sign-in">Войти</i>

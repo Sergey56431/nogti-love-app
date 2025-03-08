@@ -1,25 +1,23 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DatePicker } from 'primeng/datepicker';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Checkbox } from 'primeng/checkbox';
 import { Slider } from 'primeng/slider';
 import { Status } from '@shared/utils';
 import { RouterLink } from '@angular/router';
+import { Button } from 'primeng/button';
 
 @Component({
   selector: 'app-schedule-page',
   standalone: true,
   imports: [
-    MatFormFieldModule,
-    MatDatepickerModule,
     DatePicker,
     ReactiveFormsModule,
     Checkbox,
     Slider,
     FormsModule,
     RouterLink,
+    Button,
   ],
   templateUrl: './schedule-page.component.html',
   styleUrl: './schedule-page.component.scss',

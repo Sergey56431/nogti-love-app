@@ -10,6 +10,7 @@ import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { UserInfoType } from '@shared/types';
 import { MessageService, ToastMessageOptions } from 'primeng/api';
 import { SnackStatusesUtil } from '@shared/utils';
+import { InputNumber } from 'primeng/inputnumber';
 
 @Component({
   selector: 'app-add-new-client-card',
@@ -21,6 +22,7 @@ import { SnackStatusesUtil } from '@shared/utils';
     InputMask,
     Button,
     ReactiveFormsModule,
+    InputNumber,
   ],
   templateUrl: './add-new-client-card.component.html',
   styleUrl: './add-new-client-card.component.scss',

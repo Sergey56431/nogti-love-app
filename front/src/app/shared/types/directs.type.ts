@@ -1,4 +1,5 @@
 export interface DirectsType {
+  id?: string,
   date: string,
   time: string,
   comment:string,

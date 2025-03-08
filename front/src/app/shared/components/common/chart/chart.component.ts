@@ -45,6 +45,6 @@ export class ChartComponent {
   };
 
   private _getAmounts(): void {
-
+    console.log('getAmounts');
   }
 }

@@ -6,17 +6,17 @@ import {
   Signal,
   signal,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '@core/auth';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserInfoType } from '@shared/types';
 import { createDispatchMap } from '@ngxs/store';
 import { UsersActions } from '@core/store';
-import { PrimeIcons } from 'primeng/api';
+import { MessageService, PrimeIcons } from 'primeng/api';
 import { Menu } from 'primeng/menu';
 import { BadgeDirective } from 'primeng/badge';
 import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
+import { SnackStatusesUtil } from '@shared/utils';
 
 @Component({
   selector: 'app-header',
@@ -58,10 +58,9 @@ export class HeaderComponent implements OnInit {
     },
   ];
 
-  constructor(
-    private _authService: AuthService,
-    private _snackBar: MatSnackBar,
-  ) {}
+  constructor(private readonly _authService: AuthService,
+              private readonly _router: Router,
+              private readonly _snackBar: MessageService) {}
 
   private _actions = createDispatchMap({
     loadUser: UsersActions.GetUser,
@@ -78,13 +77,8 @@ export class HeaderComponent implements OnInit {
   logout() {
     if (this._user()) {
       console.log(this._user());
-      this._authService.logout(this._user().userId ?? '').subscribe({
-        next: () => {
-          this.doLogout();
-        },
-        error: () => {
-          console.log('Ошибка выхода');
-        },
+      this._authService.logout(this._user().userId ?? '').subscribe(() =>{
+        this.doLogout();
       });
     }
   }
@@ -95,7 +89,8 @@ export class HeaderComponent implements OnInit {
 
   doLogout() {
     this._authService.removeTokens();
-    this._snackBar.open('Вы успешно вышли из системы');
-    window.location.reload();
+    const status = SnackStatusesUtil.getStatuses('success', 'Вы успешно вышли из системы');
+    this._snackBar.add(status);
+    this._router.navigate(['/login']);
   }
 }

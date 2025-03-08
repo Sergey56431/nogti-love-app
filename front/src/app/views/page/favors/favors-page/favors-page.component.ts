@@ -9,11 +9,12 @@ import { CategoriesService, FavorsService } from '@shared/services';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Button } from 'primeng/button';
 import { TableModule } from 'primeng/table';
-import { CategoriesType, DefaultResponseType, ServicesType } from '@shared/types';
+import { CategoriesType, DefaultResponseType, ServicesType, UserInfoType } from '@shared/types';
 import { MessageService } from 'primeng/api';
 import { SnackStatusesUtil } from '@shared/utils';
 import { Tooltip } from 'primeng/tooltip';
 import { FavorsDialogComponent } from '@shared/components';
+import { AuthService } from '@core/auth';
 
 @Component({
   selector: 'app-favors-page',
@@ -26,6 +27,7 @@ import { FavorsDialogComponent } from '@shared/components';
 export class FavorsPageComponent implements OnInit {
   public _isOverflow = signal<boolean>(false);
 
+  private _userInfo: UserInfoType = {} as UserInfoType;
   protected _title = 'Услуги и категории';
 
   private _ref: DynamicDialogRef | undefined;
@@ -37,11 +39,12 @@ export class FavorsPageComponent implements OnInit {
   private readonly _categoryService = inject(CategoriesService);
   private readonly _dialogService = inject(DialogService);
   private readonly _snackService = inject(MessageService);
+  private readonly _authService = inject(AuthService);
 
 
   public ngOnInit(): void {
+    this._userInfo = this._authService.getUserInfo();
     try {
-      this._getAllFavors();
       this._getAllCategories();
     } catch (err) {
       const status = SnackStatusesUtil.getStatuses('error', 'Ошибка получения данных');
@@ -57,7 +60,7 @@ export class FavorsPageComponent implements OnInit {
       if ((result as DefaultResponseType).error === undefined) {
         this._favorsList.set(result as ServicesType[]);
       } else {
-        const error = SnackStatusesUtil.getStatuses('error', (result as DefaultResponseType).message,)!;
+        const error = SnackStatusesUtil.getStatuses('error', (result as DefaultResponseType).message)!;
         this._snackService.add(error);
       }
     });
@@ -65,9 +68,20 @@ export class FavorsPageComponent implements OnInit {
 
   // Запрос на получение всех категорий
   private _getAllCategories(): void {
-    this._categoryService.getAllCategories().subscribe((result) => {
+    this._categoryService.getCategoryByUser(this._userInfo.userId ?? '').subscribe((result) => {
       if ((result as DefaultResponseType).error === undefined) {
+
         this._categoriesList.set(result as CategoriesType[]);
+        (result as CategoriesType[]).forEach((item) => {
+          item.services?.forEach((favor) => {
+            if (favor) {
+              const foundFavor = this._favorsList().some(f => f.service?.id === favor.service?.id);
+              if (!foundFavor) {
+                this._favorsList().push(favor);
+              }
+            }
+          });
+        });
       } else {
         const error = SnackStatusesUtil.getStatuses('error');
         this._snackService.add(error!);
@@ -79,7 +93,7 @@ export class FavorsPageComponent implements OnInit {
   protected _addPosition() {
     this._ref = this._dialogService.open(FavorsDialogComponent, {
       header: 'Добавить услуги / категории',
-      draggable: true,
+      draggable: false,
       closable: true,
       closeOnEscape: true,
       modal: true,
@@ -92,7 +106,6 @@ export class FavorsPageComponent implements OnInit {
       },
     });
     this._ref.onClose.subscribe(() => {
-      this._getAllFavors();
       this._getAllCategories();
     });
   }
@@ -101,7 +114,7 @@ export class FavorsPageComponent implements OnInit {
   protected _editPosition(favor: ServicesType, edit: string): void {
     this._ref = this._dialogService.open(FavorsDialogComponent, {
       header: 'Редактировать услуги / категории',
-      draggable: true,
+      draggable: false,
       closable: true,
       closeOnEscape: true,
       modal: true,
@@ -115,24 +128,20 @@ export class FavorsPageComponent implements OnInit {
     });
 
     this._ref.onClose.subscribe(() => {
-      if (edit === 'favors'){
-        this._getAllFavors();
-      } else {
-        this._getAllCategories();
-      }
+      this._getAllCategories();
     });
   }
 
   // Удаление выбранной услуги
   protected _removeFavor(favor: ServicesType): void {
-    this._favorsService.deleteFavors(favor.id ?? '').subscribe(result => {
+    this._favorsService.deleteFavors(favor.service.id ?? '').subscribe(result => {
       if ((result as DefaultResponseType).error === undefined) {
         this._favorsList.update((prev) =>
-          prev.filter((item) => item.id !== favor.id),
+          prev.filter((item) => item.service.id !== favor.service.id),
         );
-        this._showMessage('success', `Услуга "${favor.name}" успешно удалена`);
+        this._showMessage('success', `Услуга "${favor.service.name}" успешно удалена`);
       } else {
-        this._showMessage('error', `Ошибка удаления услуги "${favor.name}"`);
+        this._showMessage('error', `Ошибка удаления услуги "${favor.service.name}"`);
       }
     });
   }

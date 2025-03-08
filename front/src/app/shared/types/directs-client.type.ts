@@ -5,8 +5,8 @@ export interface DirectsClientType {
   userId?: string;
   clientName: string;
   phone: string;
-  time: string;
-  directsServices?: ServicesType[]
+  time: string
+  services?: ServicesType[]
   image?: string;
   comment?: string;
 }

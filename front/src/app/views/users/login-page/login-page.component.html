@@ -1,42 +1,56 @@
-<section class="forms" >
+<section class="forms">
 
   <form class="form" [formGroup]="_loginForm">
     <div class="user-logo">
       <img src="/images/logo.png" alt="Логотип">
     </div>
     <input class="input" formControlName="phoneNumber"
-           [ngStyle]="{'border-color': phoneNumber?.invalid && (phoneNumber?.dirty ) ? 'red' : '' }"
+           [class.error]="phoneNumber?.invalid && (phoneNumber?.dirty )"
            type="text" placeholder="Номер телефона">
 
-    <div *ngIf="phoneNumber?.invalid && (phoneNumber?.dirty)">
-      <div class="text-danger" *ngIf="phoneNumber?.errors?.['required']">
-        Введите номер телефона
+    @if (phoneNumber?.invalid && (phoneNumber?.dirty)) {
+      <div>
+        @if (phoneNumber?.errors?.['required']) {
+          <div class="text-danger">
+            Введите номер телефона
+          </div>
+        }
+        @if (phoneNumber?.errors?.['pattern']) {
+          <div class="text-danger">
+            Неверно введен номер телефона
+          </div>
+        }
       </div>
-      <div class="text-danger" *ngIf="phoneNumber?.errors?.['pattern']">
-        Неверно введен номер телефона
-      </div>
-    </div>
+    }
 
     <input class="input" formControlName="password"
-           [ngStyle]="{'border-color': password?.invalid && (password?.dirty) ? 'red' : '' }"
+           [class.error]="password?.invalid && (password?.dirty)"
            type="password" placeholder="Пароль">
 
-    <div *ngIf="password?.invalid && (password?.dirty)">
-      <div class="text-danger" *ngIf="password?.errors?.['required']">
-        Введите пароль
+    @if (password?.invalid && (password?.dirty)) {
+      <div>
+        @if (password?.errors?.['required']) {
+          <div class="text-danger">
+            Введите пароль
+          </div>
+        }
+        @if (password?.errors?.['pattern']) {
+          <div class="text-danger">
+            Пароль должен содержать латинские буквы в верхнем регистре и цифры
+          </div>
+        }
       </div>
-      <div class="text-danger" *ngIf="password?.errors?.['pattern']">
-        Пароль должен содержать латинские буквы в верхнем регистре и цифры
-      </div>
-    </div>
+    }
 
     <div class="access">
       <input type="checkbox" id="rememberMe" formControlName="rememberMe">
       <label for="rememberMe">Запомнить меня</label>
     </div>
+
     <div class="loginRef">
       <span>Ещё нет аккаунта? </span><a routerLink="/registration">Зарегистрировать</a>
     </div>
-    <button class="formBtn" [disabled]="_loginForm.invalid" (click)="login()">Войти</button>
+
+    <button class="formBtn" [disabled]="_loginForm.invalid" (click)="_login()">Войти</button>
   </form>
 </section>

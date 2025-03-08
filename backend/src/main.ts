@@ -32,7 +32,7 @@ async function bootstrap() {
     origin: (origin, callback) => {
       const allowedOrigins = [
         'https://sergey-frontenddev-cashback-app-d231.twc1.net',
-        'http://localhost:3000',
+        'http://localhost:4200',
       ];
 
       if (!origin || allowedOrigins.includes(origin)) {
@@ -55,7 +55,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
 
   SwaggerModule.setup('api', app, document);
-
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
 bootstrap()

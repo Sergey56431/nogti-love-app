@@ -11,10 +11,10 @@ import { Directs } from '@core/store/directs/actions';
 import { Button } from 'primeng/button';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '@core/auth';
-import { DirectsType } from '@shared/types/directs.type';
 import { CalendarResponse, DefaultResponseType } from '@shared/types';
 import { DayState, ProgressStatuses, SnackStatusesUtil } from '@shared/utils';
 import { ItemChangerDirective } from '@shared/directives';
+import { DirectsClientType } from '@shared/types/directs-client.type';
 
 
 export interface CalendarDay {
@@ -47,7 +47,7 @@ export class DatePickerComponent implements OnInit {
     return this._mountCount() > new Date().getMonth() + 1;
   });
 
-  public directs = signal<DirectsType[]>([]);
+  public directs = signal<DirectsClientType[]>([]);
 
   private _actions = createDispatchMap({
     loadDirects: Directs.GetDirects,
@@ -139,6 +139,10 @@ export class DatePickerComponent implements OnInit {
       .reverse()
       .join('-');
     this.selectedDate.set(date);
+    this.fetchDirectsToDay(date);
+  }
+
+  public fetchDirectsToDay(date: string) {
     this._directService.fetchDirectsByDate(date).subscribe((directs) => {
       this.directs.set(directs);
       console.log(this.directs());
