@@ -15,16 +15,16 @@ export class DirectsService {
     return this._http.get<DirectsClientType[] | DefaultResponseType>(environment.api + 'directs');
   }
 
-  public fetchDirectsByDate(date: string): Observable<DirectsClientType | DefaultResponseType> {
-    return this._http.get<DirectsClientType | DefaultResponseType>(environment.api + 'directs', {
+  public fetchDirectsByDate(date: string): Observable<DirectsClientType[] | DefaultResponseType> {
+    return this._http.get<DirectsClientType[] | DefaultResponseType>(environment.api + 'directs', {
       params: {
         date: date
       }
     });
   }
 
-  public fetchDirectsByUser(userId: string): Observable<DirectsClientType | DefaultResponseType> {
-    return this._http.get<DirectsClientType | DefaultResponseType>(environment.api + 'directs', {
+  public fetchDirectsByUser(userId: string): Observable<DirectsClientType[] | DefaultResponseType> {
+    return this._http.get<DirectsClientType[] | DefaultResponseType>(environment.api + 'directs', {
       params: {
         userId: userId
       }
