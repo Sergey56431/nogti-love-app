@@ -51,17 +51,33 @@ export class FavorsPageComponent implements OnInit {
       this._snackService.add(status);
       console.log(err);
     }
+
   }
 
-  // Запрос на получение всех категорий и услуг
+  // Запрос на получение всех услуг
+  private _getAllFavors(): void {
+    this._favorsService.getAllFavors().subscribe((result) => {
+      if ((result as DefaultResponseType).error === undefined) {
+        this._favorsList.set(result as ServicesType[]);
+      } else {
+        const error = SnackStatusesUtil.getStatuses('error', (result as DefaultResponseType).message)!;
+        this._snackService.add(error);
+      }
+    });
+  }
+
+  // Запрос на получение всех категорий
   private _getAllCategories(): void {
     this._categoryService.getCategoryByUser(this._userInfo.userId ?? '').subscribe((result) => {
       if ((result as DefaultResponseType).error === undefined) {
         this._categoriesList.set(result as CategoriesType[]);
         (result as CategoriesType[]).forEach((item) => {
           item.services?.forEach((favor) => {
-            if(favor) {
-              this._favorsList().push(favor);
+            if (favor) {
+              const foundFavor = this._favorsList().find(f => f.id === favor.id);
+              if (!foundFavor) {
+                this._favorsList().push(favor);
+              }
             }
           });
         });
@@ -89,7 +105,6 @@ export class FavorsPageComponent implements OnInit {
       },
     });
     this._ref.onClose.subscribe(() => {
-      this._getAllFavors();
       this._getAllCategories();
     });
   }
@@ -112,11 +127,7 @@ export class FavorsPageComponent implements OnInit {
     });
 
     this._ref.onClose.subscribe(() => {
-      if (edit === 'favors'){
-        this._getAllFavors();
-      } else {
-        this._getAllCategories();
-      }
+      this._getAllCategories();
     });
   }
 

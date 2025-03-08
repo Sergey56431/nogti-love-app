@@ -11,16 +11,9 @@
       <label for="phone">Телефон</label>
     </p-floatlabel>
 
-    <p-floatlabel class="w-full" variant="on">
-      <p-select class="w-full"
-                [fluid]="true"
-                formControlName="dateVisit"
-                inputId="time"
-                (onChange)="_choiceTime($event.value)"
-                [options]="_timeVariant"
-                optionLabel="name"
-                styleClass="w-full" />
-      <label for="time">Время</label>
+    <p-floatlabel class="min-w-full" variant="on">
+      <p-inputmask class="w-full" inputId="time" formControlName="time" mask="99:99"/>
+      <label for="time">Время записи</label>
     </p-floatlabel>
 
     <p-floatlabel class="w-full" variant="on">
@@ -68,7 +61,6 @@
                 label="Отмена"
                 (onClick)="_closeDialog()"/>
       <p-button icon="pi pi-check"
-                severity="info"
                 styleClass="p-button-primary"
                 type="button"
                 label="Записать"
