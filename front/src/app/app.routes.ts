@@ -64,17 +64,17 @@ export const routes: Routes = [
         title: 'Операции',
       },
       {
-        path: 'operations/all-transactions',
+        path: 'all-transactions',
         loadComponent: () => import('./views').then((c) => c.AllTransationsPageComponent),
         title: 'Список операций',
       },
       {
-        path: 'operations/category-operations',
+        path: 'category-operations',
         loadComponent: () => import('./views').then((c) => c.OperationsCategoryComponent),
         title: 'Категории операций',
       },
       {
-        path: 'operations/transactions-details/:id',
+        path: 'transactions-details/:id',
         loadComponent: () => import('./views').then((c) => c.TransactionsDetailsComponent),
         title: 'Детали операции',
       },

@@ -1,7 +1,7 @@
 <div class="page-content">
   <h1 class="page-title">{{ _title }}</h1>
 
-  <div class="operations-cards flex items-center gap-5">
+  <div class="operations-cards flex items-center flex-wrap gap-5 justify-center md:justify-start">
     @for (category of _categories; track category) {
       <a [routerLink]="'/' + category.route">
         <div class="operation-card"

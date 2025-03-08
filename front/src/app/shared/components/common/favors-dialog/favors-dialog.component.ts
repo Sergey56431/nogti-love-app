@@ -106,7 +106,7 @@ export class FavorsDialogComponent implements OnInit {
     this._userInfo.set(this._authService.getUserInfo());
     this._dialogVariant = DialogVariants.SERVICE;
     this._categoryService
-      .getAllCategories()
+      .getCategoryByUser(this._userInfo()?.userId ?? '')
       .pipe(
         catchError((error: ErrorHandler) => {
           console.log(error);
