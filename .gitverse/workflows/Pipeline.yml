@@ -4,8 +4,7 @@ on:
   pull_request:
     branches:
       - master
-      - frontDev
-      - backend
+      - test
 jobs:
   build_backend:
     name: Сборка Бэкенда 
