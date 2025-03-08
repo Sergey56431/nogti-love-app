@@ -61,6 +61,7 @@ export class RegistrationPageComponent {
         username: this._signupForm.value.username!,
         password: this._signupForm.value.password!.toString(),
         name: this._signupForm.value.name!,
+        role: 'ADMIN',
         phoneNumber: this._signupForm.value.phone?.toString() ?? '',
         lastName: this._signupForm.value.lastName!,
       })

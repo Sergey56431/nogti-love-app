@@ -60,7 +60,7 @@ export class ScheduleMainComponent {
       header: 'Добавить новую запись',
       width: '500px',
       modal: true,
-      draggable: true,
+      draggable: false,
       contentStyle: {
         overflow: 'visible',
       },
@@ -121,7 +121,7 @@ export class ScheduleMainComponent {
         border: 'none',
       },
       modal: true,
-      draggable: true,
+      draggable: false,
       contentStyle: {},
       closable: true,
       data: direct,

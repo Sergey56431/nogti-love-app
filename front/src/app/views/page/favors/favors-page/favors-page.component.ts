@@ -92,7 +92,7 @@ export class FavorsPageComponent implements OnInit {
   protected _addPosition() {
     this._ref = this._dialogService.open(FavorsDialogComponent, {
       header: 'Добавить услуги / категории',
-      draggable: true,
+      draggable: false,
       closable: true,
       closeOnEscape: true,
       modal: true,
@@ -113,7 +113,7 @@ export class FavorsPageComponent implements OnInit {
   protected _editPosition(favor: ServicesType, edit: string): void {
     this._ref = this._dialogService.open(FavorsDialogComponent, {
       header: 'Редактировать услуги / категории',
-      draggable: true,
+      draggable: false,
       closable: true,
       closeOnEscape: true,
       modal: true,

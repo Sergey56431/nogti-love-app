@@ -78,12 +78,12 @@ button {
   }
 }
 
-p-inputmask{
-  &.phone-input {
-    input {
-      width: 100%;
-    }
+p-inputmask {
+
+  input {
+    width: 100%;
   }
+
 }
 
 @media screen and (max-width: 500px) {
