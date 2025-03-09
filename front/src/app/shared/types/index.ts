@@ -1,5 +1,6 @@
 export * from './client-type';
 export * from './calendar-response';
+export * from './calendare-edit.type';
 export * from './categories.type';
 export * from './default-response.type';
 export * from './directs.type';

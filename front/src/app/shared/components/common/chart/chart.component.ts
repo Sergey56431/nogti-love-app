@@ -13,8 +13,8 @@ import { Button } from 'primeng/button';
 })
 export class ChartComponent {
   protected _options = [
-    { routerLink: '', label: 'Доходы' },
-    { routerLink: '', label: 'Расходы' },
+    { routerLink: '/all-transactions/income', label: 'Доходы' },
+    { routerLink: '/all-transactions/expenses', label: 'Расходы' },
     { routerLink: '/operations', label: 'Детально' },
   ];
 

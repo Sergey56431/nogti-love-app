@@ -15,6 +15,6 @@ export interface CreateCalendarType extends CalendarResponse {
 export interface NotWorksDaysCalendarType {
   userId: string,
   noWorkDays: {
-    date: string
+    date: string | null
   }[]
 }

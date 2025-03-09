@@ -12,7 +12,7 @@
       <div class="schedule-content-body">
         <app-date-picker (emitDate)="_checkDayState($event)" #calendar></app-date-picker>
 
-        <div class="flex flex-col items-start gap-3">
+        <div class="flex flex-col items-start gap-3 mb-3">
           <div class="font-bold">{{ calendar.day }}</div>
           @if (calendar.day) {
             <div class="flex flex-col gap-1">
@@ -22,6 +22,43 @@
             </div>
 
             @if (_pageParam() === SchedulePage.edit) {
+              <div class="flex items-center justify-between gap-2">
+                <div>С</div>
+
+                <div class="flex items-center gap-1">
+                  <p-inputNumber class="w-11" [(ngModel)]="_startHour" buttonLayout="vertical"
+                                 [showButtons]="true" [min]="0" [max]="24">
+                    <ng-template pTemplate="incrementbuttonicon">
+                      <span class="pi pi-plus"></span>
+                    </ng-template>
+                    <ng-template pTemplate="decrementbuttonicon">
+                      <span class="pi pi-minus"></span>
+                    </ng-template>
+                  </p-inputNumber>
+
+                  <div>:</div>
+
+                  <p-select class="minute-select w-12" [options]="_minute" ></p-select>
+                </div>
+
+                <div>До</div>
+
+                <div class="flex items-center gap-1">
+                  <p-inputNumber class="w-11" [(ngModel)]="_endHour" buttonLayout="vertical"
+                                 [showButtons]="true" [min]="0" [max]="24">
+                    <ng-template pTemplate="incrementbuttonicon">
+                      <span class="pi pi-plus"></span>
+                    </ng-template>
+                    <ng-template pTemplate="decrementbuttonicon">
+                      <span class="pi pi-minus"></span>
+                    </ng-template>
+                  </p-inputNumber>
+
+                  <div>:</div>
+
+                  <p-select class="minute-select w-12" [options]="_minute"></p-select>
+                </div>
+              </div>
 
             }
           }
@@ -56,7 +93,7 @@
           </ng-template>
         </p-table>
       } @else {
-        <h3 class="flex justify-center">Выберите нерабочие дни</h3>
+        <p-button class="w-full" severity="primary" (onClick)="_allDaysWorking()" label="Все дни рабочие"></p-button>
       }
 
     </div>

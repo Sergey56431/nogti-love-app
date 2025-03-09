@@ -29,8 +29,8 @@ export class ScheduleMainComponent {
 
   private _status: ToastMessageOptions = {} as ToastMessageOptions;
   protected _options = [
-    { routerLink: '', label: 'Редактировать расписание' },
-    { routerLink: '', label: 'Список всех записей' },
+    { routerLink: '/schedule/edit', label: 'Редактировать расписание' },
+    { routerLink: '/schedule', label: 'Список всех записей' },
     {
       label: 'Обновить расписание',
       command: () => {

@@ -9,7 +9,7 @@
 
     <div class="flex flex-col gap-4 lg:flex-row">
       <div class="favors-list overflow-auto text-center">
-        @if (_favorsList().length > 0) {
+        @if (_favorsList().length !== 0) {
 
           <p-table [tableStyle]="{textAlign: 'center'}" [value]="_favorsList()">
             <ng-template #header>
