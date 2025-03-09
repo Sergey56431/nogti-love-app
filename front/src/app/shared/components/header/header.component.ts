@@ -41,12 +41,10 @@ export class HeaderComponent implements OnInit {
 
   protected _userMenu = [
     {
-      path: '',
+      path: '/settings',
+      routerLink: '/settings',
       label: 'Настройки',
       icon: PrimeIcons.COG,
-      command: () => {
-        this._settingsUser();
-      },
     },
     {
       path: '',
@@ -81,10 +79,6 @@ export class HeaderComponent implements OnInit {
         this.doLogout();
       });
     }
-  }
-
-  protected _settingsUser() {
-    console.log(this._user());
   }
 
   doLogout() {

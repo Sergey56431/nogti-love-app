@@ -64,7 +64,7 @@ export class ScheduleEditComponent implements OnInit {
     noWorkDays: [],
   };
 
-  protected _mySchedule: CustomDay = {} as CustomDay;
+  // protected _mySchedule: CustomDay = {} as CustomDay;
 
   protected _pageParam = signal<string>('');
   private _pageLabel = computed(() => {
