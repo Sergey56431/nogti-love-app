@@ -1,25 +1,23 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DatePicker } from 'primeng/datepicker';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Checkbox } from 'primeng/checkbox';
 import { Slider } from 'primeng/slider';
 import { Status } from '@shared/utils';
 import { RouterLink } from '@angular/router';
+import { Button } from 'primeng/button';
 
 @Component({
   selector: 'app-schedule-page',
   standalone: true,
   imports: [
-    MatFormFieldModule,
-    MatDatepickerModule,
     DatePicker,
     ReactiveFormsModule,
     Checkbox,
     Slider,
     FormsModule,
     RouterLink,
+    Button,
   ],
   templateUrl: './schedule-page.component.html',
   styleUrl: './schedule-page.component.scss',
@@ -27,6 +25,7 @@ import { RouterLink } from '@angular/router';
 })
 export class SchedulePageComponent {
   protected _title = 'Расписание';
+
   protected _services = [
     { id: 1, name: 'Маникюр' },
     { id: 2, name: 'Педикюр' },
@@ -36,7 +35,8 @@ export class SchedulePageComponent {
     { id: 4, name: 'Юлия' },
     { id: 5, name: 'Лилия' },
   ];
-  private _statusDirects = [Status];
+
+  private _statusDirects = [Status.New, Status.Success, Status.Canceled, Status.Pending];
   protected _rangeTime = [15, 75];
   protected _choicePeriod = signal<Date[] | undefined>(undefined);
   protected _showFilters = signal<boolean>(false);

@@ -27,19 +27,19 @@
               <div class="flex flex-col gap-3 mb-3">
 
                 <p-floatlabel variant="on">
-                  <input pInputText id="name" autocomplete="off" [autofocus]="false" formControlName="name" />
+                  <input pInputText id="name" fluid autocomplete="off" [autofocus]="false" formControlName="name" />
                   <label for="name">Наименование</label>
                 </p-floatlabel>
 
-                <div class="flex gap-1">
+                <div class="flex flex-col gap-3 md:flex-row md:gap-1">
                   <p-floatlabel variant="on">
-                    <p-input-number inputId="price" mode="currency" currency="RUB"
+                    <p-input-number class="price-favor" inputId="price" [fluid]="false" mode="currency" currency="RUB"
                                     locale="ru-RU" formControlName="price"></p-input-number>
                     <label for="price">Стоимость</label>
                   </p-floatlabel>
 
                   <p-floatlabel variant="on">
-                    <p-inputmask mask="99:99" inputId="time" formControlName="time" />
+                    <p-inputmask mask="09:99" inputId="time" formControlName="time" />
                     <label for="time">Время оказания</label>
                   </p-floatlabel>
                 </div>
@@ -79,7 +79,7 @@
             <ng-container [formGroupName]="i">
               <div>
                 <p-floatlabel variant="on">
-                  <input pInputText id="categoryName" autocomplete="off" [autofocus]="false" formControlName="name" />
+                  <input pInputText id="categoryName" fluid autocomplete="off" [autofocus]="false" formControlName="name" />
                   <label for="categoryName">Наименование</label>
                 </p-floatlabel>
               </div>

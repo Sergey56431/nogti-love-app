@@ -4,4 +4,6 @@ export interface SignupResponseType {
   username: string,
   phoneNumber: string,
   password: string
+  role?: string,
+  birthday?: string,
 }

@@ -47,8 +47,7 @@ export class ItemChangerDirective implements AfterViewInit {
   }
 
   private _disabledDate() {
-
-    this.rend.setProperty(this.el.nativeElement, 'disabled', true);
+    // this.rend.setProperty(this.el.nativeElement, 'disabled', true);
     this.rend.addClass(this.el.nativeElement, 'disabled');
   }
 

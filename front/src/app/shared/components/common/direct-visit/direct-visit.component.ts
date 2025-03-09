@@ -14,7 +14,14 @@ import { ButtonModule } from 'primeng/button';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CategoriesService, DirectsService, FavorsService } from '@shared/services';
 import { AuthService } from '@core/auth';
-import { CategoriesType, DefaultResponseType, DirectsType, ServicesType, UserInfoType } from '@shared/types';
+import {
+  CategoriesType,
+  DefaultResponseType,
+  DirectsClientType,
+  DirectsType,
+  ServicesType,
+  UserInfoType,
+} from '@shared/types';
 import { MultiSelect } from 'primeng/multiselect';
 import { MessageService } from 'primeng/api';
 import { ProgressStatuses, SnackStatusesUtil } from '@shared/utils';
@@ -38,32 +45,10 @@ import { ProgressStatuses, SnackStatusesUtil } from '@shared/utils';
 export class DirectVisitComponent implements OnInit {
 
   private _date = '';
-  private _time = '';
   protected _categories = signal<CategoriesType[]>([]);
   protected _choiceFavor = signal<string[]>([]);
   protected _favors = signal<ServicesType[]>([]);
   private _userInfo = signal<UserInfoType | undefined>(undefined);
-
-  // Нужен запрос с временем записей
-
-  protected _timeVariant = [
-    {
-      name: '11:00',
-      code: 1,
-    },
-    {
-      name: '13:00',
-      code: 2,
-    },
-    {
-      name: '15:00',
-      code: 3,
-    },
-    {
-      name: '17:00',
-      code: 4,
-    },
-  ];
 
   constructor(private readonly _fb: FormBuilder,
               private readonly _toast: MessageService,
@@ -85,7 +70,7 @@ export class DirectVisitComponent implements OnInit {
     ]),
     category: new FormControl('', [Validators.required]),
     favor: new FormControl('', [Validators.required]),
-    dateVisit: new FormControl('', [Validators.required]),
+    time: new FormControl('', [Validators.required]),
     comment: new FormControl(''),
   });
 
@@ -102,11 +87,6 @@ export class DirectVisitComponent implements OnInit {
     } catch (err) {
       console.log(err);
     }
-  }
-
-  // Функция форматирования объекта времени в строку для отправки на сервер
-  protected _choiceTime(time: { name: string, code: number }) {
-    this._time = time.name;
   }
 
   // Получение всех услуг
@@ -129,7 +109,7 @@ export class DirectVisitComponent implements OnInit {
       date: this._date ?? '',
       comment: this._newVisitor.controls.comment.value ?? '',
       phone: this._newVisitor.controls.phone.value ?? '',
-      time: this._time ?? '',
+      time: this._newVisitor.controls.time.value ?? '',
       services: favorsId,
     };
     this._sendNewDirect(data);
@@ -139,7 +119,7 @@ export class DirectVisitComponent implements OnInit {
   private _sendNewDirect(data: DirectsType) {
     this._directsService.createDirect(data).subscribe({
       next: direct => {
-        const message = `Пользователь ${direct.clientName} успешно записан!`;
+        const message = `Пользователь ${(direct as DirectsClientType).clientName} успешно записан!`;
         const _snack = SnackStatusesUtil.getStatuses(ProgressStatuses.SUCCESS, message);
         this._toast.add(_snack!);
         this._ref?.close();

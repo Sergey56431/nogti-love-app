@@ -68,7 +68,7 @@ export class ClientsPageComponent implements OnInit {
       header: 'Добавить нового клиента',
       modal: true,
       closeOnEscape: true,
-      draggable: true,
+      draggable: false,
       closable: true,
       contentStyle: {
         overflow: 'unset',

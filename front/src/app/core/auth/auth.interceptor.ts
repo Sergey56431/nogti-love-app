@@ -18,12 +18,10 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(
     private _authService: AuthService,
     private _router: Router,
-  ) {}
+  ) {
+  }
 
-  public intercept(
-    req: HttpRequest<unknown>,
-    next: HttpHandler,
-  ): Observable<HttpEvent<unknown>> {
+  public intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     //вызвать лоадер
     this._token = this._authService.getTokens();
     if (this._token) {
@@ -90,8 +88,7 @@ export class AuthInterceptor implements HttpInterceptor {
       catchError((error) => {
         this._authService.logout(this._userId);
         this._authService.removeTokens();
-        // this._router.navigate(['/login']);
-        window.location.reload();
+        this._router.navigate(['/login']);
         return throwError(() => error); // Возвращаем оригинальную ошибку
       }),
     );

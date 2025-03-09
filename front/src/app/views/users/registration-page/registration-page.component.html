@@ -1,77 +1,99 @@
-<section class="forms" >
+<section class="forms">
   <form class="form" [formGroup]="_signupForm">
     <div class="user-logo">
       <img src="/images/logo.png" alt="Логотип">
     </div>
-    <input class="input" formControlName="username"
-           [ngStyle]="{'border-color': username?.invalid && (username?.dirty) ? 'red' : '' }"
-           type="text" placeholder="Имя" >
+    <input class="input" formControlName="username" [class.error]="username?.invalid && (username?.dirty)"
+           type="text" placeholder="username">
+
     <div class="input-error">
-
-      <div *ngIf="username?.invalid && (username?.dirty)">
-        <div class="text-danger" *ngIf="username?.errors?.['required']">
-          Заполните Имя
+      @if (username?.invalid && (username?.dirty)) {
+        <div>
+          @if (username?.errors?.['required']) {
+            <div class="text-danger">
+              Введите username
+            </div>
+          }
+          @if (username?.errors?.['pattern']) {
+            <div class="text-danger">
+              Некорректный username
+            </div>
+          }
         </div>
-        <div class="text-danger" *ngIf="username?.errors?.['pattern']">
-          Неверное имя
-        </div>
-      </div>
-
+      }
     </div>
-    <input class="input" formControlName="password"
-           [ngStyle]="{'border-color': password?.invalid && (password?.dirty) ? 'red' : '' }"
+
+    <input class="input" formControlName="password" [class.error]="password?.invalid && (password?.dirty)"
            type="password" placeholder="Пароль">
 
-    <div *ngIf="password?.invalid && (password?.dirty)">
-      <div class="text-danger" *ngIf="password?.errors?.['required']">
-        Введите пароль
+    @if (password?.invalid && (password?.dirty)) {
+      <div>
+        @if (password?.errors?.['required']) {
+          <div class="text-danger">
+            Введите пароль
+          </div>
+        }
+        @if (password?.errors?.['pattern']) {
+          <div class="text-danger">
+            Пример пароля: Password123
+          </div>
+        }
       </div>
-      <div class="text-danger" *ngIf="password?.errors?.['pattern']">
-        Пароль должен содержать ...
-      </div>
-    </div>
+    }
 
-    <input class="input" formControlName="phone"
-           [ngStyle]="{'border-color': phone?.invalid && (phone?.dirty) ? 'red' : '' }"
+    <input class="input" formControlName="phone" [class.error]="phone?.invalid && (phone?.dirty)"
            type="text" placeholder="Телефон">
 
-    <div *ngIf="phone?.invalid && (phone?.dirty)">
-      <div class="text-danger" *ngIf="phone?.errors?.['required']">
-        Введите телефон
+    @if (phone?.invalid && (phone?.dirty)) {
+      <div>
+        @if (phone?.errors?.['required']) {
+          <div class="text-danger">
+            Введите телефон
+          </div>
+        }
+        @if (phone?.errors?.['pattern']) {
+          <div class="text-danger">
+            Неверно введён телефон
+          </div>
+        }
       </div>
-      <div class="text-danger" *ngIf="phone?.errors?.['pattern']">
-        Неверно введён телефон
-      </div>
-    </div>
+    }
 
-    <input class="input" formControlName="name"
-           [ngStyle]="{'border-color': name?.invalid && (name?.dirty) ? 'red' : '' }"
+    <input class="input" formControlName="name" [class.error]="name?.invalid && (name?.dirty)"
            type="text" placeholder="Ваше имя">
+     @if(name?.invalid && (name?.dirty)) {
+       <div>
+         @if(name?.errors?.['pattern']) {
+           <div class="text-danger">
+             Некорректно введено имя
+           </div>
+         }
+       </div>
+     }
 
-    <div *ngIf="name?.invalid && (name?.dirty)">
-      <div class="text-danger" *ngIf="name?.errors?.['pattern']">
-        Некорректно введено имя
-      </div>
-    </div>
-
-    <input class="input" formControlName="lastName"
-           [ngStyle]="{'border-color': lastName?.invalid && (lastName?.dirty) ? 'red' : '' }"
+    <input class="input" formControlName="lastName" [class.error]="lastName?.invalid && (lastName?.dirty)"
            type="text" placeholder="Ваше фамилия">
 
-    <div *ngIf="lastName?.invalid && (lastName?.dirty)">
-      <div class="text-danger" *ngIf="lastName?.errors?.['pattern']">
-        Некорректно введена фамилия
+    @if(lastName?.invalid && (lastName?.dirty)) {
+      <div>
+        @if(lastName?.errors?.['pattern']) {
+          <div class="text-danger">
+            Некорректно введена фамилия
+          </div>
+        }
       </div>
-    </div>
+    }
 
     <div class="access">
       <input type="checkbox" id="access" formControlName="accept">
       <label for="access">Я ознакомлен(а) с </label>
       <a>политикой конфиденциальности</a>
     </div>
+
     <div class="loginRef">
       <span>У меня уже есть страница. </span><a routerLink="/login">Войти</a>
     </div>
+
     <button class="formBtn" [disabled]="_signupForm.invalid" (click)="_signup()">Зарегистрироваться</button>
   </form>
 </section>

@@ -3,10 +3,12 @@
   <div class="breadcrumb">
     <p-breadcrumb class="max-w-full" [model]="_breadcrumb()" [home]="_home"></p-breadcrumb>
   </div>
-  <div class="client flex items-start gap-14">
+  <div class="client flex flex-col lg:flex-row lg:items-start lg:gap-14">
+
     <div class="client-image">
       <img ngSrc="./assets/images/profile.png" alt="client-image" width="350" height="350">
     </div>
+
     <div class="client-info mt-5">
       <ul class="client-info-items list-none flex flex-col gap-5">
         <p-toggle-button (onChange)="_editMode.set($event.checked!)" onLabel="Редактирование" offLabel="Просмотр" onIcon="pi pi-unlock"
@@ -36,7 +38,7 @@
           <p-rating [readonly]="!_editMode()" (ngModelChange)="this._clientRating.set($event * 20)"
                     [ngModel]="_client()?.rate ?? 0 / 20" />
         </li>
-        <li class="client-info-item flex items-center">
+        <li class="client-info-item flex flex-col gap-2 lg:flex-row lg:items-center">
           <span class="client-info-item-title">Пометки о клиенте:</span>
           <textarea [value]="_client()?.description ?? ''"
                     #description

@@ -18,13 +18,17 @@
         <ul class="timetable-items h-56">
 
           @for (direct of _directsList(); track direct) {
-            <li class="timetable-item" (click)="_moreInfo(direct)">
-              <div class="timetable-item-direct" [pTooltip]="direct.comment">
+            <li class="timetable-item flex gap-2 items-center">
+              <div class="timetable-item-direct" tooltipPosition="bottom" (click)="_moreInfo(direct)" [pTooltip]="direct.comment">
                 <div class="item-time-direct">{{ direct.time }}</div>
-                <div class="item-profile-img"></div>
                 <div class="item-profile-name">{{ direct.clientName }}</div>
                 <div class="item-profile-phone">{{ direct.phone }}</div>
               </div>
+              <div>
+                <p-button icon="pi pi-times" [rounded]="true" [text]="true" severity="danger"
+                          pTooltip="Удалить запись" (onClick)="_deleteDirect(direct)" />
+              </div>
+
             </li>
           }
 
@@ -51,8 +55,7 @@
           <span>Новая запись</span>
         </button>
       </div>
-    }
-    @else {
+    } @else {
       <div class="timetable no-content">Выберите день</div>
     }
   </div>
@@ -74,4 +77,5 @@
     <div class="squire free-day"></div>
     <span>Свободные окна</span>
   </div>
+  <p-confirm-dialog />
 </div>

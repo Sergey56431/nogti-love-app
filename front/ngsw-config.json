@@ -3,7 +3,7 @@
   "index": "/index.html",
   "assetGroups": [
     {
-      "name": "app",
+      "name": "nogti-love",
       "installMode": "prefetch",
       "resources": {
         "files": [

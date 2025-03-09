@@ -1,27 +1,17 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
 import { AdminsRoute } from '@shared/utils';
-import { MatTooltip } from '@angular/material/tooltip';
 import { PrimeIcons } from 'primeng/api';
+import { Tooltip } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
   imports: [
-    MatSidenavModule,
-    MatListModule,
-    MatIconModule,
-    MatToolbarModule,
-    MatButtonModule,
     RouterLink,
     RouterLink,
     RouterLinkActive,
-    MatTooltip,
+    Tooltip,
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',

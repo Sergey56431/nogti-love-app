@@ -10,7 +10,8 @@ import { CalendarModule } from './calendar';
 import { IncomExpencesModule } from './incom_expences';
 import { CategoriesModule } from './categories';
 import { ServicesModule } from './services';
-import { SettingsModule } from './settings/settings.module';
+import { SettingsModule } from './settings';
+import { CategoryOperationsModule } from './categoryOperations';
 import { TimeSlotAlgorithmModule } from './utilits';
 
 @Module({
@@ -23,6 +24,7 @@ import { TimeSlotAlgorithmModule } from './utilits';
     CategoriesModule,
     ServicesModule,
     SettingsModule,
+    CategoryOperationsModule,
     TimeSlotAlgorithmModule,
   ],
   controllers: [AppController],

@@ -61,7 +61,7 @@ button {
   }
 }
 
-.p-inputtext {
+.p-input-text {
   width: 100%;
 }
 
@@ -78,6 +78,17 @@ button {
   }
 }
 
+p-inputmask {
+  input {
+    width: 100%;
+  }
+}
+
+.minute-select{
+  .p-select-dropdown {
+    display: none;
+  }
+}
 
 @media screen and (max-width: 500px) {
   .page {

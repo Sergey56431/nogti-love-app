@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { DirectsType } from '@shared/types/directs.type';
+import { DirectsType, DirectsClientType, DefaultResponseType } from '@shared/types';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
@@ -11,47 +11,47 @@ export class DirectsService {
 
   constructor(private readonly _http: HttpClient) { }
 
-  public fetchAllDirects(): Observable<any> {
-    return this._http.get(environment.api + 'directs');
+  public fetchAllDirects(): Observable<DirectsClientType[] | DefaultResponseType> {
+    return this._http.get<DirectsClientType[] | DefaultResponseType>(environment.api + 'directs');
   }
 
-  public fetchDirectsByDate(date: string): Observable<any> {
-    return this._http.get(environment.api + 'directs', {
+  public fetchDirectsByDate(date: string): Observable<DirectsClientType[] | DefaultResponseType> {
+    return this._http.get<DirectsClientType[] | DefaultResponseType>(environment.api + 'directs', {
       params: {
         date: date
       }
     });
   }
 
-  public fetchDirectsByUser(userId: string): Observable<any> {
-    return this._http.get(environment.api + 'directs', {
+  public fetchDirectsByUser(userId: string): Observable<DirectsClientType[] | DefaultResponseType> {
+    return this._http.get<DirectsClientType[] | DefaultResponseType>(environment.api + 'directs', {
       params: {
         userId: userId
       }
     });
   }
 
-  public fetchDirectById(directId: string): Observable<any> {
-    return this._http.get(environment.api + 'directs',{
+  public fetchDirectById(directId: string): Observable<DirectsClientType | DefaultResponseType> {
+    return this._http.get<DirectsClientType | DefaultResponseType>(environment.api + 'directs',{
       params: {
         id: directId
       }
     });
   }
 
-  public createDirect(direct: DirectsType): Observable<any> {
-    return this._http.post(environment.api + 'directs', direct);
+  public createDirect(direct: DirectsType): Observable<DirectsClientType | DefaultResponseType> {
+    return this._http.post<DirectsClientType | DefaultResponseType>(environment.api + 'directs', direct);
   }
 
-  public updateDirect(direct: DirectsType, directId: string): Observable<any> {
-    return this._http.put(environment.api + 'directs', {
+  public updateDirect(direct: DirectsType, directId: string): Observable<DirectsClientType | DefaultResponseType> {
+    return this._http.put<DirectsClientType | DefaultResponseType>(environment.api + 'directs', {
       params: { id: directId },
       body: direct
     });
   }
 
-  public deleteDirect(directId: string): Observable<any> {
-    return this._http.delete(environment.api + 'directs', {
+  public deleteDirect(directId: string): Observable<DirectsClientType | DefaultResponseType> {
+    return this._http.delete<DirectsClientType | DefaultResponseType>(environment.api + 'directs', {
       params: {id: directId}
     });
   }
