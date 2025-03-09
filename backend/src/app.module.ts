@@ -11,6 +11,7 @@ import { IncomExpencesModule } from './incom_expences';
 import { CategoriesModule } from './categories';
 import { ServicesModule } from './services';
 import { SettingsModule } from './settings/settings.module';
+import { TimeSlotAlgorithmModule } from './utilits';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { SettingsModule } from './settings/settings.module';
     CategoriesModule,
     ServicesModule,
     SettingsModule,
+    TimeSlotAlgorithmModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, JwtStrategy],

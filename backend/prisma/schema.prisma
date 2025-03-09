@@ -40,15 +40,26 @@ model Settings {
 }
 
 model Calendar {
-  id      String    @id @default(uuid())
-  date    DateTime  @unique @db.Date
-  directs Directs[]
-  time    String?
-  state   DayState  @default(empty)
-  userId  String
-  creator User      @relation(fields: [userId], references: [id])
+  id        String      @id @default(uuid())
+  date      DateTime    @db.Date
+  directs   Directs[]
+  time      String?
+  state     DayState    @default(empty)
+  userId    String
+  creator   User        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  freeSlots FreeSlot[]
 
-  @@index([date])
+  @@unique([date, userId])
+}
+
+model FreeSlot {
+  id         String   @id @default(uuid())
+  time       String
+  calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  calendarId String
+  isBooked   Boolean  @default(false)
+
+  @@unique([calendarId, time])
 }
 
 model Directs {
@@ -61,8 +72,8 @@ model Directs {
   state      DirectsState?     @default(notConfirmed)
   services   DirectsServices[]
   calendarId String
-  user       User?             @relation(fields: [userId], references: [id])
-  calendar   Calendar          @relation(fields: [calendarId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user       User?             @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  calendar   Calendar?         @relation(fields: [calendarId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@index([calendarId])
 }
