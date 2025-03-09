@@ -9,14 +9,18 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CategoryOperationsService } from './categoryOperations.service';
-import { CreateCategoryOperationsDto, UpdateCategoryOperationsDto } from './dto';
+import {
+  CreateCategoryOperationsDto,
+  UpdateCategoryOperationsDto,
+} from './dto';
 import { TokenGuard } from '../auth';
-import { UpdateCategoryDto } from '../categories/dto';
 
 @UseGuards(TokenGuard)
 @Controller('categoryOperations')
 export class CategoryOperationsController {
-  constructor(private readonly categoryOperationsService: CategoryOperationsService) {}
+  constructor(
+    private readonly categoryOperationsService: CategoryOperationsService,
+  ) {}
 
   @Post()
   create(@Body() createCategoryOperationsDto: CreateCategoryOperationsDto) {
@@ -37,11 +41,13 @@ export class CategoryOperationsController {
     @Query('id') id: string,
     @Body() UpdateCategoryOperationsDto: UpdateCategoryOperationsDto,
   ) {
-    return this.categoryOperationsService.update(id, UpdateCategoryOperationsDto);
+    return this.categoryOperationsService.update(
+      id,
+      UpdateCategoryOperationsDto,
+    );
   }
   @Delete()
   remove(@Query('id') id: string) {
     return this.categoryOperationsService.remove(id);
   }
 }
-
