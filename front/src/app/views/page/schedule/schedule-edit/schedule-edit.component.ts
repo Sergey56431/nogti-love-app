@@ -153,11 +153,17 @@ export class ScheduleEditComponent implements OnInit {
     if (this._userId != null) {
       this._mySchedule.userId = this._userId;
       try {
-        // empty
-      } catch (e) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        this._pageParam() !== SchedulePage.create ? this._editSchedule() : this._createNotWorkDays();
+      }
+      catch (e) {
         console.log(e);
       }
     }
+  }
+
+  protected _editSchedule(){
+    //
   }
 
   private _formingSchedule() {

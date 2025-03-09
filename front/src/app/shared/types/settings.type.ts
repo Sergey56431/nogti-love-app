@@ -1,4 +1,6 @@
 export interface SettingsType {
-  name: string
-  value: string
+  userId: string,
+  defaultWorkTime: string;
+  defaultBreakTime: string;
+  timeGranularity: string;
 }
