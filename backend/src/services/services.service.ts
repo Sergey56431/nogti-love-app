@@ -84,7 +84,9 @@ export class ServicesService {
         }
       }
 
-      const service = await this._prismaService.services.findUnique({ where: { id } });
+      const service = await this._prismaService.services.findUnique({
+        where: { id },
+      });
       if (!service) {
         throw new NotFoundException(`Услуга не найдена`);
       }

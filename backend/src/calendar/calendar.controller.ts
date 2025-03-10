@@ -52,10 +52,7 @@ export class CalendarController {
   @Post('all')
   create_all(
     @Body()
-    data: {
-      noWorkDays: CreateCalendarDto[];
-      userId: string;
-    },
+    data: CreateCalendarAllDto,
   ) {
     return this.calendarService.create_all(data);
   }

@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { TokenGuard } from '../auth';
 import { CreateSettingsDto, UpdateSettingsDto } from './dto';
 import { SettingsService } from './settings.service';
@@ -15,7 +24,7 @@ export class SettingsController {
 
   @Get()
   find(@Query('userId') userId?: string) {
-    return this.settingsServices.find(userId);
+    return this.settingsServices.findByUser(userId);
   }
 
   @Put()

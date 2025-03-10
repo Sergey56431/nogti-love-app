@@ -1,16 +1,50 @@
 import {
   BadRequestException,
+  forwardRef,
   HttpException,
+  Inject,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { DirectsState } from '@prisma/client';
+import { CreateDirectDto } from './dto';
+import { TimeSlotAlgorithm } from '../utilits';
 
 @Injectable()
 export class DirectsService {
-  constructor(private readonly _prismaService: PrismaService) {}
+  constructor(
+    private readonly _prismaService: PrismaService,
+    @Inject(forwardRef(() => TimeSlotAlgorithm))
+    private readonly _timeSlotAlgorithm: TimeSlotAlgorithm,
+  ) {}
+
+  public async findByDateUser(userId: string, date: Date) {
+    try {
+      return await this._prismaService.directs.findMany({
+        where: {
+          userId: userId,
+          calendar: {
+            date: date,
+          },
+          state: {
+            not: 'cancelled',
+          },
+        },
+        include: {
+          services: {
+            include: {
+              service: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      throw new HttpException('Ошибка при получении записей', 500);
+    }
+  }
 
   public async findByDate(date: string) {
     try {
@@ -49,7 +83,25 @@ export class DirectsService {
     }
   }
 
-  public async create(createDirectDto) {
+  public async createDirect(createDirect) {
+    try {
+      return await this._prismaService.directs.create({
+        data: {
+          time: createDirect.time.toString(),
+          clientName: createDirect.clientName.toString(),
+          phone: createDirect.phone.toString(),
+          comment: createDirect.comment.toString(),
+          calendarId: createDirect.calendarId,
+          userId: createDirect.userId,
+        },
+      });
+    } catch (error) {
+      console.error('Ошибка при создании записи:', error);
+      throw new InternalServerErrorException('Внутренняя ошибка сервера');
+    }
+  }
+
+  public async create(createDirectDto: CreateDirectDto) {
     try {
       const date = new Date(createDirectDto.date);
       if (isNaN(date.getTime())) {
@@ -90,18 +142,18 @@ export class DirectsService {
         throw new HttpException({ errors: errors }, 400);
       }
 
-      const createDirect = { ...createDirectDto };
-      delete createDirect.services;
-      delete createDirect.date;
+      const newDirect = await this._timeSlotAlgorithm.bookSlot(
+        createDirectDto.userId,
+        createDirectDto.date,
+        createDirectDto.time,
+        createDirectDto.services.map((s) => s.serviceId),
+        createDirectDto.clientName,
+        createDirectDto.phone,
+        createDirectDto.comment,
+        calendar.id,
+      );
 
-      const direct = await this._prismaService.directs.create({
-        data: {
-          ...createDirect,
-          calendarId: calendar.id,
-        },
-      });
-
-      const servicePromises = createDirectDto.services.map(async (service) => {
+      const servicePromises = newDirect.services.map(async (service) => {
         const serviceExists = await this._prismaService.services.findUnique({
           where: { id: service.serviceId },
         });
@@ -111,14 +163,14 @@ export class DirectsService {
         return this._prismaService.directsServices.create({
           data: {
             serviceId: service.serviceId,
-            directId: direct.id,
+            directId: newDirect.directId,
           },
         });
       });
 
       await Promise.all(servicePromises);
 
-      return this.findOne(direct.id);
+      return this.findOne(newDirect.directId);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -214,7 +266,12 @@ export class DirectsService {
         throw new HttpException('Некорректная дата', 400);
       }
       const calendarId = await this._prismaService.calendar.findUnique({
-        where: { date: date, userId: updateDirectDto.userId },
+        where: {
+          date_userId: {
+            date: date,
+            userId: updateDirectDto.userId,
+          },
+        },
         select: { id: true },
       });
       if (!calendarId) {

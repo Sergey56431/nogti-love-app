@@ -19,7 +19,7 @@ export class SettingsService {
     }
   }
 
-  async find(userId: string): Promise<CreateSettingsDto> {
+  async findByUser(userId: string): Promise<CreateSettingsDto> {
     try {
       return await this._prismaService.settings.findFirst({
         where: { userId },

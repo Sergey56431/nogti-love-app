@@ -98,99 +98,166 @@ export function CustomSwaggerCreateCalendarResponses(
         'application/json': {
           example: [
             {
-              id: '3f514899-0851-4885-aba9-30791a7d5573',
-              date: '2025-02-05T00:00:00.000Z',
-              state: 'notHave',
-              userId: '5592c7c4-c398-435a-9b9e-bc550139e698',
-              directs: [],
-            },
-            {
-              id: 'a0c794f7-bc4e-4060-8419-54b186b09bc9',
-              date: '2025-02-06T00:00:00.000Z',
+              id: '8bc88f1f-984f-4f11-93ed-c5587bf3b828',
+              date: '2025-05-01T00:00:00.000Z',
+              time: '09:00-16:00',
               state: 'empty',
-              userId: '5592c7c4-c398-435a-9b9e-bc550139e698',
-              directs: [
+              userId: 'ea6580aa-020f-4f07-aeab-9d801e5da629',
+              freeSlots: [
                 {
-                  id: 'b247fcea-c548-4ea8-90e9-db1a73066ee3',
-                  phone: '89502151980',
-                  clientName: 'Владrr',
-                  time: '17:55',
-                  comment: 'Коментарий',
-                  userId: '5592c7c4-c398-435a-9b9e-bc550139e698',
-                  state: 'confirmed',
-                  calendarId: 'a0c794f7-bc4e-4060-8419-54b186b09bc9',
+                  time: '09:00',
+                },
+                {
+                  time: '09:30',
+                },
+                {
+                  time: '10:00',
+                },
+                {
+                  time: '10:30',
+                },
+                {
+                  time: '11:00',
+                },
+                {
+                  time: '11:30',
+                },
+                {
+                  time: '12:00',
+                },
+                {
+                  time: '12:30',
+                },
+                {
+                  time: '13:00',
+                },
+                {
+                  time: '13:30',
+                },
+                {
+                  time: '14:00',
+                },
+                {
+                  time: '14:30',
+                },
+                {
+                  time: '15:00',
+                },
+                {
+                  time: '15:30',
+                },
+                {
+                  time: '16:00',
                 },
               ],
             },
             {
-              id: '75bd2d38-856e-4d07-bba6-8d824c141aaf',
-              date: '2025-02-07T00:00:00.000Z',
+              id: '2c4e0cfa-3ac5-42f3-b10a-253a90ab3dfb',
+              date: '2025-05-02T00:00:00.000Z',
+              time: '09:00-16:00',
               state: 'empty',
-              userId: '5592c7c4-c398-435a-9b9e-bc550139e698',
-              directs: [],
+              userId: 'ea6580aa-020f-4f07-aeab-9d801e5da629',
+              freeSlots: [
+                {
+                  time: '09:00',
+                },
+                {
+                  time: '09:30',
+                },
+                {
+                  time: '10:00',
+                },
+                {
+                  time: '10:30',
+                },
+                {
+                  time: '11:00',
+                },
+                {
+                  time: '11:30',
+                },
+                {
+                  time: '12:00',
+                },
+                {
+                  time: '12:30',
+                },
+                {
+                  time: '13:00',
+                },
+                {
+                  time: '13:30',
+                },
+                {
+                  time: '14:00',
+                },
+                {
+                  time: '14:30',
+                },
+                {
+                  time: '15:00',
+                },
+                {
+                  time: '15:30',
+                },
+                {
+                  time: '16:00',
+                },
+              ],
             },
             {
-              id: '9ff35398-5534-4c82-9022-82fb3d78427b',
-              date: '2025-01-01T00:00:00.000Z',
+              id: 'eedfd8a4-8f37-4cb8-a875-bab958bb33e9',
+              date: '2025-05-03T00:00:00.000Z',
+              time: '09:00-16:00',
               state: 'empty',
-              userId: '5592c7c4-c398-435a-9b9e-bc550139e698',
-              directs: [],
-            },
-            {
-              id: '4675821a-241e-49bf-8cfb-13c2c8c8527a',
-              date: '2025-01-02T00:00:00.000Z',
-              state: 'empty',
-              userId: '5592c7c4-c398-435a-9b9e-bc550139e698',
-              directs: [],
-            },
-            {
-              id: 'd9380d04-62bf-4c0a-86da-0e510a6c482c',
-              date: '2025-01-03T00:00:00.000Z',
-              state: 'empty',
-              userId: '5592c7c4-c398-435a-9b9e-bc550139e698',
-              directs: [],
-            },
-            {
-              id: 'b4929c1e-d88a-4574-a857-6bbb854e428d',
-              date: '2025-01-04T00:00:00.000Z',
-              state: 'empty',
-              userId: '5592c7c4-c398-435a-9b9e-bc550139e698',
-              directs: [],
-            },
-            {
-              id: '1814b279-e006-46f7-864a-fc3e67a6ecfc',
-              date: '2025-01-05T00:00:00.000Z',
-              state: 'notHave',
-              userId: '5592c7c4-c398-435a-9b9e-bc550139e698',
-              directs: [],
-            },
-            {
-              id: '33e504b4-ebd6-47bd-82ef-ded312f75eaf',
-              date: '2025-01-06T00:00:00.000Z',
-              state: 'empty',
-              userId: '5592c7c4-c398-435a-9b9e-bc550139e698',
-              directs: [],
-            },
-            {
-              id: '704856c4-9252-4d17-9062-0f57e69a6151',
-              date: '2025-01-07T00:00:00.000Z',
-              state: 'empty',
-              userId: '5592c7c4-c398-435a-9b9e-bc550139e698',
-              directs: [],
-            },
-            {
-              id: '6fbd1b1d-984e-4d43-b914-ee96254bde19',
-              date: '2025-01-08T00:00:00.000Z',
-              state: 'empty',
-              userId: '5592c7c4-c398-435a-9b9e-bc550139e698',
-              directs: [],
-            },
-            {
-              id: 'e1d73d4a-4509-4117-91c5-59cd0f0a60b0',
-              date: '2025-01-09T00:00:00.000Z',
-              state: 'empty',
-              userId: '5592c7c4-c398-435a-9b9e-bc550139e698',
-              directs: [],
+              userId: 'ea6580aa-020f-4f07-aeab-9d801e5da629',
+              freeSlots: [
+                {
+                  time: '09:00',
+                },
+                {
+                  time: '09:30',
+                },
+                {
+                  time: '10:00',
+                },
+                {
+                  time: '10:30',
+                },
+                {
+                  time: '11:00',
+                },
+                {
+                  time: '11:30',
+                },
+                {
+                  time: '12:00',
+                },
+                {
+                  time: '12:30',
+                },
+                {
+                  time: '13:00',
+                },
+                {
+                  time: '13:30',
+                },
+                {
+                  time: '14:00',
+                },
+                {
+                  time: '14:30',
+                },
+                {
+                  time: '15:00',
+                },
+                {
+                  time: '15:30',
+                },
+                {
+                  time: '16:00',
+                },
+              ],
             },
           ],
         },
