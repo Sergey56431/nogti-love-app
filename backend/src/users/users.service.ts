@@ -139,7 +139,9 @@ export class UsersService {
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      dto.birthday = new Date(dto.birthday);
+      if (dto.birthday) {
+        dto.birthday = new Date(dto.birthday);
+      }
       const user = await this._prismaService.user.create({
         select: this._returnUserModel,
         data: { ...dto, password: hashedPassword },
