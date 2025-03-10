@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  forwardRef,
   HttpException,
   Inject,
   Injectable,
@@ -8,43 +7,19 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { DirectsState } from '@prisma/client';
+import { Directs, DirectsState } from '@prisma/client';
 import { CreateDirectDto } from './dto';
-import { TimeSlotAlgorithm } from '../utilits';
+import { IDirectsService } from './interfaces';
+import { ITimeSlotAlgorithm } from '../utilits/interfaces';
+import { IDirectsServiceAlgorithm } from './interfaces/directs.service.algorithm.interface';
 
 @Injectable()
-export class DirectsService {
+export class DirectsService implements IDirectsService {
   constructor(
     private readonly _prismaService: PrismaService,
-    @Inject(forwardRef(() => TimeSlotAlgorithm))
-    private readonly _timeSlotAlgorithm: TimeSlotAlgorithm,
+    @Inject('ITimeSlotAlgorithm')
+    private readonly _timeSlotAlgorithm: ITimeSlotAlgorithm,
   ) {}
-
-  public async findByDateUser(userId: string, date: Date) {
-    try {
-      return await this._prismaService.directs.findMany({
-        where: {
-          userId: userId,
-          calendar: {
-            date: date,
-          },
-          state: {
-            not: 'cancelled',
-          },
-        },
-        include: {
-          services: {
-            include: {
-              service: true,
-            },
-          },
-        },
-      });
-    } catch (error) {
-      console.log(error);
-      throw new HttpException('Ошибка при получении записей', 500);
-    }
-  }
 
   public async findByDate(date: string) {
     try {
@@ -80,24 +55,6 @@ export class DirectsService {
       }
       console.error('Ошибка при поиске по дате:', error);
       throw new HttpException('Ошибка при получении записей', 500);
-    }
-  }
-
-  public async createDirect(createDirect) {
-    try {
-      return await this._prismaService.directs.create({
-        data: {
-          time: createDirect.time.toString(),
-          clientName: createDirect.clientName.toString(),
-          phone: createDirect.phone.toString(),
-          comment: createDirect.comment.toString(),
-          calendarId: createDirect.calendarId,
-          userId: createDirect.userId,
-        },
-      });
-    } catch (error) {
-      console.error('Ошибка при создании записи:', error);
-      throw new InternalServerErrorException('Внутренняя ошибка сервера');
     }
   }
 
@@ -372,6 +329,58 @@ export class DirectsService {
       }
       console.error('Ошибка при удалении записи:', error);
       throw new Error('Ошибка при удалении данных');
+    }
+  }
+}
+
+@Injectable()
+export class DirectsServiceForAlgorithm implements IDirectsServiceAlgorithm{
+  constructor(private readonly _prismaService: PrismaService) {}
+  public async findByDateUser(userId: string, date: Date): Promise<any> {
+    try {
+      return await this._prismaService.directs.findMany({
+        where: {
+          userId: userId,
+          calendar: {
+            date: date,
+          },
+          state: {
+            not: 'cancelled',
+          },
+        },
+        include: {
+          services: {
+            include: {
+              service: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      throw new HttpException('Ошибка при получении записей', 500);
+    }
+  }
+
+  public async createDirect(
+    createDirect: CreateDirectDto,
+    calendarId: string,
+  ): Promise<Directs> {
+    try {
+      return await this._prismaService.directs.create({
+        data: {
+          userId: createDirect.userId.toString(),
+          time: createDirect.time.toString(),
+          clientName: createDirect.clientName.toString(),
+          phone: createDirect.phone.toString(),
+          comment: createDirect.comment.toString(),
+          calendarId: calendarId,
+          state: createDirect.state,
+        },
+      });
+    } catch (error) {
+      console.error('Ошибка при создании записи:', error);
+      throw new InternalServerErrorException('Внутренняя ошибка сервера');
     }
   }
 }

@@ -3,12 +3,12 @@ import {
   Controller,
   Delete,
   Get,
+  Inject,
   Post,
   Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { DirectsService } from './directs.service';
 import { CreateDirectDto, UpdateDirectDto } from './dto';
 import { TokenGuard } from '../auth';
 import {
@@ -21,13 +21,16 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { DayState } from '@prisma/client';
+import { IDirectsService } from './interfaces';
 
 @UseGuards(TokenGuard)
 @ApiTags('Directs (Записи)')
 @Controller('directs')
 export class DirectsController {
-  constructor(private readonly _directsService: DirectsService) {}
+  constructor(
+    @Inject('IDirectsService')
+    private readonly _directsService: IDirectsService,
+  ) {}
 
   @ApiOperation({ summary: 'Создать запись' })
   @ApiCreatedResponse({

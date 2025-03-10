@@ -16,7 +16,7 @@ model User {
   username           String            @db.VarChar(100)
   phoneNumber        String            @unique @db.VarChar(20)
   score              Int?              @default(100)
-  rate               Int?              @default(100)
+  rate               Int?              @default(0)
   birthday           DateTime?
   description        String?           @db.VarChar(200)
   password           String            @db.VarChar(60)

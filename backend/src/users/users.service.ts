@@ -12,10 +12,13 @@ export class UsersService {
     lastName: true,
     username: true,
     phoneNumber: true,
-    refreshToken: false,
     score: true,
-    password: false,
+    rate: true,
+    birthday: true,
+    description: true,
     role: true,
+    refreshToken: false,
+    password: false,
   };
 
   constructor(private readonly _prismaService: PrismaService) {}
@@ -136,6 +139,7 @@ export class UsersService {
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
 
+      dto.birthday = new Date(dto.birthday);
       const user = await this._prismaService.user.create({
         select: this._returnUserModel,
         data: { ...dto, password: hashedPassword },

@@ -3,27 +3,37 @@ import { UpdateCalendarDto } from './dto';
 import { PrismaService } from '../prisma';
 import { DayState } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { TimeSlotAlgorithm } from '../utilits';
 import { FreeSlotService } from '../freeSlots';
 import { CreateCalendarAllDto } from './dto/create-calendar-all.dto';
 import { SettingsService } from '../settings';
+import { ICalendarService } from './interfaces';
+import { ITimeSlotAlgorithm } from '../utilits/interfaces';
+import { ICalendarServiceAlgorithm } from './interfaces';
+
+interface DayData {
+  state: DayState;
+  userId: string;
+  workTime?: string;
+}
 
 @Injectable()
-export class CalendarService {
+export class CalendarService implements ICalendarService {
   constructor(
     private readonly _prismaService: PrismaService,
-    @Inject(forwardRef(() => TimeSlotAlgorithm)) // Правильно
-    private readonly _timeSlotAlgorithm: TimeSlotAlgorithm,
-    @Inject(forwardRef(() => FreeSlotService)) // Правильно
+    @Inject('ITimeSlotAlgorithm')
+    private readonly _timeSlotAlgorithm: ITimeSlotAlgorithm,
+    @Inject(forwardRef(() => FreeSlotService))
     private readonly _freeSlotService: FreeSlotService,
     private readonly _settingsService: SettingsService,
   ) {}
 
+  // Год и месяц для которых создается календарь не в прошлом
   private _validateDateForCreate(year: number, month: number) {
     const now = new Date();
     const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1;
+    const currentMonth = now.getMonth() + 1; // месяцы начинаются с 0
 
+    // Если год меньше текущего или год равен текущему, но месяц меньше текущего
     if (year < currentYear || (year === currentYear && month < currentMonth)) {
       throw new HttpException(
         'Нельзя создать календарь на прошедший месяц',
@@ -32,17 +42,22 @@ export class CalendarService {
     }
   }
 
+  // корректность даты и что она принадлежит указанному месяцу
   private _validateNoWorkDay(dateString: string, year: number, month: number) {
     const dateParts = dateString.split('-');
     const yearFromDate = parseInt(dateParts[0], 10);
     const monthFromDate = parseInt(dateParts[1], 10);
     const dayFromDate = parseInt(dateParts[2], 10);
 
+    // Проверка что все части даты числа
     if (isNaN(yearFromDate) || isNaN(monthFromDate) || isNaN(dayFromDate)) {
       throw new HttpException(`Некорректный формат даты: ${dateString}`, 400);
     }
+
+    //месяцы начинаются с 0 (0 - январь 11 - декабрь)
     const date = new Date(yearFromDate, monthFromDate - 1, dayFromDate);
 
+    // Проверка корректности даты
     if (
       date.getFullYear() !== yearFromDate ||
       date.getMonth() + 1 !== monthFromDate ||
@@ -51,6 +66,7 @@ export class CalendarService {
       throw new HttpException(`Некорректная дата: ${dateString}`, 400);
     }
 
+    // Дата принадлежит указанному месяцу и году
     if (yearFromDate !== year || monthFromDate !== month) {
       throw new HttpException(
         `Дата ${dateString} не находится в указанном месяце`,
@@ -59,22 +75,100 @@ export class CalendarService {
     }
   }
 
-  async updateDayState(dayId: string, newState: DayState) {
-    try {
-      await this._prismaService.calendar.update({
-        where: { id: dayId },
-        data: { state: newState },
+  //Получает из БД существующие дни для пользователя и месяца
+  private async _existingDays(userId, firstDayOfMonth, lastDayOfMonth) {
+    // Для хранения данных о днях, ключ - дата, значение - объект с данными дня
+    const daysMap = new Map<
+      string,
+      { state: DayState; userId: string; workTime?: string }
+    >();
+
+    // дни пользователя за указанный месяц
+    const existingDays = await this._prismaService.calendar.findMany({
+      where: {
+        userId: userId,
+        date: {
+          gte: firstDayOfMonth,
+          lte: lastDayOfMonth,
+        },
+      },
+    });
+
+    // Заполняю daysMap данными из базы
+    for (const day of existingDays) {
+      const dateString = day.date.toISOString().slice(0, 10); // Формат "YYYY-MM-DD"
+      daysMap.set(dateString, {
+        state: day.state,
+        userId: day.userId,
+        workTime: day.time,
       });
-    } catch (error) {
-      if (
-        error instanceof PrismaClientKnownRequestError &&
-        error.code == 'P2025'
-      ) {
-        throw new HttpException('День календаря не найден', 404);
-      }
-      console.error('Ошибка при обновлении состояния дня:', error);
-      throw new HttpException('Ошибка при обновлении состояния дня', 500);
     }
+    return daysMap;
+  }
+
+  //Инициализирует Map со всеми днями месяца добавляя empty дни если их нет в БД
+  private async _initializeDaysMap(
+    userId: string,
+    firstDayOfMonth: Date,
+    lastDayOfMonth: Date,
+  ): Promise<Map<string, DayData>> {
+    const daysMap = await this._existingDays(
+      userId,
+      firstDayOfMonth,
+      lastDayOfMonth,
+    );
+
+    for (
+      let d = new Date(firstDayOfMonth);
+      d <= lastDayOfMonth;
+      d.setDate(d.getDate() + 1)
+    ) {
+      const dateString = d.toISOString().slice(0, 10);
+      if (!daysMap.has(dateString)) {
+        daysMap.set(dateString, {
+          state: DayState.empty,
+          userId,
+          workTime: '',
+        });
+      }
+    }
+    return daysMap;
+  }
+
+  // Применяет кастомные настройки customDays к Map дней
+  private _applyCustomDays(
+    daysMap: Map<string, DayData>,
+    customDays: { date: string; state?: DayState; workTime?: string }[],
+    year: number,
+    month: number,
+  ): void {
+    if (!customDays) {
+      return;
+    }
+
+    for (const { date: dateString, state, workTime } of customDays) {
+      this._validateNoWorkDay(dateString, year, month);
+      daysMap.set(dateString, {
+        state: state || DayState.empty,
+        userId: daysMap.get(dateString)?.userId || '', // userId должен быть, но на всякий случай
+        workTime: state === DayState.notHave ? '' : (workTime ?? ''),
+      });
+    }
+  }
+
+  //Преобразует Map дней в массив объектов для Prisma
+  private _getDaysToCreate(
+    daysMap: Map<string, DayData>,
+  ): { date: Date; state: DayState; userId: string; workTime: string }[] {
+    return [...daysMap.entries()].map(([dateString, dayData]) => {
+      const { state, userId, workTime } = dayData;
+      return {
+        date: new Date(dateString),
+        state,
+        userId,
+        workTime,
+      };
+    });
   }
 
   public async create(createCalendarDto) {
@@ -120,66 +214,73 @@ export class CalendarService {
     const [yearStr, monthStr] = dateForCreate.split('-');
     const year = parseInt(yearStr, 10);
     const month = parseInt(monthStr, 10);
-
     this._validateDateForCreate(year, month);
 
     const firstDayOfMonth = new Date(Date.UTC(year, month - 1, 1));
     const lastDayOfMonth = new Date(Date.UTC(year, month, 0));
-    const daysMap = new Map<
-      string,
-      { state: DayState; userId: string; workTime?: string }
-    >();
 
-    // Инициализируем все дни месяца как empty
-    for (
-      let date = new Date(firstDayOfMonth);
-      date <= lastDayOfMonth;
-      date.setDate(date.getDate() + 1)
-    ) {
-      const dateString = date.toISOString().slice(0, 10);
-      daysMap.set(dateString, { state: DayState.empty, userId });
-    }
+    //получение уже существующих дней календаря для данного пользователя и месяца
+    const daysMap = await this._initializeDaysMap(
+      userId,
+      firstDayOfMonth,
+      lastDayOfMonth,
+    );
 
-    // Применяем кастомные настройки из customDays
-    if (customDays) {
-      for (const { date: dateString, state, workTime } of customDays) {
-        this._validateNoWorkDay(dateString, year, month); // Валидация даты
-        if (daysMap.has(dateString)) {
-          const dayData = daysMap.get(dateString)!;
-          dayData.state = state || dayData.state; // Если state не указан, оставляем текущий
-          dayData.workTime = workTime; // workTime может быть undefined
-        }
-      }
-    }
+    // добавление кастомных дней
+    this._applyCustomDays(daysMap, customDays, year, month);
 
     try {
-      const daysToCreate = [...daysMap.entries()].map(
-        ([dateString, { state, userId, workTime }]) => ({
-          date: new Date(dateString),
-          state: state,
-          userId: userId,
-          workTime: workTime,
-        }),
-      );
+      // массив объектов для записи в БД
+      const daysToCreate = this._getDaysToCreate(daysMap);
+
       const settings = await this._settingsService.findByUser(userId);
 
+      //Обработка каждого дня в транзакции
       await this._prismaService.$transaction(async (prisma) => {
         for (const day of daysToCreate) {
+          //-- Логика из _processDayWithinTransaction --
+          const existingDay = await prisma.calendar.findUnique({
+            where: { date_userId: { date: day.date, userId: day.userId } },
+            include: { directs: true },
+          });
+
+          if (
+            existingDay &&
+            existingDay.directs.length > 0 &&
+            day.state === DayState.notHave
+          ) {
+            throw new HttpException(
+              `Нельзя сделать день ${day.date.toISOString().slice(0, 10)} нерабочим, так как на него есть записи.`,
+              400,
+            );
+          }
+          //Если день был notHave и его нет в customDay, то он должен стать пустым
+          if (
+            existingDay &&
+            existingDay.state === DayState.notHave &&
+            !customDays?.find(
+              (cDay) => cDay.date === day.date.toISOString().slice(0, 10),
+            )
+          ) {
+            day.state = DayState.empty;
+          }
+
           const day_ = await prisma.calendar.upsert({
-            where: {
-              date_userId: {
-                date: day.date,
-                userId: day.userId,
-              },
-            },
+            where: { date_userId: { date: day.date, userId: day.userId } },
             update: {
               state: day.state,
-              time: day.workTime,
+              time:
+                day.state === DayState.notHave
+                  ? ''
+                  : day.workTime || settings.defaultWorkTime,
             },
             create: {
               date: day.date,
               state: day.state,
-              time: day.workTime || settings.defaultWorkTime,
+              time:
+                day.state === DayState.notHave
+                  ? ''
+                  : day.workTime || settings.defaultWorkTime,
               userId: day.userId,
             },
           });
@@ -192,31 +293,26 @@ export class CalendarService {
         }
       });
 
+      // генерация слотов
       for (const day of daysToCreate) {
-        await this._timeSlotAlgorithm.generateFreeSlots(
+        const calendarDay = await this.findByUserDate(userId, day.date);
+        const slotsToCreate = await this._timeSlotAlgorithm.generateFreeSlots(
           userId,
           day.date.toISOString(),
           day.workTime,
+          calendarDay,
         );
+        await this._freeSlotService.createFreeSlots(slotsToCreate);
       }
 
       return this._prismaService.calendar.findMany({
-        where: {
-          userId: userId,
-          date: {
-            gte: firstDayOfMonth,
-            lte: lastDayOfMonth,
-          },
-        },
-        include: {
-          freeSlots: {
-            select: {
-              time: true,
-            },
-          },
-        },
+        where: { userId, date: { gte: firstDayOfMonth, lte: lastDayOfMonth } },
+        include: { freeSlots: { select: { time: true } } },
       });
     } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code == 'P2003'
@@ -255,25 +351,6 @@ export class CalendarService {
       }
       console.log(error);
       throw new HttpException('Ошибка сервера при поиске календаря', 500);
-    }
-  }
-
-  public async findByUserDate(userId, date) {
-    try {
-      return await this._prismaService.calendar.findUnique({
-        where: {
-          date_userId: {
-            date: date,
-            userId: userId,
-          },
-        },
-      });
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      console.log(error);
-      throw new HttpException('Ошибка сервера при поиске дня календаря', 500);
     }
   }
 
@@ -388,6 +465,67 @@ export class CalendarService {
       }
       console.log(error);
       throw new HttpException('Ошибка сервера при удалении дня календаря', 500);
+    }
+  }
+
+  public async findByUserDate(userId, date) {
+    try {
+      return await this._prismaService.calendar.findUnique({
+        where: {
+          date_userId: {
+            date: date,
+            userId: userId,
+          },
+        },
+      });
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      console.log(error);
+      throw new HttpException('Ошибка сервера при поиске дня календаря', 500);
+    }
+  }
+}
+
+@Injectable()
+export class CalendarServiceForAlgorithm implements ICalendarServiceAlgorithm {
+  constructor(private readonly _prismaService: PrismaService) {}
+
+  public async updateDayState(dayId: string, newState: DayState) {
+    try {
+      await this._prismaService.calendar.update({
+        where: { id: dayId },
+        data: { state: newState },
+      });
+    } catch (error) {
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code == 'P2025'
+      ) {
+        throw new HttpException('День календаря не найден', 404);
+      }
+      console.error('Ошибка при обновлении состояния дня:', error);
+      throw new HttpException('Ошибка при обновлении состояния дня', 500);
+    }
+  }
+
+  public async findByUserDate(userId, date) {
+    try {
+      return await this._prismaService.calendar.findUnique({
+        where: {
+          date_userId: {
+            date: date,
+            userId: userId,
+          },
+        },
+      });
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      console.log(error);
+      throw new HttpException('Ошибка сервера при поиске дня календаря', 500);
     }
   }
 }

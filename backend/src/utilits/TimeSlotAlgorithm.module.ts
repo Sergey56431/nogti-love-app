@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ServicesModule } from '../services';
 import { DirectsModule } from '../directs';
 import { CalendarModule } from '../calendar';
@@ -14,10 +14,14 @@ import { CategoriesModule } from '../categories';
     forwardRef(() => DirectsModule),
     forwardRef(() => CalendarModule),
     FreeSlotModule,
-    CalendarModule,
     CategoriesModule,
   ],
-  providers: [TimeSlotAlgorithm],
-  exports: [TimeSlotAlgorithm],
+  providers: [
+    {
+      provide: 'ITimeSlotAlgorithm',
+      useClass: TimeSlotAlgorithm,
+    },
+  ],
+  exports: ['ITimeSlotAlgorithm'],
 })
 export class TimeSlotAlgorithmModule {}

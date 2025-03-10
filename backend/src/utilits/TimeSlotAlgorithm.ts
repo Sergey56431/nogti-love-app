@@ -1,11 +1,27 @@
 import { ServicesService } from '../services';
 import { SettingsService } from '../settings';
-import { CreateDirectDto, DirectsService } from '../directs';
-import { CalendarService } from '../calendar';
-import { forwardRef, HttpException, Inject, Injectable } from '@nestjs/common';
+import { CreateDirectDto } from '../directs';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { FreeSlotService } from '../freeSlots';
-import { DayState, DirectsState } from '@prisma/client';
+import { Calendar, DayState, DirectsState } from '@prisma/client';
 import { CategoryService } from '../categories';
+import { ITimeSlotAlgorithm } from './interfaces';
+import { IDirectsServiceAlgorithm } from '../directs/interfaces';
+import { ICalendarServiceAlgorithm } from '../calendar/interfaces';
+
+class TimeInterval {
+  constructor(
+    public start: number,
+    public end: number,
+  ) {}
+}
+
+interface TimeBoundaries {
+  startMinutes: number;
+  endMinutes: number;
+  breakMinutes: number;
+  granularityMinutes: number;
+}
 
 interface UserSettings {
   userId: string;
@@ -15,27 +31,32 @@ interface UserSettings {
 }
 
 @Injectable()
-export class TimeSlotAlgorithm {
+export class TimeSlotAlgorithm implements ITimeSlotAlgorithm {
   constructor(
     private readonly _servicesService: ServicesService,
     private readonly _settingsService: SettingsService,
-    @Inject(forwardRef(() => DirectsService))
-    private readonly _directsService: DirectsService,
-    @Inject(forwardRef(() => CalendarService))
-    private readonly _calendarService: CalendarService,
+    @Inject('IDirectsServiceAlgorithm')
+    private readonly _directsService: IDirectsServiceAlgorithm,
+    @Inject('ICalendarServiceAlgorithm')
+    private readonly _calendarService: ICalendarServiceAlgorithm,
     private readonly _freeSlotService: FreeSlotService,
     private readonly _categoryService: CategoryService,
   ) {}
 
+  // ------------------ Вспомогательные методы
   private async _convertTimeToMinutes(time: string): Promise<number> {
     const time1: string[] = time.split(':');
     return +time1[0] * 60 + +time1[1];
   }
+
   private async _formatMinutesToTime(minutes: number): Promise<string> {
     return `${Math.floor(minutes / 60)
       .toString()
       .padStart(2, '0')}:${(minutes % 60).toString().padStart(2, '0')}`; //возвращает строку типа "02:23"; `округляем/только в меньшую(minutes / 60):остаток при делении minutes на 60`
   }
+
+  // ------------------ Методы получения данных
+
   private async _getServicesDuration(serviceIds: string[]): Promise<number> {
     let alltime: number = 0;
     for (const id of serviceIds) {
@@ -81,44 +102,24 @@ export class TimeSlotAlgorithm {
     return !!freeSlots;
   }
 
-  public async generateFreeSlots(
-    userId: string,
-    date_: string,
+  private async _getWorkTime(
+    settings: UserSettings,
     customWorkTime?: string,
-  ) {
-    const date = new Date(date_);
-    const settings = await this._getUserSettings(userId);
+  ): Promise<[string, string]> {
     const workTime = customWorkTime || settings.defaultWorkTime;
-    const [startTime, endTime] = workTime.split('-');
+    return workTime.split('-') as [string, string];
+  }
 
-    const startMinutes = await this._convertTimeToMinutes(startTime);
-    const endMinutes = await this._convertTimeToMinutes(endTime);
-    const breakMinutes = await this._convertTimeToMinutes(
-      settings.defaultBreakTime,
-    );
-    const granularityMinutes = await this._convertTimeToMinutes(
-      settings.timeGranularity,
-    );
+  private async _getExistingAppointments(
+    userId: string,
+    date: Date,
+  ): Promise<TimeInterval[]> {
     const existingDirects = await this._directsService.findByDateUser(
       userId,
       date,
     );
 
-    const calendarDay = await this._calendarService.findByUserDate(
-      userId,
-      date,
-    );
-
-    if (!calendarDay) {
-      return;
-    }
-    if (calendarDay.state === 'notHave') {
-      return;
-    }
-
-    const calendarId = calendarDay.id;
-
-    const existingAppointments = await Promise.all(
+    const appointments = await Promise.all(
       existingDirects.map(async (direct) => {
         const servicesDuration = await direct.services.reduce(
           async (accPromise, ds) => {
@@ -129,18 +130,41 @@ export class TimeSlotAlgorithm {
           Promise.resolve(0),
         );
         const startTime = await this._convertTimeToMinutes(direct.time);
-        return {
-          start: startTime,
-          end: startTime + servicesDuration,
-        };
+        return new TimeInterval(startTime, startTime + servicesDuration);
       }),
     );
+    return appointments.sort((a, b) => a.start - b.start);
+  }
 
-    existingAppointments.sort((a, b) => a.start - b.start);
+  // ----------------- Основная логика генерации
 
+  private async _calculateTimeBoundaries(
+    startTime: string,
+    endTime: string,
+    settings: UserSettings,
+  ): Promise<TimeBoundaries> {
+    const startMinutes = await this._convertTimeToMinutes(startTime);
+    const endMinutes = await this._convertTimeToMinutes(endTime);
+    const breakMinutes = await this._convertTimeToMinutes(
+      settings.defaultBreakTime,
+    );
+    const granularityMinutes = await this._convertTimeToMinutes(
+      settings.timeGranularity,
+    );
+    return { startMinutes, endMinutes, breakMinutes, granularityMinutes };
+  }
+
+  private async _generateSlots(
+    startMinutes: number,
+    endMinutes: number,
+    granularityMinutes: number,
+    breakMinutes: number,
+    existingAppointments: TimeInterval[],
+    calendarId: string,
+  ): Promise<{ calendarId: string; time: string }[]> {
     let currentTime = startMinutes;
     let lastEndTime = 0;
-    const slotsToCreate = [];
+    const slots = [];
 
     while (currentTime < endMinutes) {
       const slotEndTime = currentTime + granularityMinutes;
@@ -153,7 +177,6 @@ export class TimeSlotAlgorithm {
           isOverlapping = true;
           break;
         }
-
         if (currentTime < prevEndTimeWithBreak) {
           isOverlapping = true;
           break;
@@ -162,30 +185,62 @@ export class TimeSlotAlgorithm {
 
       if (!isOverlapping) {
         const timeString = await this._formatMinutesToTime(currentTime);
-        slotsToCreate.push({
-          calendarId: calendarId,
-          time: timeString,
-        });
+        slots.push({ calendarId, time: timeString }); // Добавил calendarId
         lastEndTime = currentTime + granularityMinutes;
       }
       currentTime = slotEndTime;
     }
 
-    //Проверяю крайний случай
+    // Проверка крайнего случая (добавляем слот в конце дня если нужно)
     if (
       existingAppointments.length === 0 ||
       existingAppointments[existingAppointments.length - 1].end <= endMinutes
     ) {
       const timeString = await this._formatMinutesToTime(endMinutes);
-      slotsToCreate.push({
-        calendarId: calendarId,
-        time: timeString,
-      });
+      slots.push({ calendarId, time: timeString });
     }
 
-    if (slotsToCreate.length > 0) {
-      await this._freeSlotService.createFreeSlots(slotsToCreate);
+    return slots;
+  }
+
+  public async generateFreeSlots(
+    userId: string,
+    date_: string,
+    customWorkTime?: string,
+    calendarDay?: Calendar,
+  ) {
+    const date = new Date(date_);
+
+    const settings = await this._getUserSettings(userId);
+    const [startTime, endTime] = await this._getWorkTime(
+      settings,
+      customWorkTime,
+    );
+
+    if (!calendarDay || calendarDay.state === 'notHave') {
+      return [];
     }
+    const calendarId = calendarDay.id;
+    const { startMinutes, endMinutes, breakMinutes, granularityMinutes } =
+      await this._calculateTimeBoundaries(startTime, endTime, settings);
+    const existingAppointments = await this._getExistingAppointments(
+      userId,
+      date,
+    );
+
+    const slotsToCreate = await this._generateSlots(
+      startMinutes,
+      endMinutes,
+      granularityMinutes,
+      breakMinutes,
+      existingAppointments,
+      calendarId,
+    );
+
+    if (slotsToCreate.length > 0) {
+      return slotsToCreate;
+    }
+    return [];
   }
 
   public async bookSlot(
@@ -304,18 +359,19 @@ export class TimeSlotAlgorithm {
 
     const createDirectDto: CreateDirectDto = {
       userId: userId.toString(),
-      date: dateStr,
+      date: dateStr.toString(),
       time: time.toString(),
       clientName: clientName.toString(),
       phone: phone.toString(),
       comment: comment.toString(),
       services: serviceIds.map((serviceId) => ({ serviceId })),
+      state: DirectsState.notConfirmed,
     };
 
-    const direct = await this._directsService.createDirect({
-      ...createDirectDto,
-      calendarId: calendarId,
-    });
+    const direct = await this._directsService.createDirect(
+      createDirectDto,
+      calendarId,
+    );
 
     let currentTime = newAppointmentStart;
     while (currentTime < newAppointmentEnd) {
