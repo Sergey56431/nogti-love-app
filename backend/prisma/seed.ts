@@ -6,7 +6,6 @@ async function main() {
     data: {
       name: 'Влад',
       lastName: 'Никифоров',
-      username: 'AinzOulGown111',
       phoneNumber: '+79502151980',
       password: '1234',
       birthday: new Date(2004, 7, 20),

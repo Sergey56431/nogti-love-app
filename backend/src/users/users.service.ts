@@ -10,12 +10,14 @@ export class UsersService {
     id: true,
     name: true,
     lastName: true,
-    username: true,
     phoneNumber: true,
-    refreshToken: false,
     score: true,
-    password: false,
+    rate: true,
+    birthday: true,
+    description: true,
     role: true,
+    refreshToken: false,
+    password: false,
   };
 
   constructor(private readonly _prismaService: PrismaService) {}
@@ -112,8 +114,8 @@ export class UsersService {
   }
 
   public async createUser(dto: UserCreateDto) {
-    const { password, username, phoneNumber } = dto;
-    if (!password || !username || !phoneNumber) {
+    const { password, phoneNumber } = dto;
+    if (!password || !phoneNumber) {
       throw new HttpException(
         'Отсутствуют необходимые данные для создания пользователя',
         400,
@@ -136,6 +138,9 @@ export class UsersService {
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
 
+      if (dto.birthday) {
+        dto.birthday = new Date(dto.birthday);
+      }
       const user = await this._prismaService.user.create({
         select: this._returnUserModel,
         data: { ...dto, password: hashedPassword },

@@ -7,8 +7,8 @@ import {
   Put,
   UseGuards,
   Query,
+  Inject,
 } from '@nestjs/common';
-import { CalendarService } from './calendar.service';
 import { CreateCalendarDto, UpdateCalendarDto } from './dto';
 import { TokenGuard } from '../auth';
 import {
@@ -28,16 +28,20 @@ import {
 } from '../custom-swagger';
 import { CreateCalendarAllDto } from './dto/create-calendar-all.dto';
 import { DayState } from '@prisma/client';
+import { ICalendarService } from './interfaces';
 
 @UseGuards(TokenGuard)
 @ApiTags('Calendar (Календарь)')
 @Controller('calendar')
 export class CalendarController {
-  constructor(private readonly calendarService: CalendarService) {}
+  constructor(
+    @Inject('ICalendarService')
+    private readonly _calendarService: ICalendarService,
+  ) {}
 
   @Post()
   create(@Body() createCalendarDto: CreateCalendarDto) {
-    return this.calendarService.create(createCalendarDto);
+    return this._calendarService.create(createCalendarDto);
   }
 
   @ApiOperation({ summary: 'Создать календарь на месяц' })
@@ -54,7 +58,7 @@ export class CalendarController {
     @Body()
     data: CreateCalendarAllDto,
   ) {
-    return this.calendarService.create_all(data);
+    return this._calendarService.create_all(data);
   }
 
   @ApiOperation({
@@ -90,13 +94,13 @@ export class CalendarController {
     @Query('endDate') endDate: string,
   ) {
     if (id) {
-      return this.calendarService.findOne(id);
+      return this._calendarService.findOne(id);
     } else if (userId) {
-      return this.calendarService.findByUser(userId);
+      return this._calendarService.findByUser(userId);
     } else if (startDate && endDate) {
-      return this.calendarService.findInterval(startDate, endDate);
+      return this._calendarService.findInterval(startDate, endDate);
     } else {
-      return this.calendarService.findAll();
+      return this._calendarService.findAll();
     }
   }
 
@@ -128,7 +132,7 @@ export class CalendarController {
     @Query('id') id: string,
     @Body() updateCalendarDto: UpdateCalendarDto,
   ) {
-    return this.calendarService.update(id, updateCalendarDto);
+    return this._calendarService.update(id, updateCalendarDto);
   }
 
   @ApiOperation({ summary: 'Удалить день календаря' })
@@ -141,6 +145,6 @@ export class CalendarController {
   @ApiNotFoundResponse({ description: 'День календаря не найден' })
   @Delete()
   remove(@Query('id') id: string) {
-    return this.calendarService.remove(id);
+    return this._calendarService.remove(id);
   }
 }

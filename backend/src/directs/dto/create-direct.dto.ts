@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { DirectsState } from '@prisma/client';
+import { Services } from '@prisma/client';
 
 export class CreateDirectDto {
   @ApiProperty({
@@ -43,6 +45,8 @@ export class CreateDirectDto {
   })
   comment: string;
 
+  state: DirectsState;
+
   @ApiProperty({
     description: 'Услуги',
     required: false,
@@ -55,3 +59,10 @@ export class CreateDirectDto {
   services: { serviceId: string }[];
 }
 export type UpdateDirectDto = Partial<CreateDirectDto>;
+
+export type CreatedDirectDto = Omit<CreateDirectDto, 'services'> & {
+  id: string;
+  calendarId: string;
+  state: DirectsState;
+  services: { service: Services }[];
+};
