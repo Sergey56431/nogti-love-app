@@ -46,7 +46,7 @@ export class AppComponent implements OnInit {
 
   checkIfInstalled() {
     // Проверка, если приложение открыто в режиме PWA
-    if (window.matchMedia('(display-mode: standalone)').matches) {
+    if (window.matchMedia('(display-mode: fullscreen)').matches) {
       return;
     }
   }
@@ -57,8 +57,6 @@ export class AppComponent implements OnInit {
 
     if (userConfirmed && this.installPromptEvent) {
       this.installPromptEvent.prompt();
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
       this.installPromptEvent.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === 'accepted') {
           console.log('Пользователь принял установку приложения');
