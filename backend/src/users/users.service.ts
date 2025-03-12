@@ -10,7 +10,6 @@ export class UsersService {
     id: true,
     name: true,
     lastName: true,
-    username: true,
     phoneNumber: true,
     score: true,
     rate: true,
@@ -115,8 +114,8 @@ export class UsersService {
   }
 
   public async createUser(dto: UserCreateDto) {
-    const { password, username, phoneNumber } = dto;
-    if (!password || !username || !phoneNumber) {
+    const { password, phoneNumber } = dto;
+    if (!password || !phoneNumber) {
       throw new HttpException(
         'Отсутствуют необходимые данные для создания пользователя',
         400,

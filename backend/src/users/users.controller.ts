@@ -23,14 +23,12 @@ export class UsersController {
     @Query('id') id: string,
     @Query('role') role: string,
     @Query('phoneNumber') phoneNumber: string,
-    @Query('username') username: string,
     @Query('score') score: number,
   ) {
-    if (role || phoneNumber || username || score) {
+    if (role || phoneNumber || score) {
       return await this._usersService.findFiltred({
         role,
         phoneNumber,
-        username,
         score: +score,
       });
     }
