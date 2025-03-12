@@ -4,7 +4,7 @@
     <div class="user-logo">
       <img src="/images/logo.png" alt="Логотип">
     </div>
-    <input class="input" formControlName="phoneNumber"
+    <input class="input" formControlName="phoneNumber" autocomplete="on"
            [class.error]="phoneNumber?.invalid && (phoneNumber?.dirty )"
            type="text" placeholder="Номер телефона">
 
@@ -23,7 +23,7 @@
       </div>
     }
 
-    <input class="input" formControlName="password"
+    <input class="input" formControlName="password" autocomplete="on"
            [class.error]="password?.invalid && (password?.dirty)"
            type="password" placeholder="Пароль">
 

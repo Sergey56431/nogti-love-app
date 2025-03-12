@@ -5,7 +5,7 @@ export namespace AuthData {
 
   export class LoginUser {
     static readonly type = '[User] Get User';
-    constructor(public readonly username: string, public readonly password: string) {}
+    constructor(public readonly phoneNumber: string, public readonly password: string) {}
   }
 
   export class LogoutUser {

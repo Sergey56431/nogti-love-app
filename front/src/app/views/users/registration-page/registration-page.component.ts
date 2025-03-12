@@ -22,7 +22,6 @@ export class RegistrationPageComponent {
 
   protected _signupForm = this._fb.group({
     password: ['', [Validators.pattern('^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,12})$'), Validators.required]],
-    username: ['', [Validators.required]],
     phone: ['', [Validators.pattern('^((8|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$')]],
     name: ['', [Validators.required]],
     lastName: ['', [Validators.required]],
@@ -33,10 +32,6 @@ export class RegistrationPageComponent {
               private _router: Router,
               private _fb: FormBuilder,
               private _snackBar: MessageService) {
-  }
-
-  get username() {
-    return this._signupForm.get('username');
   }
 
   get password() {
@@ -58,7 +53,6 @@ export class RegistrationPageComponent {
   protected _signup() {
     if (this._signupForm.valid && this._signupForm.value) {
       this._authService.signup({
-        username: this._signupForm.value.username!,
         password: this._signupForm.value.password!.toString(),
         name: this._signupForm.value.name!,
         role: 'ADMIN',
