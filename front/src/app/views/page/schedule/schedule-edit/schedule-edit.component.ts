@@ -11,7 +11,7 @@ import { MenuItem, MessageService } from 'primeng/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatePickerComponent } from '@shared/components';
 import { ToggleSwitch } from 'primeng/toggleswitch';
-import { CalendarEditType, CustomDay, DefaultResponseType, NotWorksDaysCalendarType } from '@shared/types';
+import { CalendarEditType, DefaultResponseType, NotWorksDaysCalendarType } from '@shared/types';
 import { FormsModule } from '@angular/forms';
 import { orderBy } from 'lodash';
 import { TableModule } from 'primeng/table';
