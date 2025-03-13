@@ -28,6 +28,14 @@ model User {
   category           Category[]
   income_Expanses    Income_Expanses[]
   settings           Settings[]
+  clients            UserClient[]
+}
+model UserClient{
+  id                 String            @id @default(uuid())
+  name               String            @db.VarChar(100)
+  lastName           String?           @db.VarChar(100)
+  admin_id           String            @db.VarChar(100)
+  admin              User              @relation(fields: [admin_id], references: [id])
 }
 
 model Settings {

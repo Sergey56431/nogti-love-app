@@ -20,6 +20,7 @@ export class UsersService {
     refreshToken: false,
     password: false,
   };
+  private lastName: any;
 
   constructor(private readonly _prismaService: PrismaService) {}
 
@@ -202,6 +203,43 @@ export class UsersService {
       }
       console.log(error);
       throw new HttpException('Ошибка сервера при удалении пользователя', 500);
+    }
+  }
+  public async createClient(name: string, lastName: string, admin_id: string) {
+    try {
+      return this._prismaService.userClient.create({
+        data: {
+          name,
+          lastName,
+          admin_id,
+        },
+      });
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        throw new HttpException('Клиент уже существует', 409);
+      }
+      throw new HttpException('Ошибка при создании клиента', 500);
+    }
+  }
+  public async findAllClientsByAdminID(admin_id: string) {
+    try {
+      return this._prismaService.userClient.findMany({
+        where: { admin_id },
+      });
+    } catch {
+      throw new HttpException('Ошибка при поиске клиентов', 500);
+    }
+  }
+  public async deleteClient(id) {
+    try {
+      return this._prismaService.userClient.delete({
+        where: { id },
+      });
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        throw new HttpException('Клиент не найден', 404);
+      }
+      throw new HttpException('Ошибка при удалении клиента', 500);
     }
   }
 }
