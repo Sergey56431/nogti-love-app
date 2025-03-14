@@ -205,41 +205,40 @@ export class UsersService {
       throw new HttpException('Ошибка сервера при удалении пользователя', 500);
     }
   }
-  public async createClient(name: string, lastName: string, admin_id: string) {
+  public async createRole(name: string, userId: string) {
     try {
-      return this._prismaService.userClient.create({
+      return this._prismaService.customRole.create({
         data: {
           name,
-          lastName,
-          admin_id,
+          userId,
         },
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
-        throw new HttpException('Клиент уже существует', 409);
+        throw new HttpException('Роль уже существует', 409);
       }
-      throw new HttpException('Ошибка при создании клиента', 500);
+      throw new HttpException('Ошибка при создании роли', 500);
     }
   }
-  public async findAllClientsByAdminID(admin_id: string) {
+  public async findAllRolesByUserID(userId: string) {
     try {
-      return this._prismaService.userClient.findMany({
-        where: { admin_id },
+      return this._prismaService.customRole.findMany({
+        where: { userId },
       });
     } catch {
-      throw new HttpException('Ошибка при поиске клиентов', 500);
+      throw new HttpException('Ошибка при поиске роли', 500);
     }
   }
   public async deleteClient(id) {
     try {
-      return this._prismaService.userClient.delete({
+      return this._prismaService.customRole.delete({
         where: { id },
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
-        throw new HttpException('Клиент не найден', 404);
+        throw new HttpException('Роль не найдена', 404);
       }
-      throw new HttpException('Ошибка при удалении клиента', 500);
+      throw new HttpException('Ошибка при поиске роли', 500);
     }
   }
 }

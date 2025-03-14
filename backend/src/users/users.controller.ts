@@ -60,8 +60,8 @@ export class UsersController {
   public async deleteUser(@Query('id') id: string) {
     return await this._usersService.deleteUser(id);
   }
-  @Get('client')
-  public async findClientsByAdminID(@Query('adminID') admin_id: string) {
-    return await this._usersService.findAllClientsByAdminID(admin_id);
+  @Get('Role')
+  public async findRolesByUserID(@Query('userId') userId: string) {
+    return await this._usersService.findAllRolesByUserID(userId);
   }
 }
