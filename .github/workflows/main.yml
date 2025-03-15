@@ -8,7 +8,7 @@ on:
 jobs:
   build_backend:
     name: Сборка Бэкенда 
-    runs-on: ubuntu-cloud-runner
+    runs-on: ubuntu-latest
     steps:
       - name: Проверка кода
         uses: actions/checkout@v2
@@ -27,7 +27,7 @@ jobs:
         working-directory: ./backend
 
   build_frontend:
-    runs-on: ubuntu-cloud-runner
+    runs-on: ubuntu-latest
     name: Сборка Фронтенда
     steps:
       - name: Проверка кода
