@@ -1,34 +1,29 @@
-import { Controller, Get, Query, Post, Put, Delete } from '@nestjs/common';
+import {Controller, Get, Query, Post, Put, Delete, Body} from '@nestjs/common';
 import { RolesService } from './roles.service';
+import { RoleCreateDto, TRoleUpdateDto } from "./roles-dto/roles-dto";
 
 @Controller('role')
 export class RolesController {
   constructor(private readonly roleService: RolesService) {}
-
-  @Get('allRoles')
-  public async findAllRoles() {
-    return this.roleService.findAllRoles();
-  }
   @Get()
-  public async findRoleByUserID(@Query('userId') userId) {
+  public async findRole(@Query('userId') userId) {
     return this.roleService.findAllRolesByUserID(userId);
   }
   @Post()
   public async createRole(
-    @Query('nameRole') name: string,
-    @Query('userId') userId: string,
+    @Body('Role') dto: RoleCreateDto
   ) {
-    return this.roleService.createRole(name, userId);
+    return this.roleService.createRole(dto);
   }
   @Put()
   public async updateRole(
-    @Query('roleId') roleId: string,
-    @Query('name') name: string,
+    @Query('id') roleId: string,
+    @Body() dto: TRoleUpdateDto,
   ) {
-    return this.roleService.updateRole(roleId, name);
+    return this.roleService.updateRole(roleId, dto);
   }
   @Delete()
-  public async deleteRole(@Query('roleId') roleId: string) {
+  public async deleteRole(@Query('id') roleId: string) {
     return this.roleService.deleteRole(roleId);
   }
 }

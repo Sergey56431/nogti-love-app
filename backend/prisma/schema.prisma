@@ -19,7 +19,6 @@ model User {
   birthday           DateTime?
   description        String?              @db.VarChar(200)
   password           String               @db.VarChar(60)
-  role               Role                 @default(CLIENT)
   calendar           Calendar[]
   refreshToken       String?
   directs            Directs[]
@@ -27,8 +26,7 @@ model User {
   category           Category[]
   income_Expanses    Income_Expanses[]
   settings           Settings[]
-  CustomRole         CustomRole[]
-  roles              CustomRole[]
+  role               CustomRole[]
 }
 
 model CustomRole {
