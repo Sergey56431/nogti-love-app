@@ -2,6 +2,10 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.customRole.create({
+    data: { id: 'testId', name: 'testName', userId: 'userId' },
+  });
+
   const user1 = await prisma.user.create({
     data: {
       name: 'Влад',
@@ -9,7 +13,7 @@ async function main() {
       phoneNumber: '+79502151980',
       password: '1234',
       birthday: new Date(2004, 7, 20),
-      role: 'ADMIN',
+      role: 'testName',
     },
   });
 

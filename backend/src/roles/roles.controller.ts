@@ -17,7 +17,8 @@ export class RolesController {
   public async findRole(@Query('userId') userId, @Query('id') id) {
     if (userId) {
       return this.roleService.findAllRolesByUserID(userId);
-    } else if (id) {
+    }
+    if (id) {
       return this.roleService.findRoleById(id);
     } else {
       return this.roleService.findAllRoles();
@@ -30,7 +31,7 @@ export class RolesController {
   @Put()
   public async updateRole(
     @Query('id') roleId: string,
-    @Body() dto: RoleUpdateDto,
+    @Body('Role') dto: RoleUpdateDto,
   ) {
     return this.roleService.updateRole(roleId, dto);
   }

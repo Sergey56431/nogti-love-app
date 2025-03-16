@@ -1,7 +1,7 @@
 generator client {
   provider        = "prisma-client-js"
-  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
   previewFeatures = ["prismaSchemaFolder"]
+  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -17,17 +17,17 @@ model User {
   score              Int?                 @default(100)
   rate               Int?                 @default(0)
   birthday           DateTime?
+  role               String               @default("testName")
   description        String?              @db.VarChar(200)
   password           String               @db.VarChar(60)
-  calendar           Calendar[]
   refreshToken       String?
-  directs            Directs[]
-  categoryOperations CategoryOperations[]
+  calendar           Calendar[]
   category           Category[]
+  categoryOperations CategoryOperations[]
+  createdRoles       CustomRole[]
+  directs            Directs[]
   income_Expanses    Income_Expanses[]
-  settings           Settings[]
-  roleId             String
-  role               CustomRole[]
+  settings           Settings?
 }
 
 model CustomRole {
@@ -43,17 +43,17 @@ model Settings {
   defaultBreakTime String @default("00:30")
   timeGranularity  String @default("00:30")
   userId           String @unique
-  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Calendar {
   id        String     @id @default(uuid())
   date      DateTime   @db.Date
-  directs   Directs[]
   time      String?
   state     DayState   @default(empty)
   userId    String
-  creator   User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  creator   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  directs   Directs[]
   freeSlots FreeSlot[]
 
   @@unique([date, userId])
@@ -62,9 +62,9 @@ model Calendar {
 model FreeSlot {
   id         String   @id @default(uuid())
   time       String
-  calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   calendarId String
   isBooked   Boolean  @default(false)
+  calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
 
   @@unique([calendarId, time])
 }
@@ -77,10 +77,10 @@ model Directs {
   comment    String?
   userId     String?
   state      DirectsState?     @default(notConfirmed)
-  services   DirectsServices[]
   calendarId String
-  user       User?             @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  calendar   Calendar?         @relation(fields: [calendarId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  calendar   Calendar          @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+  user       User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  services   DirectsServices[]
 
   @@index([calendarId])
 }
@@ -93,24 +93,24 @@ model Income_Expanses {
   createDate         DateTime?          @default(now())
   updateDate         DateTime?
   userId             String
-  categoryOperations CategoryOperations @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  user               User               @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  categoryOperations CategoryOperations @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model CategoryOperations {
   id              String            @id @default(uuid())
   name            String
   userId          String
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   income_Expanses Income_Expanses[]
-  user            User              @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Category {
   id       String     @id @default(uuid())
   name     String     @db.VarChar(100)
   userId   String
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   services Services[]
-  user     User       @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Services {
@@ -118,16 +118,16 @@ model Services {
   name       String            @db.VarChar(100)
   time       String
   price      Float
-  directs    DirectsServices[]
   categoryId String
-  category   Category          @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  directs    DirectsServices[]
+  category   Category          @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
 model DirectsServices {
   serviceId String
   directId  String
-  service   Services @relation(fields: [serviceId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  direct    Directs  @relation(fields: [directId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  direct    Directs  @relation(fields: [directId], references: [id], onDelete: Cascade)
+  service   Services @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   @@id([directId, serviceId])
   @@index([directId, serviceId])
