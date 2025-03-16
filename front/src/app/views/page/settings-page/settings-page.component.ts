@@ -6,7 +6,6 @@ import { AuthService } from '@core/auth';
 import { InputText } from 'primeng/inputtext';
 import { SettingsType } from '@shared/types/settings.type';
 import { Button } from 'primeng/button';
-import { remove } from 'lodash';
 
 @Component({
   selector: 'app-settings-page',

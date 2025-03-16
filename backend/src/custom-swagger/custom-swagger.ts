@@ -3,9 +3,7 @@ import {
   ApiOkResponse,
   ApiParam,
   ApiParamOptions,
-  ApiResponse,
   ApiResponseOptions,
-  getSchemaPath,
 } from '@nestjs/swagger';
 import { DayState } from '@prisma/client';
 
