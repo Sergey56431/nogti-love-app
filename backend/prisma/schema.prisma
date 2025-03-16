@@ -17,7 +17,7 @@ model User {
   score              Int?                 @default(100)
   rate               Int?                 @default(0)
   birthday           DateTime?
-  role               String               @default("testName")
+  role               String               @default("ADMIN")
   description        String?              @db.VarChar(200)
   password           String               @db.VarChar(60)
   refreshToken       String?
@@ -34,7 +34,7 @@ model CustomRole {
   id     String @id @default(uuid())
   name   String @db.VarChar(100)
   userId String @db.VarChar(100)
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Settings {
@@ -43,7 +43,7 @@ model Settings {
   defaultBreakTime String @default("00:30")
   timeGranularity  String @default("00:30")
   userId           String @unique
-  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Calendar {
@@ -52,7 +52,7 @@ model Calendar {
   time      String?
   state     DayState   @default(empty)
   userId    String
-  creator   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  creator   User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   directs   Directs[]
   freeSlots FreeSlot[]
 
@@ -64,7 +64,7 @@ model FreeSlot {
   time       String
   calendarId String
   isBooked   Boolean  @default(false)
-  calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+  calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@unique([calendarId, time])
 }
@@ -78,7 +78,7 @@ model Directs {
   userId     String?
   state      DirectsState?     @default(notConfirmed)
   calendarId String
-  calendar   Calendar          @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+  calendar   Calendar          @relation(fields: [calendarId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   user       User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
   services   DirectsServices[]
 
@@ -93,15 +93,15 @@ model Income_Expanses {
   createDate         DateTime?          @default(now())
   updateDate         DateTime?
   userId             String
-  categoryOperations CategoryOperations @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryOperations CategoryOperations @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model CategoryOperations {
   id              String            @id @default(uuid())
   name            String
   userId          String
-  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   income_Expanses Income_Expanses[]
 }
 
@@ -109,7 +109,7 @@ model Category {
   id       String     @id @default(uuid())
   name     String     @db.VarChar(100)
   userId   String
-  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   services Services[]
 }
 
@@ -120,14 +120,14 @@ model Services {
   price      Float
   categoryId String
   directs    DirectsServices[]
-  category   Category          @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category   Category          @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model DirectsServices {
   serviceId String
   directId  String
-  direct    Directs  @relation(fields: [directId], references: [id], onDelete: Cascade)
-  service   Services @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  direct    Directs  @relation(fields: [directId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  service   Services @relation(fields: [serviceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@id([directId, serviceId])
   @@index([directId, serviceId])

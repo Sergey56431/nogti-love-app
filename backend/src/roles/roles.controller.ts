@@ -27,13 +27,13 @@ export class RolesController {
     }
   }
   @Post()
-  public async createRole(@Body('Role') dto: RoleCreateDto) {
+  public async createRole(@Body() dto: RoleCreateDto) {
     return this.roleService.createRole(dto);
   }
   @Put()
   public async updateRole(
     @Query('id') roleId: string,
-    @Body('Role') dto: RoleUpdateDto,
+    @Body() dto: RoleUpdateDto,
   ) {
     return this.roleService.updateRole(roleId, dto);
   }

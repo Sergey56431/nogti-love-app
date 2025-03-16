@@ -13,7 +13,7 @@ async function main() {
       phoneNumber: '+79502151980',
       password: '1234',
       birthday: new Date(2004, 7, 20),
-      role: 'testName',
+      role: 'ADMIN',
     },
   });
 
