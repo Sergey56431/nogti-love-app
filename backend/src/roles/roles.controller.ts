@@ -14,9 +14,11 @@ import { RoleCreateDto, RoleUpdateDto } from './roles-dto/roles-dto';
 export class RolesController {
   constructor(private readonly roleService: RolesService) {}
   @Get()
-  public async findRole(@Query('userId') userId) {
+  public async findRole(@Query('userId') userId, @Query('id') id) {
     if (userId) {
       return this.roleService.findAllRolesByUserID(userId);
+    } else if (id) {
+      return this.roleService.findRoleById(id);
     } else {
       return this.roleService.findAllRoles();
     }

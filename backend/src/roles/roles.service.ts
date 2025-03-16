@@ -75,4 +75,14 @@ export class RolesService {
       throw new HttpException('Ошибка при поиске роли', 500);
     }
   }
+  public async findRoleById(id) {
+    try {
+      return this._prismaService.customRole.findUnique({
+        where: { id },
+      });
+    } catch (error) {
+      console.log(error);
+      throw new HttpException('Ошибка при поиске роли', 500);
+    }
+  }
 }
