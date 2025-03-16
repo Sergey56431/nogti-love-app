@@ -10,92 +10,102 @@
         <span>Расписание</span>
       </header>
       <div class="schedule-content-body">
-        <app-date-picker (emitDate)="_checkDayState($event)" #calendar></app-date-picker>
+        <app-date-picker (startDate)="_startDate.set($event)" (emitDate)="_checkDayState($event)"
+                         #calendar></app-date-picker>
 
         <div class="flex flex-col items-start gap-3 mb-3">
           <div class="font-bold">{{ calendar.day }}</div>
           @if (calendar.day) {
             <div class="flex flex-col gap-1">
               <p>Укажите статус</p>
-              <p-toggleswitch [(ngModel)]="_dayState" [name]="'Укажите статус'" [falseValue]="false" [trueValue]="true"
-                              (onChange)="_choiceDay($event.checked)" />
+              <p-toggleswitch [(ngModel)]="_dayState" [name]="'Укажите статус'" [falseValue]="false"
+                              [trueValue]="true" />
             </div>
 
-            @if (_pageParam() === SchedulePage.edit) {
-              <div class="flex items-center justify-between gap-2">
-                <div>С</div>
+            <div class="flex items-center justify-between gap-2">
+              <div>С</div>
 
-                <div class="flex items-center gap-1">
-                  <p-inputNumber class="w-11" [(ngModel)]="_startHour" buttonLayout="vertical"
-                                 [showButtons]="true" [min]="0" [max]="24">
-                    <ng-template pTemplate="incrementbuttonicon">
-                      <span class="pi pi-plus"></span>
-                    </ng-template>
-                    <ng-template pTemplate="decrementbuttonicon">
-                      <span class="pi pi-minus"></span>
-                    </ng-template>
-                  </p-inputNumber>
+              <div class="flex items-center gap-1">
+                <p-inputNumber class="w-11" [(ngModel)]="_startHour" buttonLayout="vertical"
+                               [showButtons]="true" [min]="0" [max]="24">
+                  <ng-template pTemplate="incrementbuttonicon">
+                    <span class="pi pi-plus"></span>
+                  </ng-template>
+                  <ng-template pTemplate="decrementbuttonicon">
+                    <span class="pi pi-minus"></span>
+                  </ng-template>
+                </p-inputNumber>
 
-                  <div>:</div>
+                <div>:</div>
 
-                  <p-select class="minute-select w-12" [options]="_minute" ></p-select>
-                </div>
-
-                <div>До</div>
-
-                <div class="flex items-center gap-1">
-                  <p-inputNumber class="w-11" [(ngModel)]="_endHour" buttonLayout="vertical"
-                                 [showButtons]="true" [min]="0" [max]="24">
-                    <ng-template pTemplate="incrementbuttonicon">
-                      <span class="pi pi-plus"></span>
-                    </ng-template>
-                    <ng-template pTemplate="decrementbuttonicon">
-                      <span class="pi pi-minus"></span>
-                    </ng-template>
-                  </p-inputNumber>
-
-                  <div>:</div>
-
-                  <p-select class="minute-select w-12" [options]="_minute"></p-select>
-                </div>
+                <p-select class="minute-select w-12" [options]="_minute" (onChange)="_startMinute.set($event.value)" />
               </div>
 
-            }
+              <div>До</div>
+
+              <div class="flex items-center gap-1">
+                <p-inputNumber class="w-11" [(ngModel)]="_endHour" buttonLayout="vertical"
+                               [showButtons]="true" [min]="0" [max]="24">
+                  <ng-template pTemplate="incrementbuttonicon">
+                    <span class="pi pi-plus"></span>
+                  </ng-template>
+                  <ng-template pTemplate="decrementbuttonicon">
+                    <span class="pi pi-minus"></span>
+                  </ng-template>
+                </p-inputNumber>
+
+                <div>:</div>
+
+                <p-select class="minute-select w-12" [options]="_minute" (onChange)="_endMinute.set($event.value)" />
+              </div>
+            </div>
+
           }
+
 
         </div>
         <div class="flex justify-end gap-1 mt-2">
-          <p-button severity="warn" (onClick)="_resetDays()" [disabled]="_mySchedule.noWorkDays.length === 0"
-                    label="Сбросить" icon="pi pi-refresh" class="w-full" />
+          @if (_scheduleCustom().customDays && _scheduleCustom().customDays.length > 0) {
+            <p-button severity="warn" (onClick)="_resetDays()"
+                      label="Сбросить" icon="pi pi-refresh" class="w-full" />
 
-          <p-button severity="primary" (onClick)="_saveDays()" [disabled]="_mySchedule.noWorkDays.length === 0"
-                    label="Сохранить" icon="pi pi-check" class="w-full" />
+            <p-button severity="primary" (onClick)="_choiceDay()"
+                      label="Сохранить" icon="pi pi-check" class="w-full" />
+          } @else {
+            <p-button severity="success" (onClick)="_resetDays()" label="Сформировать расписание" fluid />
+          }
         </div>
       </div>
     </div>
 
     <div class="card-editing-date w-full">
-      @if (_mySchedule.noWorkDays.length > 0) {
-        <h3 class="flex justify-center">Нерабочие дни</h3>
-
-        <p-table [value]="_mySchedule.noWorkDays">
+      <h3 class="flex justify-center">Список дней</h3>
+      @if (_scheduleCustom().customDays && _scheduleCustom().customDays.length > 0) {
+        <p-table [value]="_scheduleCustom().customDays">
           <ng-template #header>
             <tr>
               <th>День</th>
               <th>Состояние</th>
+              <th>Рабочее время</th>
             </tr>
           </ng-template>
           <ng-template #body let-item>
             <tr>
               <td>{{ item.date }}</td>
-              <td>Не рабочий</td>
+              <td>{{ item.state === 'have' ? 'Рабочий день' : 'Выходной день' }}</td>
+              <td>{{ item.workTime }}</td>
             </tr>
           </ng-template>
         </p-table>
+        <div class="mt-3">
+          <p-button severity="primary" class="w-full" (onClick)="_createSchedule()" icon="pi pi-check"
+                    label="Сохранить расписание" />
+        </div>
       } @else {
-        <p-button class="w-full" severity="primary" (onClick)="_allDaysWorking()" label="Все дни рабочие"></p-button>
+        <div class="flex justify-center text-center font-medium mt-3">Нажмите кнопку сформировать, чтобы сформировать расписание для дальнейшей
+          корректировки
+        </div>
       }
-
     </div>
   </div>
 

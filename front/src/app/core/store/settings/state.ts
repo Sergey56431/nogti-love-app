@@ -11,7 +11,7 @@ export interface SettingsStateModel {
 
 @State<SettingsStateModel>({
   name: 'settings',
-  defaults: {},
+  defaults: undefined,
 })
 
 @Injectable()
@@ -27,16 +27,30 @@ export class SettingsState {
   @Action(SettingsActions.GetSettings)
   private _getSettings(ctx: StateContext<SettingsStateModel>, action: SettingsActions.GetSettings) {
     const state = ctx.getState();
-    if (state != null) {
+    if (state.settings != null) {
       return;
-    } else {
-      this._settingsService.getSettings(action.userId).subscribe(settings => {
-        ctx.setState(patch({
-          settings,
-        }));
-
-        ctx.dispatch(new SettingsActions.GetSettingsSuccess(settings));
-      });
     }
+    this._settingsService.getSettings(action.userId).subscribe(settings => {
+      ctx.setState(patch({
+        settings,
+      }));
+
+     return ctx.dispatch(new SettingsActions.GetSettingsSuccess(settings));
+    });
+  }
+
+  @Action(SettingsActions.UpdateSettings)
+  private _updateSettings(ctx: StateContext<SettingsStateModel>, action: SettingsActions.UpdateSettings) {
+    const state = ctx.getState();
+    if (state == null) {
+      return;
+    }
+    this._settingsService.updateSettings(action.userId, action.settings).subscribe(settings => {
+      ctx.setState(patch({
+        settings,
+      }));
+
+      return ctx.dispatch(new SettingsActions.UpdateSettingsSuccess(settings));
+    });
   }
 }

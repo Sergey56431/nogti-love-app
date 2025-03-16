@@ -3,4 +3,5 @@ export interface SettingsType {
   defaultWorkTime: string;
   defaultBreakTime: string;
   timeGranularity: string;
+  id: string,
 }

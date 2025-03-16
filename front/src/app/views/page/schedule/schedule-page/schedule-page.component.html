@@ -3,10 +3,8 @@
   <div class="schedule-page-content">
     <div class="schedule-options flex w-72 flex-col items-center pr-10 gap-2.5 xl:items-start">
       <div class="flex flex-col items-center gap-1 xl:flex-row">
-        <p-button class="w-72" type="button" icon="pi pi-pencil"
-                  [routerLink]="['/schedule', 'edit']" label="Редактировать расписание"/>
         <p-button class="w-64" type="button" icon="pi pi-plus" severity="success"
-                  [routerLink]="['/schedule', 'create']" label="Заполнить расписание"/>
+                  routerLink="/schedule-edit" label="Выставить расписание"/>
       </div>
 
       <p-date-picker [fluid]="true"

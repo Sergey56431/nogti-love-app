@@ -12,6 +12,10 @@ export class SettingsService {
   constructor(private readonly _http: HttpClient) {}
 
   public getSettings(id: string): Observable<SettingsType> {
-    return this._http.get<SettingsType>(environment + 'settings&userId=' + id);
+    return this._http.get<SettingsType>(environment.api + 'settings?userId=' + id);
+  }
+
+  public updateSettings(userId: string, body: Partial<SettingsType>): Observable<SettingsType> {
+    return this._http.put<SettingsType>(environment.api + 'settings?userId=' + userId, body);
   }
 }

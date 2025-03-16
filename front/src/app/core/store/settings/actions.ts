@@ -7,8 +7,19 @@ export namespace SettingsActions {
     static readonly type = '[Settings] Get Settings';
     constructor(public userId: string) {}
   }
+
+  export class UpdateSettings {
+    static readonly type = '[Settings] Update Settings';
+    constructor(public userId: string, public settings: Partial<SettingsType>) {}
+  }
+
   export class GetSettingsSuccess {
     static readonly type = '[Settings] Get Settings Success';
+    constructor(public payload: SettingsType) {}
+  }
+
+  export class UpdateSettingsSuccess {
+    static readonly type = '[Settings] Update Settings Success';
     constructor(public payload: SettingsType) {}
   }
 }
