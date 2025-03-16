@@ -12,9 +12,11 @@ import { CreateDirectDto } from './dto';
 import { IDirectsService } from './interfaces';
 import { ITimeSlotAlgorithm } from '../utilits/interfaces';
 import { IDirectsServiceAlgorithm } from './interfaces/directs.service.algorithm.interface';
+import {CustomLogger} from "../logger";
 
 @Injectable()
 export class DirectsService implements IDirectsService {
+  private readonly logger = new CustomLogger();
   constructor(
     private readonly _prismaService: PrismaService,
     @Inject('ITimeSlotAlgorithm')
@@ -25,6 +27,7 @@ export class DirectsService implements IDirectsService {
     try {
       const date_ = new Date(date);
       if (isNaN(date_.getTime())) {
+        this.logger.log(`Пользователь ввел некорректную дату`);
         throw new HttpException('Некорректная дата', 400);
       }
       return await this._prismaService.directs.findMany({
@@ -53,7 +56,8 @@ export class DirectsService implements IDirectsService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.error('Ошибка при поиске по дате:', error);
+      console.log(error);
+      this.logger.error('Ошибка при поиске по дате', error.stack);
       throw new HttpException('Ошибка при получении записей', 500);
     }
   }
@@ -62,6 +66,7 @@ export class DirectsService implements IDirectsService {
     try {
       const date = new Date(createDirectDto.date);
       if (isNaN(date.getTime())) {
+        this.logger.log(`Пользователь ввел некорректную дату`);
         throw new HttpException('Некорректная дата', 400);
       }
 
@@ -115,6 +120,7 @@ export class DirectsService implements IDirectsService {
           where: { id: service.serviceId },
         });
         if (!serviceExists) {
+          this.logger.warn(`Услуга с ${service.serviceId} не найдена`);
           throw new HttpException(`Услуга не найдена`, 404);
         }
         return this._prismaService.directsServices.create({
@@ -136,9 +142,11 @@ export class DirectsService implements IDirectsService {
         error instanceof PrismaClientKnownRequestError &&
         error.code == 'P2003'
       ) {
+        this.logger.warn(`Ошибка при поиске пользователя`);
         throw new HttpException('Пользователь не найден', 404);
       }
-      console.error('Ошибка при создании записи:', error);
+      console.log(error);
+      this.logger.error(`Ошибка при создании записи`, error);
       throw new InternalServerErrorException('Внутренняя ошибка сервера');
     }
   }
@@ -147,8 +155,9 @@ export class DirectsService implements IDirectsService {
     try {
       return await this._prismaService.directs.findMany();
     } catch (error) {
-      console.error('Ошибка при получении всех записей:', error);
-      throw new HttpException('Ошибка при получении всех записей', 500);
+      console.log(error);
+      this.logger.error('Ошибка при получении всех записей', error.stack);
+      throw new HttpException('Ошибка сервера при получении всех записей', 500);
     }
   }
 
@@ -176,7 +185,8 @@ export class DirectsService implements IDirectsService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.error('Ошибка при поиске по дате:', error);
+      console.log(error);
+      this.logger.error('Ошибка при поиске по дате', error.stack);
       throw new HttpException('Ошибка при получении записей', 500);
     }
   }
@@ -211,7 +221,8 @@ export class DirectsService implements IDirectsService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.error('Ошибка при поиске записи:', error);
+      console.log(error);
+      this.logger.error('Ошибка при поиске записи', error.stack);
       throw new HttpException('Ошибка при получении записи', 500);
     }
   }
@@ -220,6 +231,7 @@ export class DirectsService implements IDirectsService {
     try {
       const date = new Date(updateDirectDto.date);
       if (isNaN(date.getTime())) {
+        this.logger.log(`Пользователь ввел некорректную дату`);
         throw new HttpException('Некорректная дата', 400);
       }
       const calendarId = await this._prismaService.calendar.findUnique({
@@ -232,6 +244,7 @@ export class DirectsService implements IDirectsService {
         select: { id: true },
       });
       if (!calendarId) {
+        this.logger.warn('Пользователь ввел неверную дату');
         throw new HttpException('Календарь для указанной даты не найден', 404);
       }
 
@@ -239,7 +252,8 @@ export class DirectsService implements IDirectsService {
         updateDirectDto.state &&
         !Object.values(DirectsState).includes(updateDirectDto.state)
       ) {
-        throw new HttpException('Неверный статус записи', 400);
+        this.logger.log('Неверный статус записи');
+        throw new HttpException('Ошибка статуса записи', 400);
       }
 
       const updateDirect = { ...updateDirectDto };
@@ -263,7 +277,8 @@ export class DirectsService implements IDirectsService {
               },
             );
             if (!serviceExists) {
-              throw new HttpException(`Услуга не найдена`, 404);
+              this.logger.warn('Услуга не найдена');
+              throw new HttpException(`Ошибка сервера при поиске услуги`, 404);
             }
           },
         );
@@ -302,15 +317,18 @@ export class DirectsService implements IDirectsService {
         error instanceof PrismaClientKnownRequestError &&
         error.code == 'P2025'
       ) {
-        throw new HttpException('Запись не найдена', 404);
+        this.logger.warn('Запись не найдена');
+        throw new HttpException(`Ошибка сервера при поиске записи`, 404);
       }
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code == 'P2003'
       ) {
-        throw new HttpException('Пользователь не найден', 404);
+        this.logger.warn('Пользователь не найден');
+        throw new HttpException(`Ошибка сервера при поиске пользователя`, 404);
       }
-      console.error('Ошибка при создании записи:', error);
+      console.log(error);
+      this.logger.error('Ошибка при создании записи', error.stack);
       throw new HttpException('Ошибка при обновлении записи', 500);
     }
   }
@@ -325,9 +343,11 @@ export class DirectsService implements IDirectsService {
         error instanceof PrismaClientKnownRequestError &&
         error.code == 'P2025'
       ) {
-        throw new HttpException('Запись не найдена', 404);
+        this.logger.warn('Запись не найдена');
+        throw new HttpException(`Ошибка сервера при поиске записи`, 404);
       }
-      console.error('Ошибка при удалении записи:', error);
+      console.log(error);
+      this.logger.error('Ошибка при удалении записи', error);
       throw new Error('Ошибка при удалении данных');
     }
   }
@@ -335,6 +355,7 @@ export class DirectsService implements IDirectsService {
 
 @Injectable()
 export class DirectsServiceForAlgorithm implements IDirectsServiceAlgorithm{
+  private readonly logger = new CustomLogger();
   constructor(private readonly _prismaService: PrismaService) {}
   public async findByDateUser(userId: string, date: Date): Promise<any> {
     try {
@@ -358,7 +379,8 @@ export class DirectsServiceForAlgorithm implements IDirectsServiceAlgorithm{
       });
     } catch (error) {
       console.log(error);
-      throw new HttpException('Ошибка при получении записей', 500);
+      this.logger.error('Ошибка при получении записей', error.stack);
+      throw new HttpException('Ошибка сервера при получении записей', 500);
     }
   }
 
