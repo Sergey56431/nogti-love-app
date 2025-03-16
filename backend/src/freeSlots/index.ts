@@ -1,2 +1,2 @@
-export * from './freeSlot.service';
+export * from './freeSlots.service';
 export * from './freeSlot.module';

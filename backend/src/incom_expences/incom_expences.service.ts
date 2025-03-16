@@ -1,13 +1,14 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { CreateIncomeExpencesDto, UpdateIncomeExpences } from './dto';
+import { CreateOperationsDto, UpdateOperationsDto } from './dto';
 import { PrismaService } from '../prisma';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { IOperationsService } from './interfaces';
 
 @Injectable()
-export class IncomExpencesService {
+export class OperationsService implements IOperationsService {
   constructor(private readonly _prismaService: PrismaService) {}
 
-  async create(createIncomExpenceDto: CreateIncomeExpencesDto) {
+  async create(createIncomExpenceDto: CreateOperationsDto) {
     const { userId, categoryId, ...data } = createIncomExpenceDto;
     const requiredFields = ['type', 'value'];
     const errors = requiredFields
@@ -95,9 +96,9 @@ export class IncomExpencesService {
     }
   }
 
-  async update(id: string, updateIncomExpenceDto: UpdateIncomeExpences) {
+  async update(id: string, updateIncomExpenceDto: UpdateOperationsDto) {
     try {
-      const data: UpdateIncomeExpences = {};
+      const data: UpdateOperationsDto = {};
 
       if (updateIncomExpenceDto.categoryId) {
         data.categoryId = updateIncomExpenceDto.categoryId;

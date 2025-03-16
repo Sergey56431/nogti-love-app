@@ -7,16 +7,21 @@ import {
   Delete,
   UseGuards,
   Query,
+  Inject,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
 import { TUserUpdateDto, UserCreateDto } from './users-dto';
 import { TokenGuard } from '../auth/auth.guard';
 import { CustomSwaggerUserIdParam } from '../custom-swagger';
+import { IUsersService } from './interfaces';
+import { UsersService } from './users.service';
 
 @UseGuards(TokenGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly _usersService: UsersService) {}
+  constructor(
+    @Inject(UsersService)
+    private readonly _usersService: IUsersService,
+  ) {}
 
   @Get()
   public async findOne(

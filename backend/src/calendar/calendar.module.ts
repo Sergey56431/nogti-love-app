@@ -1,30 +1,21 @@
-import { forwardRef, Module } from '@nestjs/common';
-import {
-  CalendarService,
-  CalendarServiceForAlgorithm,
-} from './calendar.service';
+import { Module } from '@nestjs/common';
+import { CalendarService, GenerateSlotsAlgorithm } from './calendar.service';
 import { CalendarController } from './calendar.controller';
 import { PrismaService } from 'src/prisma';
-import { TimeSlotAlgorithmModule } from '../utilits';
-import { FreeSlotService } from '../freeSlots';
-import { SettingsService } from '../settings';
+import { FreeSlotModule } from '../freeSlots';
+import { TimeSlotAlgorithmModule } from '../utilits/TimeSlotAlgorithm.module';
 
 @Module({
   controllers: [CalendarController],
+  imports: [FreeSlotModule, TimeSlotAlgorithmModule],
   providers: [
     PrismaService,
-    FreeSlotService,
-    SettingsService,
+    GenerateSlotsAlgorithm,
     {
-      provide: 'ICalendarService',
+      provide: CalendarService,
       useClass: CalendarService,
     },
-    {
-      provide: 'ICalendarServiceAlgorithm',
-      useClass: CalendarServiceForAlgorithm,
-    },
   ],
-  imports: [forwardRef(() => TimeSlotAlgorithmModule)],
-  exports: ['ICalendarService', 'ICalendarServiceAlgorithm'],
+  exports: [CalendarService],
 })
 export class CalendarModule {}

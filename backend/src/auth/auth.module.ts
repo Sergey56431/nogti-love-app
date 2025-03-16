@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PrismaService } from '../prisma';
-import { UsersService } from '../users';
+import { UsersModule, UsersService } from '../users';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt-strategy';
@@ -20,6 +20,7 @@ import { TokenGuard } from './auth.guard';
         signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES_IN') },
       }),
     }),
+    UsersModule,
   ],
   controllers: [AuthController],
   providers: [

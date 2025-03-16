@@ -6,9 +6,10 @@ import {
 } from './dto';
 import { PrismaService } from '../prisma';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { ICategoryOperationsService } from './interfaces';
 
 @Injectable()
-export class CategoryOperationsService {
+export class CategoryOperationsService implements ICategoryOperationsService {
   constructor(private readonly _prismaService: PrismaService) {}
 
   async create(data: CreateCategoryOperationsDto) {
@@ -56,6 +57,7 @@ export class CategoryOperationsService {
       );
     }
   }
+
   async findAll() {
     try {
       return await this._prismaService.categoryOperations.findMany();
@@ -70,6 +72,7 @@ export class CategoryOperationsService {
       );
     }
   }
+
   async findOne(id: string) {
     try {
       const result = await this._prismaService.categoryOperations.findUnique({
@@ -92,6 +95,7 @@ export class CategoryOperationsService {
       );
     }
   }
+
   async findByUser(userId: string) {
     try {
       return await this._prismaService.categoryOperations.findMany({
@@ -108,6 +112,7 @@ export class CategoryOperationsService {
       );
     }
   }
+
   async update(id: string, data: UpdateCategoryOperationsDto) {
     try {
       return await this._prismaService.categoryOperations.update({
@@ -132,6 +137,7 @@ export class CategoryOperationsService {
       );
     }
   }
+
   async remove(id: string) {
     try {
       return await this._prismaService.categoryOperations.delete({

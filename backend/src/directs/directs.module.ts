@@ -1,23 +1,24 @@
 import { Module } from '@nestjs/common';
-import { DirectsService, DirectsServiceForAlgorithm } from './directs.service';
+import { BookSlotsAlgorithm, DirectsService } from './directs.service';
 import { DirectsController } from './directs.controller';
 import { PrismaService } from '../prisma';
-import { TimeSlotAlgorithmModule } from '../utilits';
+import { SettingsModule } from '../settings';
+import { ServicesModule } from '../services';
+import { CategoriesModule } from '../categories';
+import { FreeSlotModule } from '../freeSlots';
+import { TimeSlotAlgorithmModule } from '../utilits/TimeSlotAlgorithm.module';
 
 @Module({
   controllers: [DirectsController],
   providers: [
     PrismaService,
     {
-      provide: 'IDirectsService',
+      provide: DirectsService,
       useClass: DirectsService,
     },
-    {
-      provide: 'IDirectsServiceAlgorithm',
-      useClass: DirectsServiceForAlgorithm,
-    },
+    BookSlotsAlgorithm,
   ],
-  imports: [TimeSlotAlgorithmModule],
-  exports: ['IDirectsService', 'IDirectsServiceAlgorithm'],
+  exports: [DirectsService],
+  imports: [FreeSlotModule, TimeSlotAlgorithmModule],
 })
 export class DirectsModule {}

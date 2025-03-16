@@ -1,7 +1,7 @@
 import { TypeOperation } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateIncomeExpencesDto {
+export class CreateOperationsDto {
   @ApiProperty({
     description: 'ID пользователя',
     nullable: false,
@@ -32,4 +32,4 @@ export class CreateIncomeExpencesDto {
   type: TypeOperation;
 }
 
-export type UpdateIncomeExpences = Partial<CreateIncomeExpencesDto>;
+export type UpdateOperationsDto = Partial<CreateOperationsDto>;

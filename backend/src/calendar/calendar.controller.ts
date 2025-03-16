@@ -29,13 +29,14 @@ import {
 import { CreateCalendarAllDto } from './dto/create-calendar-all.dto';
 import { DayState } from '@prisma/client';
 import { ICalendarService } from './interfaces';
+import { CalendarService } from './calendar.service';
 
 @UseGuards(TokenGuard)
 @ApiTags('Calendar (Календарь)')
 @Controller('calendar')
 export class CalendarController {
   constructor(
-    @Inject('ICalendarService')
+    @Inject(CalendarService)
     private readonly _calendarService: ICalendarService,
   ) {}
 

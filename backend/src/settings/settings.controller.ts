@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Inject,
   Post,
   Put,
   Query,
@@ -11,11 +12,15 @@ import {
 import { TokenGuard } from '../auth';
 import { CreateSettingsDto, UpdateSettingsDto } from './dto';
 import { SettingsService } from './settings.service';
+import { ISettingService } from './interfaces';
 
 @UseGuards(TokenGuard)
 @Controller('settings')
 export class SettingsController {
-  constructor(private readonly settingsServices: SettingsService) {}
+  constructor(
+    @Inject(SettingsService)
+    private readonly settingsServices: ISettingService,
+  ) {}
 
   @Post()
   create(@Body() createSettingsDto: CreateSettingsDto) {

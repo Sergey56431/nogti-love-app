@@ -1,14 +1,14 @@
-import { forwardRef, HttpException, Inject, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { UpdateCalendarDto } from './dto';
 import { PrismaService } from '../prisma';
-import { DayState } from '@prisma/client';
+import { Calendar, DayState } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { FreeSlotService } from '../freeSlots';
+import { FreeSlotsService } from '../freeSlots';
 import { CreateCalendarAllDto } from './dto/create-calendar-all.dto';
-import { SettingsService } from '../settings';
 import { ICalendarService } from './interfaces';
-import { ITimeSlotAlgorithm } from '../utilits/interfaces';
-import { ICalendarServiceAlgorithm } from './interfaces';
+import { IFreeSlotsService } from '../freeSlots/interfaces';
+import { TimeSlotUtilits } from '../utilits/TimeSlotAlgorithm';
+import { ITimeSlotUtilits } from '../utilits/interfaces/timeSlotAgorithm.interface';
 
 interface DayData {
   state: DayState;
@@ -16,15 +16,119 @@ interface DayData {
   workTime?: string;
 }
 
+class TimeInterval {
+  constructor(
+    public start: number,
+    public end: number,
+  ) {}
+}
+
+@Injectable()
+export class GenerateSlotsAlgorithm {
+  constructor(
+    private readonly _prismaService: PrismaService,
+    @Inject(TimeSlotUtilits)
+    private readonly _timeSlotUtilits: ITimeSlotUtilits,
+  ) {}
+
+  private async _getExistingAppointments(
+    userId: string,
+    date: Date,
+  ): Promise<TimeInterval[]> {
+    const existingDirects = await this._prismaService.directs.findMany({
+      where: {
+        userId: userId,
+        calendar: {
+          date: date,
+        },
+        state: {
+          not: 'cancelled',
+        },
+      },
+      include: {
+        services: {
+          include: {
+            service: true,
+          },
+        },
+      },
+    });
+
+    const appointments = await Promise.all(
+      existingDirects.map(async (direct) => {
+        const servicesDuration = await direct.services.reduce(
+          async (accPromise, ds) => {
+            const acc = await accPromise;
+            const minutes = await this._timeSlotUtilits.convertTimeToMinutes(
+              ds.service.time,
+            );
+            return acc + minutes;
+          },
+          Promise.resolve(0),
+        );
+        const startTime = await this._timeSlotUtilits.convertTimeToMinutes(
+          direct.time,
+        );
+        return new TimeInterval(startTime, startTime + servicesDuration);
+      }),
+    );
+    return appointments.sort((a, b) => a.start - b.start);
+  }
+
+  // ----------------- Основная логика генерации
+
+  public async generateFreeSlots(
+    userId: string,
+    date_: string,
+    customWorkTime?: string,
+    calendarDay?: Calendar,
+  ) {
+    const date = new Date(date_);
+
+    const settings = await this._timeSlotUtilits.getUserSettings(userId);
+    const [startTime, endTime] = await this._timeSlotUtilits.getWorkTime(
+      settings,
+      customWorkTime,
+    );
+
+    if (!calendarDay || calendarDay.state === 'notHave') {
+      return [];
+    }
+    const calendarId = calendarDay.id;
+    const { startMinutes, endMinutes, breakMinutes, granularityMinutes } =
+      await this._timeSlotUtilits.calculateTimeBoundaries(
+        startTime,
+        endTime,
+        settings,
+      );
+    const existingAppointments = await this._getExistingAppointments(
+      userId,
+      date,
+    );
+
+    const slotsToCreate = await this._timeSlotUtilits.generateSlots(
+      startMinutes,
+      endMinutes,
+      granularityMinutes,
+      breakMinutes,
+      existingAppointments,
+      calendarId,
+    );
+
+    if (slotsToCreate.length > 0) {
+      return slotsToCreate;
+    }
+    return [];
+  }
+}
+
 @Injectable()
 export class CalendarService implements ICalendarService {
   constructor(
     private readonly _prismaService: PrismaService,
-    @Inject('ITimeSlotAlgorithm')
-    private readonly _timeSlotAlgorithm: ITimeSlotAlgorithm,
-    @Inject(forwardRef(() => FreeSlotService))
-    private readonly _freeSlotService: FreeSlotService,
-    private readonly _settingsService: SettingsService,
+    @Inject(FreeSlotsService)
+    private readonly _freeSlotService: IFreeSlotsService,
+    private readonly _generateSlotsAlgorithm: GenerateSlotsAlgorithm,
   ) {}
 
   // Год и месяц для которых создается календарь не в прошлом
@@ -233,7 +337,9 @@ export class CalendarService implements ICalendarService {
       // массив объектов для записи в БД
       const daysToCreate = this._getDaysToCreate(daysMap);
 
-      const settings = await this._settingsService.findByUser(userId);
+      const settings = await this._prismaService.settings.findFirst({
+        where: { userId },
+      });
 
       //Обработка каждого дня в транзакции
       await this._prismaService.$transaction(async (prisma) => {
@@ -296,16 +402,17 @@ export class CalendarService implements ICalendarService {
       // генерация слотов
       for (const day of daysToCreate) {
         const calendarDay = await this.findByUserDate(userId, day.date);
-        const slotsToCreate = await this._timeSlotAlgorithm.generateFreeSlots(
-          userId,
-          day.date.toISOString(),
-          day.workTime,
-          calendarDay,
-        );
+        const slotsToCreate =
+          await this._generateSlotsAlgorithm.generateFreeSlots(
+            userId,
+            day.date.toISOString(),
+            day.workTime,
+            calendarDay,
+          );
         await this._freeSlotService.createFreeSlots(slotsToCreate);
       }
 
-      return this._prismaService.calendar.findMany({
+      return await this._prismaService.calendar.findMany({
         where: { userId, date: { gte: firstDayOfMonth, lte: lastDayOfMonth } },
         include: { freeSlots: { select: { time: true } } },
       });
@@ -343,6 +450,7 @@ export class CalendarService implements ICalendarService {
         where: { userId: userId },
         include: {
           directs: true,
+          freeSlots: { select: { time: true } },
         },
       });
     } catch (error) {
@@ -362,6 +470,7 @@ export class CalendarService implements ICalendarService {
         },
         include: {
           directs: true,
+          freeSlots: { select: { time: true } },
         },
       });
       if (!result) {
@@ -393,6 +502,10 @@ export class CalendarService implements ICalendarService {
             gte: start,
             lte: end,
           },
+        },
+        include: {
+          directs: true,
+          freeSlots: { select: { time: true } },
         },
       });
     } catch (error) {
@@ -434,6 +547,7 @@ export class CalendarService implements ICalendarService {
               },
             },
           },
+          freeSlots: { select: { time: true } },
         },
       });
     } catch (error) {
@@ -465,48 +579,6 @@ export class CalendarService implements ICalendarService {
       }
       console.log(error);
       throw new HttpException('Ошибка сервера при удалении дня календаря', 500);
-    }
-  }
-
-  public async findByUserDate(userId, date) {
-    try {
-      return await this._prismaService.calendar.findUnique({
-        where: {
-          date_userId: {
-            date: date,
-            userId: userId,
-          },
-        },
-      });
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      console.log(error);
-      throw new HttpException('Ошибка сервера при поиске дня календаря', 500);
-    }
-  }
-}
-
-@Injectable()
-export class CalendarServiceForAlgorithm implements ICalendarServiceAlgorithm {
-  constructor(private readonly _prismaService: PrismaService) {}
-
-  public async updateDayState(dayId: string, newState: DayState) {
-    try {
-      await this._prismaService.calendar.update({
-        where: { id: dayId },
-        data: { state: newState },
-      });
-    } catch (error) {
-      if (
-        error instanceof PrismaClientKnownRequestError &&
-        error.code == 'P2025'
-      ) {
-        throw new HttpException('День календаря не найден', 404);
-      }
-      console.error('Ошибка при обновлении состояния дня:', error);
-      throw new HttpException('Ошибка при обновлении состояния дня', 500);
     }
   }
 

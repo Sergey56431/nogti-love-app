@@ -1,20 +1,16 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto, SignupDto } from './auth-dto';
 import { UserCreateDto } from '../users';
 import { CustomSwaggerUserIdParam } from '../custom-swagger';
+import { IAuthService } from './interfaces';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly _authService: AuthService) {}
+  constructor(
+    @Inject(AuthService)
+    private readonly _authService: IAuthService,
+  ) {}
 
   @Post('login')
   public async _login(@Body() body: LoginDto): Promise<any> {

@@ -3,9 +3,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { TUserUpdateDto, UserCreateDto } from './users-dto';
 import * as bcrypt from 'bcrypt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { IUsersService } from './interfaces/users.interface';
 
 @Injectable()
-export class UsersService {
+export class UsersService implements IUsersService {
   private _returnUserModel = {
     id: true,
     name: true,
@@ -152,6 +153,7 @@ export class UsersService {
           defaultBreakTime: '00:30',
           timeGranularity: '00:30',
           defaultWorkTime: '09:00-16:00',
+          settingsData: [{}],
         },
       });
 

@@ -7,9 +7,10 @@ import {
   Put,
   Query,
   UseGuards,
+  Inject,
 } from '@nestjs/common';
-import { IncomExpencesService } from './incom_expences.service';
-import { CreateIncomeExpencesDto, UpdateIncomeExpences } from './dto';
+import { OperationsService } from './incom_expences.service';
+import { CreateOperationsDto, UpdateOperationsDto } from './dto';
 import { TokenGuard } from '../auth';
 import {
   ApiBody,
@@ -21,21 +22,25 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { TypeOperation } from '@prisma/client';
+import { IOperationsService } from './interfaces';
 
 @UseGuards(TokenGuard)
 @ApiTags('Operation (Операции)')
 @Controller('operation')
 export class IncomeExpencesController {
-  constructor(private readonly incomeExpencesService: IncomExpencesService) {}
+  constructor(
+    @Inject(OperationsService)
+    private readonly _operationsService: IOperationsService,
+  ) {}
 
   @ApiOperation({ summary: 'Создать операцию дохода/расхода' })
   @ApiBody({
-    type: CreateIncomeExpencesDto,
+    type: CreateOperationsDto,
     description: 'Данные для создания операции',
   })
   @ApiCreatedResponse({
     description: 'Операция успешно создана',
-    type: CreateIncomeExpencesDto,
+    type: CreateOperationsDto,
   })
   @ApiResponse({
     status: 400,
@@ -44,8 +49,8 @@ export class IncomeExpencesController {
   })
   @ApiResponse({ status: 500, description: 'Ошибка при создании операции' })
   @Post()
-  public async create(@Body() createIncomExpenceDto: CreateIncomeExpencesDto) {
-    return this.incomeExpencesService.create(createIncomExpenceDto);
+  public async create(@Body() createIncomExpenceDto: CreateOperationsDto) {
+    return this._operationsService.create(createIncomExpenceDto);
   }
 
   @ApiOperation({ summary: 'Получить операции (опционально)' })
@@ -120,10 +125,10 @@ export class IncomeExpencesController {
     @Query('id') id: string,
   ) {
     if (userId) {
-      return this.incomeExpencesService.findByUser(userId);
+      return this._operationsService.findByUser(userId);
     } else if (id) {
-      return this.incomeExpencesService.findOne(id);
-    } else return this.incomeExpencesService.findAll();
+      return this._operationsService.findOne(id);
+    } else return this._operationsService.findAll();
   }
 
   @ApiOperation({ summary: 'Обновить операцию дохода/расхода' })
@@ -133,13 +138,13 @@ export class IncomeExpencesController {
     example: '3b17500f-307a-4454-a87e-5108a63fb2a6',
   })
   @ApiBody({
-    type: CreateIncomeExpencesDto,
+    type: CreateOperationsDto,
     description: 'Данные для обновления операции',
   })
   @ApiResponse({
     status: 200,
     description: 'Операция успешно обновлена',
-    type: CreateIncomeExpencesDto,
+    type: CreateOperationsDto,
   })
   @ApiResponse({ status: 400, description: 'Ошибка валидации' })
   @ApiResponse({ status: 404, description: 'Операция не найдена' })
@@ -147,9 +152,9 @@ export class IncomeExpencesController {
   @Put()
   public async update(
     @Query('id') id: string, // Используем @Param для получения id из URL
-    @Body() updateIncomExpenceDto: UpdateIncomeExpences,
+    @Body() updateIncomExpenceDto: UpdateOperationsDto,
   ) {
-    return this.incomeExpencesService.update(id, updateIncomExpenceDto);
+    return this._operationsService.update(id, updateIncomExpenceDto);
   }
 
   @ApiOperation({ summary: 'Удалить операцию дохода/расхода' })
@@ -163,6 +168,6 @@ export class IncomeExpencesController {
   @ApiResponse({ status: 500, description: 'Ошибка при удалении операции' })
   @Delete()
   public async remove(@Query('id') id: string) {
-    return this.incomeExpencesService.remove(id);
+    return this._operationsService.remove(id);
   }
 }

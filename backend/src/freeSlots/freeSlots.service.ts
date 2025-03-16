@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma';
+import { IFreeSlotsService } from './interfaces';
 
 @Injectable()
-export class FreeSlotService {
+export class FreeSlotsService implements IFreeSlotsService{
   constructor(private readonly _prismaService: PrismaService) {}
 
   async createFreeSlots(slots: { calendarId: string; time: string }[]) {
