@@ -26,6 +26,7 @@ model User {
   category           Category[]
   income_Expanses    Income_Expanses[]
   settings           Settings[]
+  roleId             String
   role               CustomRole[]
 }
 

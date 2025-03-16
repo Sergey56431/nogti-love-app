@@ -8,6 +8,7 @@ export class UserCreateDto {
   description?: string;
   refreshToken?: string;
   id?: string;
+  roleId?: string;
   score?: number;
 }
 

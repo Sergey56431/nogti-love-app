@@ -1,6 +1,6 @@
-export class RoleCreateDto{
-    id: string;
-    name: string;
-    userId: string;
+export class RoleCreateDto {
+  id?: string;
+  name: string;
+  userId: string;
 }
-export type TRoleUpdateDto = Partial<RoleCreateDto>;
+export type RoleUpdateDto = Partial<RoleCreateDto>;
