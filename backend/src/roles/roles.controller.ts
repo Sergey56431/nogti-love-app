@@ -6,10 +6,12 @@ import {
   Put,
   Delete,
   Body,
+  UseGuards,
 } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { RoleCreateDto, RoleUpdateDto } from './roles-dto/roles-dto';
-
+import { TokenGuard } from '../auth/auth.guard';
+@UseGuards(TokenGuard)
 @Controller('role')
 export class RolesController {
   constructor(private readonly roleService: RolesService) {}
