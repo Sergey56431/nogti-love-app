@@ -41,7 +41,7 @@ export const routes: Routes = [
       },
 
       {
-        path: 'schedule/:action',
+        path: 'schedule-edit',
         loadComponent: () =>
           import('./views').then((c) => c.ScheduleEditComponent),
       },

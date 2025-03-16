@@ -1,5 +1,32 @@
 <div class="page-content">
   <h1 class="page-title">{{ _title }}</h1>
 
-  <h2 class="font-bold text-5xl mt-10">Страница Находится в разработке</h2>
+  <h2 class="my-4">Базовые настройки</h2>
+  <div class="flex flex-col items-start gap-2">
+    <div class="flex flex-col items-start md:flex-row md:items-center gap-2">
+      <label class="w-64" for="defaultBreakTime">Стандартное время перерыва</label>
+      <input id="defaultBreakTime" #defaultBreak type="text" (input)="changeSettings(defaultBreak.value, 'defaultBreakTime')"
+             pInputText [value]="_defaultSettings()?.defaultBreakTime" />
+    </div>
+
+    <div class="flex flex-col items-start md:flex-row md:items-center gap-2">
+      <label class="w-64" for="defaultWorkTime">Стандартное время работы</label>
+      <input id="defaultWorkTime" #defaultWork type="text" (input)="changeSettings(defaultWork.value, 'defaultWorkTime')"
+             pInputText [value]="_defaultSettings()?.defaultWorkTime" />
+    </div>
+
+    <div class="flex flex-col items-start md:flex-row md:items-center gap-2">
+      <label class="w-64" for="granularity">Шаг времени</label>
+      <input id="granularity" type="text"  #granularity (input)="changeSettings(granularity.value, 'timeGranularity')"
+             pInputText [value]="_defaultSettings()?.timeGranularity" />
+    </div>
+    <div class="flex items-start gap-2">
+      <p-button type="button" icon="pi pi-check" [disabled]="!_canSend()"
+                label="Сохранить" (click)="_saveSettings()" />
+      @if(false) {
+        <p-button type="button" severity="warn" [disabled]="!_newSettings()" icon="pi pi-times"
+                  label="Отменить" (click)="_removeSettings()" />
+      }
+    </div>
+  </div>
 </div>

@@ -1,31 +1,20 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  OnInit,
-  signal,
-  Signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, OnInit, signal, Signal } from '@angular/core';
 import { Breadcrumb } from 'primeng/breadcrumb';
 import { MenuItem, MessageService } from 'primeng/api';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { DatePickerComponent } from '@shared/components';
 import { ToggleSwitch } from 'primeng/toggleswitch';
-import { CalendarEditType, DefaultResponseType, NotWorksDaysCalendarType } from '@shared/types';
+import { CalendarEditType, CustomDay, DefaultResponseType } from '@shared/types';
 import { FormsModule } from '@angular/forms';
-import { orderBy } from 'lodash';
 import { TableModule } from 'primeng/table';
 import { Button } from 'primeng/button';
 import { AuthService } from '@core/auth';
 import { CalendarService } from '@shared/services';
 import { InputNumber } from 'primeng/inputnumber';
+import { DayState, SnackStatusesUtil } from '@shared/utils';
+import { createDispatchMap, Store } from '@ngxs/store';
+import { SettingsActions, SettingsState } from '@core/store';
 import { Select } from 'primeng/select';
-import { SnackStatusesUtil } from '@shared/utils';
-
-enum SchedulePage {
-  edit = 'edit',
-  create = 'create',
-}
 
 @Component({
   selector: 'app-schedule-edit',
@@ -46,30 +35,33 @@ enum SchedulePage {
 })
 export class ScheduleEditComponent implements OnInit {
   protected _title = 'Расписание';
-  protected _startHour = 9;
-  protected _minute: string[] = ['00', '15', '30', '45']; // Здесь потом будут храниться минуты рассчитанные из настроек шага
-  protected _endHour = 18;
+  protected _startHour = 0;
+  protected _minute: string[] = [];
+  protected _endHour = 0;
+  protected _startMinute = signal<string>('00');
+  protected _endMinute = signal<string>('00');
+  protected _startDate = signal<string>('');
 
-  protected readonly SchedulePage = SchedulePage;
+  private readonly _settings = this._store.selectSignal(SettingsState.getSettings);
+  // @Select(SettingsState.getSettings) config$?: Observable<SettingsType>;
+  // private readonly _settings = signal<SettingsType | undefined>(undefined);
+  protected _adminSetting = computed(() => {
+    this._actions.getSettings(this._userId ?? '');
+    return this._settings();
+  });
 
   private _userId? = '';
-
   protected _dayState?: boolean = true;
+
   private _date = signal<string>('');
-
-  protected _schedule: CalendarEditType = {} as CalendarEditType;
-
-  protected _mySchedule: NotWorksDaysCalendarType = {
+  protected _mySchedule: CustomDay | undefined = {} as CustomDay;
+  protected _schedule = signal<CalendarEditType>({
     userId: '',
-    noWorkDays: [],
-  };
-
-  // protected _mySchedule: CustomDay = {} as CustomDay;
-
-  protected _pageParam = signal<string>('');
-  private _pageLabel = computed(() => {
-    return this._pageParam() === SchedulePage.edit
-      ? 'Редактировать' : 'Создание';
+    customDays: [],
+    dateForCreate: '',
+  });
+  protected _scheduleCustom = computed(() => {
+    return this._schedule();
   });
 
   protected _home = {
@@ -81,107 +73,110 @@ export class ScheduleEditComponent implements OnInit {
   protected _breadcrumb: Signal<MenuItem[] | undefined> = computed(() => {
     return [
       {
-        label: `${this._pageLabel()} расписания`,
-        routerLink: ['/schedule', this._pageParam()],
+        label: 'Выставление расписания',
+        routerLink: ['/schedule'],
         style: { color: 'primary' },
       },
     ];
   });
 
-  constructor(private readonly _activatedRoute: ActivatedRoute,
-              private readonly _authService: AuthService,
+  constructor(private readonly _authService: AuthService,
               private readonly _router: Router,
+              private readonly _store: Store,
               private readonly _snackBar: MessageService,
               private readonly _calendarService: CalendarService) {
   }
 
+  private _actions = createDispatchMap({
+    getSettings: SettingsActions.GetSettings,
+  });
+
   public ngOnInit(): void {
-    this._activatedRoute.params.subscribe((param) => {
-      this._pageParam.set(param['action']);
-    });
     this._userId = this._authService.getUserInfo().userId;
+    this._actions.getSettings(this._userId ?? '');
+    this._formingSchedule();
   }
 
-  private _initSchedule() {
-    // формировать стартовый календарь в котором будут все дни и они будут указанны как рабочие со стандартным временем
-    // указанном в конфигурации
+  private _recountMinute() {
+    if (this._minute.length !== 0) {
+      return;
+    }
+    if (this._adminSetting()) { // undefined
+      const step = Number(this._settings()?.timeGranularity.split(':')[1]);
+      for (let i = 0; i < 60; i += step) {
+        this._minute.push(i.toString());
+      }
+    }
+  }
+
+  private _setMyWorkTime(day: CustomDay) {
+    return day.workTime?.split('-').flatMap(time => {
+      return [time.split(':')[0], time.split(':')[1]];
+    }).filter(item => item !== '00');
   }
 
   protected _checkDayState(date: string) {
+    this._recountMinute();
     this._date.set(date);
-    const findedDay: { date: string | null } | undefined = this._mySchedule?.noWorkDays.find(
+    const findedDay: CustomDay | undefined = this._schedule()?.customDays?.find(
       (d) => d.date === date);
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    findedDay ? (this._dayState = false) : (this._dayState = true);
-    console.log(this._date());
+    this._dayState = findedDay?.state === DayState.WORKING;
+    if (findedDay){
+      const time = this._setMyWorkTime(findedDay);
+      console.log(findedDay);
+      this._startHour = Number(time![0]);
+      this._endHour = Number(time![1]);
+    }
   }
 
-  protected _choiceDay(state: boolean): void {
-    const day = this._mySchedule?.noWorkDays.find((item) => item.date === this._date());
-    if (!day && !state) {
-      this._mySchedule.noWorkDays.push({ date: this._date() });
-      this._mySchedule.noWorkDays = orderBy(
-        this._mySchedule?.noWorkDays, (x) => x.date, 'asc');
-    } else if (day && state) {
-      this._mySchedule.noWorkDays = this._mySchedule?.noWorkDays.filter((item) => {
-        return item.date !== day.date;
+  protected _choiceDay(): void {
+    this._mySchedule = this._scheduleCustom()?.customDays.find((item) => item.date === this._date());
+    // Исправить работу этого метода, он должен при выборе дня менять его статус на рабочий или не рабочий в зависимости от тригера
+    if (this._mySchedule) {
+      this._mySchedule = {
+        date: this._date(),
+        workTime: this._startHour.toString().padStart(2, '0') + ':' + this._startMinute() + '-'
+          + this._endHour.toString().padStart(2, '0') + ':' + this._endMinute(),
+        state: this._dayState ? DayState.WORKING : DayState.NOT_WORKING,
+      };
+      this._changeDayInfo();
+      console.log(this._scheduleCustom());
+    }
+  }
+
+  private _changeDayInfo() {
+    this._schedule().customDays = this._schedule()?.customDays.map(day => {
+     if (day.date === this._mySchedule?.date) {
+       return { ...this._mySchedule };
+     }
+     return { ...day };
+   });
+  }
+
+  // Сделать все дни по дефолту рабочими и с дефолтным временем
+  protected _resetDays(): void {
+    this._formingSchedule();
+  }
+
+  protected _formingSchedule() {
+    this._schedule().customDays = [];
+    const date = this._startDate();
+    const month = new Date(date).getMonth() + 1;
+    const year = new Date(date).getFullYear();
+    const days = new Date(year, month, 0).getDate();
+    this._schedule().userId = this._userId ?? '';
+    this._schedule().dateForCreate = this._startDate().split('-').slice(0,2).join('-');
+    for (let i = 1; i <= days; i++) {
+      this._schedule().customDays.push({
+        date: `${year}-${month.toString().padStart(2, '0')}-${i.toString().padStart(2, '0')}`,
+        workTime: this._adminSetting()?.defaultWorkTime ?? '',
+        state: DayState.WORKING,
       });
     }
   }
 
-  // Переделать логику этого метода, старый аннигилировать =))
-  // protected _choiceDay(state: boolean): void {
-  //   const day = this._mySchedule?.noWorkDays.find((item) => item.date === this._date());
-  //   if (!day && !state) {
-  //     this._mySchedule.noWorkDays.push({
-  //       date: this._date()
-  //     });
-  //     this._mySchedule.noWorkDays = orderBy(
-  //       this._mySchedule?.noWorkDays, (x) => x.date, 'asc');
-  //   } else if (day && state) {
-  //     this._mySchedule.noWorkDays = this._mySchedule?.noWorkDays.filter((item) => {
-  //       return item.date !== day.date;
-  //     });
-  //   }
-  // }
-
-  protected _resetDays(): void {
-    this._mySchedule.noWorkDays = [{ date: '' }];
-  }
-
-  protected _saveDays(): void {
-    if (this._userId != null) {
-      this._mySchedule.userId = this._userId;
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        this._pageParam() !== SchedulePage.create ? this._editSchedule() : this._createNotWorkDays();
-      }
-      catch (e) {
-        console.log(e);
-      }
-    }
-  }
-
-  protected _editSchedule(){
-    //
-  }
-
-  private _formingSchedule() {
-    // empty
-  }
-
-  private _createNotWorkDays(): void {
-    this._calendarService.createSchedule(this._mySchedule).subscribe(result => {
-      console.log(result);
-    });
-  }
-
-  protected _allDaysWorking(): void {
-    this._mySchedule = {
-      userId: this._userId ?? '',
-      noWorkDays : []
-    };
-    this._calendarService.createSchedule(this._mySchedule).subscribe(result => {
+  protected _createSchedule(): void {
+    this._calendarService.createSchedule(this._scheduleCustom()).subscribe(result => {
       if ((result as DefaultResponseType).error === undefined) {
         const successMessage = SnackStatusesUtil.getStatuses('success', 'Расписание успешно выставлено');
         this._snackBar.add(successMessage);
