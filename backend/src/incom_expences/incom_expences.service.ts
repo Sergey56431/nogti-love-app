@@ -1,10 +1,11 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { CreateIncomeExpencesDto, UpdateIncomeExpences } from './dto';
 import { PrismaService } from '../prisma';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class IncomExpencesService {
+  private readonly logger = new Logger(IncomExpencesService.name);
   constructor(private readonly _prismaService: PrismaService) {}
 
   async create(createIncomExpenceDto: CreateIncomeExpencesDto) {
@@ -24,7 +25,7 @@ export class IncomExpencesService {
     }
 
     try {
-      return await this._prismaService.income_Expanses.create({
+      const createdOperation = await this._prismaService.income_Expanses.create({
         data: {
           ...data,
           user: {
@@ -35,30 +36,35 @@ export class IncomExpencesService {
           },
         },
       });
+      this.logger.log(`Операция с ID ${createdOperation.id} успешно создана`);
+      return createdOperation;
     } catch (error) {
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code === 'P2025'
       ) {
+        this.logger.warn(`Категория ${categoryId} или пользователь ${userId} не найден`);
         throw new HttpException('Категория или пользователь не найден', 404);
       }
-      console.error(error);
+      console.log(error);
+      this.logger.error(`Ошибка при создании операции ${categoryId}`, error.stack);
       throw new HttpException('Ошибка при создании операции', 500);
     }
   }
 
   async findByUser(userId: string) {
     try {
-      return await this._prismaService.income_Expanses.findMany({
-        where: {
-          userId: userId,
-        },
+      const operations = await this._prismaService.income_Expanses.findMany({
+        where: { userId },
       });
+      this.logger.log(`Операции пользователя с ID ${userId} успешно найдены`);
+      return operations;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
       console.log(error);
+      this.logger.error(`Ошибка при поиске операций по пользователю ${userId}`, error.stack);
       throw new HttpException(
         'Ошибка при поиске операций по пользователю',
         500,
@@ -68,9 +74,12 @@ export class IncomExpencesService {
 
   async findAll() {
     try {
-      return await this._prismaService.income_Expanses.findMany();
+      const operations = await this._prismaService.income_Expanses.findMany();
+      this.logger.log(`Все операции успешно получены`);
+      return operations;
     } catch (error) {
       console.log(error);
+      this.logger.error('Ошибка при поиске всех операций', error.stack);
       throw new HttpException('Ошибка при поиске всех операций', 500);
     }
   }
@@ -83,14 +92,17 @@ export class IncomExpencesService {
         },
       });
       if (!result) {
+        this.logger.warn(`Операция с ID ${id} не найдена`);
         throw new HttpException('Операция не найдена', 404);
       }
+      this.logger.log(`Операция с ID ${id} успешно найдена`);
       return result;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
       console.log(error);
+      this.logger.error(`Ошибка при поиске операции с ID ${id}`, error.stack);
       throw new HttpException('Ошибка при поиске операции', 500);
     }
   }
@@ -122,8 +134,11 @@ export class IncomExpencesService {
         error instanceof PrismaClientKnownRequestError &&
         error.code === 'P2025'
       ) {
+        this.logger.warn(`Операция с ID ${id} не найдена`);
         throw new HttpException('Операция не найдена', 404);
       }
+      console.error(error);
+      this.logger.error(`Ошибка при обновлении операции с ID ${id}`, error.stack);
       throw new HttpException('Ошибка при обновлении операции', 500);
     }
   }
@@ -138,9 +153,11 @@ export class IncomExpencesService {
         error instanceof PrismaClientKnownRequestError &&
         error.code === 'P2025'
       ) {
+        this.logger.warn(`Операция с ID ${id} не найдена при удалении`);
         throw new HttpException('Операция не найдена', 404);
       }
-      console.error(error);
+      console.log(error);
+      this.logger.error(`Ошибка при удалении операции с ID ${id}`, error.stack);
       throw new HttpException('Ошибка при удалении операции', 500);
     }
   }
