@@ -2,9 +2,10 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { ICategoryServices } from './interfaces';
 
 @Injectable()
-export class CategoryService {
+export class CategoryService implements ICategoryServices {
   constructor(private _prismaService: PrismaService) {}
 
   async create(data: CreateCategoryDto) {

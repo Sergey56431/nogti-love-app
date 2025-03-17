@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Inject,
   Post,
   Put,
   Query,
@@ -17,11 +18,15 @@ import {
   ApiOperation,
   ApiResponse,
 } from '@nestjs/swagger';
+import { ICategoryServices } from './interfaces';
 
 @UseGuards(TokenGuard)
 @Controller('category')
 export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
+  constructor(
+    @Inject(CategoryService)
+    private readonly _categoryService: ICategoryServices,
+  ) {}
 
   @ApiOperation({ summary: 'Создать категорию' })
   @ApiBody({
@@ -76,17 +81,17 @@ export class CategoryController {
   })
   @Post()
   create(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.categoryService.create(createCategoryDto);
+    return this._categoryService.create(createCategoryDto);
   }
 
   @Get()
   findOne(@Query('id') id: string, @Query('userId') userId: string) {
     if (id) {
-      return this.categoryService.findOne(id);
+      return this._categoryService.findOne(id);
     } else if (userId) {
-      return this.categoryService.findByUser(userId);
+      return this._categoryService.findByUser(userId);
     } else {
-      return this.categoryService.findAll();
+      return this._categoryService.findAll();
     }
   }
 
@@ -95,11 +100,11 @@ export class CategoryController {
     @Query('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
-    return this.categoryService.update(id, updateCategoryDto);
+    return this._categoryService.update(id, updateCategoryDto);
   }
 
   @Delete()
   remove(@Query('id') id: string) {
-    return this.categoryService.remove(id);
+    return this._categoryService.remove(id);
   }
 }

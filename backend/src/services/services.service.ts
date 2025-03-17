@@ -8,9 +8,10 @@ import {
 import { PrismaService } from '../prisma';
 import { CreateServicesDto, UpdateServicesDto } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { IServicesService } from './interfaces';
 
 @Injectable()
-export class ServicesService {
+export class ServicesService implements IServicesService {
   constructor(private _prismaService: PrismaService) {}
 
   async create(data: CreateServicesDto) {

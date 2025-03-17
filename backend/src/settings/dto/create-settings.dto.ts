@@ -1,4 +1,32 @@
 import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsArray,
+  IsBoolean,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+
+class SettingItemDto {
+  @IsString()
+  @IsNotEmpty()
+  id?: string; // Уникальный идентификатор настройки
+
+  @IsString()
+  @IsNotEmpty()
+  value?: string; // Значение настройки
+
+  // Дополнительные параметры, например:
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  enabled?: boolean;
+}
 
 export class CreateSettingsDto {
   @ApiProperty({
@@ -9,25 +37,19 @@ export class CreateSettingsDto {
   userId: string;
 
   @ApiProperty({
-    description: 'Дефолтное рабочее время',
+    description: 'массив объектов настрое',
     nullable: false,
-    example: '09:00-16:00',
+    example: [{ value: 'asd' }],
   })
-  defaultWorkTime: string;
+  @IsNotEmpty()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => SettingItemDto)
+  settingsData?: SettingItemDto[];
 
-  @ApiProperty({
-    description: 'Дефолтное время перерыва',
-    nullable: false,
-    example: '00:30',
-  })
   defaultBreakTime: string;
-
-  @ApiProperty({
-    description: 'Дефолтное время дробления',
-    nullable: false,
-    example: '00:30',
-  })
   timeGranularity: string;
+  defaultWorkTime: string;
 }
 
 export type UpdateSettingsDto = Partial<CreateSettingsDto>;

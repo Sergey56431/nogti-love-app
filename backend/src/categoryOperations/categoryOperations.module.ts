@@ -5,6 +5,13 @@ import { PrismaService } from '../prisma';
 
 @Module({
   controllers: [CategoryOperationsController],
-  providers: [CategoryOperationsService, PrismaService],
+  providers: [
+    {
+      provide: CategoryOperationsService,
+      useClass: CategoryOperationsService,
+    },
+    PrismaService,
+  ],
+  exports: [CategoryOperationsService],
 })
 export class CategoryOperationsModule {}

@@ -7,15 +7,20 @@ import {
   Delete,
   Query,
   UseGuards,
+  Inject,
 } from '@nestjs/common';
 import { ServicesService } from './services.service';
 import { CreateServicesDto, UpdateServicesDto } from './dto';
 import { TokenGuard } from '../auth';
+import { IServicesService } from './interfaces';
 
 @UseGuards(TokenGuard)
 @Controller('services')
 export class ServicesController {
-  constructor(private readonly servicesService: ServicesService) {}
+  constructor(
+    @Inject(ServicesService)
+    private readonly servicesService: IServicesService,
+  ) {}
 
   @Post()
   create(@Body() createServicesDto: CreateServicesDto) {
@@ -35,8 +40,8 @@ export class ServicesController {
 
   @Put()
   update(
-      @Body() updateServicesDto: UpdateServicesDto,
-      @Query('id') id: string,
+    @Body() updateServicesDto: UpdateServicesDto,
+    @Query('id') id: string,
   ) {
     return this.servicesService.update(id, updateServicesDto);
   }

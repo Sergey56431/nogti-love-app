@@ -22,13 +22,14 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { IDirectsService } from './interfaces';
+import { DirectsService } from './directs.service';
 
 @UseGuards(TokenGuard)
 @ApiTags('Directs (Записи)')
 @Controller('directs')
 export class DirectsController {
   constructor(
-    @Inject('IDirectsService')
+    @Inject(DirectsService)
     private readonly _directsService: IDirectsService,
   ) {}
 
@@ -82,6 +83,8 @@ export class DirectsController {
   public async create(@Body() createDirectDto: CreateDirectDto) {
     return await this._directsService.create(createDirectDto);
   }
+
+
 
   @ApiOperation({ summary: 'Получить записи' })
   @ApiQuery({

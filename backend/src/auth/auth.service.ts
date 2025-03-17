@@ -1,11 +1,12 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { UsersService } from '../users';
 import { LoginDto, SignupDto } from './auth-dto';
-import { UserCreateDto } from '../users';
+import { UserCreateDto, UsersService } from '../users';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { IUsersService } from '../users/interfaces';
+import { IAuthService } from './interfaces';
 
 interface User {
   id: string;
@@ -14,9 +15,10 @@ interface User {
 }
 
 @Injectable()
-export class AuthService {
+export class AuthService implements IAuthService {
   constructor(
-    private readonly _usersService: UsersService,
+    @Inject(UsersService)
+    private readonly _usersService: IUsersService,
     private readonly _configService: ConfigService,
     private readonly _jwtService: JwtService,
   ) {}
@@ -125,7 +127,7 @@ export class AuthService {
     });
   }
 
-  public generateRefreshToken(user: User) {
+  public async generateRefreshToken(user: User) {
     return this._jwtService.signAsync(user, {
       secret: this._configService.get<string>('JWT_REFRESH_SECRET'),
       expiresIn: this._configService.get<string>('JWT_REFRESH_EXPIRES_IN'),

@@ -4,7 +4,13 @@ import { SettingsController } from './settings.controller';
 import { PrismaService } from '../prisma';
 
 @Module({
-  providers: [SettingsService, PrismaService],
+  providers: [
+    {
+      provide: SettingsService,
+      useClass: SettingsService,
+    },
+    PrismaService,
+  ],
   controllers: [SettingsController],
   exports: [SettingsService],
 })

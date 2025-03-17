@@ -1,9 +1,15 @@
 import { Module } from '@nestjs/common';
-import { FreeSlotService } from './freeSlot.service';
+import { FreeSlotsService } from './freeSlots.service';
 import { PrismaService } from '../prisma';
 
 @Module({
-  providers: [FreeSlotService, PrismaService],
-  exports: [FreeSlotService],
+  providers: [
+    {
+      provide: FreeSlotsService,
+      useClass: FreeSlotsService,
+    },
+    PrismaService,
+  ],
+  exports: [FreeSlotsService],
 })
 export class FreeSlotModule {}
