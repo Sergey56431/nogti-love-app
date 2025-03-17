@@ -2,6 +2,10 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.customRole.create({
+    data: { id: 'testId', name: 'testName', userId: 'userId' },
+  });
+
   const user1 = await prisma.user.create({
     data: {
       name: 'Влад',
