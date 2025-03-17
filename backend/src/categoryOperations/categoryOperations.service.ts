@@ -1,13 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { HttpException } from '@nestjs/common';
 import { CreateCategoryOperationsDto, UpdateCategoryOperationsDto } from './dto';
 import { PrismaService } from '../prisma';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { CustomLogger } from '../logger';
 
 @Injectable()
 export class CategoryOperationsService {
-  private readonly logger = new CustomLogger();
+  private readonly logger = new Logger(CategoryOperationsService.name);
 
   constructor(private readonly _prismaService: PrismaService) {}
 

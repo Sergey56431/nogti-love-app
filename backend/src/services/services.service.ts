@@ -4,15 +4,15 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+    Logger
 } from '@nestjs/common';
 import { PrismaService } from '../prisma';
 import { CreateServicesDto, UpdateServicesDto } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { CustomLogger } from "../logger";
 
 @Injectable()
 export class ServicesService {
-  private readonly logger = new CustomLogger();
+  private readonly logger = new Logger(ServicesService.name);
   constructor(private _prismaService: PrismaService) {}
 
   async create(data: CreateServicesDto) {
@@ -22,7 +22,7 @@ export class ServicesService {
       });
 
       if (!categoryExists) {
-        this.logger.warn(`Категория с ID ${data.categoryId} не найдена`);
+        this.logger.warn(`Категория с ID ${data.categoryId} не найдена при создании услуги`);
         throw new NotFoundException('Категория не найдена');
       }
 
@@ -33,7 +33,7 @@ export class ServicesService {
       if (error instanceof NotFoundException || error instanceof BadRequestException) {
         throw error;
       }
-      this.logger.error('Ошибка при создании услуги', error.stack);
+      this.logger.error(`Ошибка при создании услуги ${CreateServicesDto}`, error.stack);
       throw new InternalServerErrorException('Ошибка создания услуги');
     }
   }
@@ -44,7 +44,7 @@ export class ServicesService {
       this.logger.log('Успешно получен список всех услуг');
       return services;
     } catch (error) {
-      this.logger.error('Ошибка при поиске всех услуг', error.stack);
+      this.logger.error(`Ошибка при поиске всех услуг`, error.stack);
       throw new InternalServerErrorException('Ошибка поиска');
     }
   }
@@ -70,11 +70,7 @@ export class ServicesService {
     try {
       const services = await this._prismaService.services.findMany({ where: { categoryId: id } });
 
-      if (services.length === 0) {
-        this.logger.warn(`Услуги для категории с ID ${id} не найдены`);
-      } else {
-        this.logger.log(`Найдено ${services.length} услуг для категории с ID ${id}`);
-      }
+      this.logger.log(`Найдено ${services.length} услуг для категории с ID ${id}`);
 
       return services;
     } catch (error) {
@@ -90,7 +86,7 @@ export class ServicesService {
           where: { id: data.categoryId },
         });
         if (!categoryExists) {
-          this.logger.warn(`Категория с ID ${data.categoryId} не найдена`);
+          this.logger.warn(`Категория с ID ${data.categoryId} не найдена при обновлении услуги ${data}`);
           throw new NotFoundException('Категория не найдена');
         }
       }
@@ -98,7 +94,7 @@ export class ServicesService {
       const service = await this._prismaService.services.findUnique({ where: { id } });
 
       if (!service) {
-        this.logger.warn(`Услуга с ID ${id} не найдена`);
+        this.logger.warn(`Услуга с ID ${id} не найдена при обновлении услуги ${data}`);
         throw new NotFoundException('Услуга не найдена');
       }
 
@@ -107,13 +103,13 @@ export class ServicesService {
         data,
       });
 
-      this.logger.log(`Услуга с ID ${id} успешно обновлена`);
+      this.logger.log(`Услуга с ID ${id} успешно обновлена ${data}`);
       return updatedService;
     } catch (error) {
       if (error instanceof NotFoundException || error instanceof BadRequestException) {
         throw error;
       }
-      this.logger.error(`Ошибка при обновлении услуги с ID ${id}`, error.stack);
+      this.logger.error(`Ошибка при обновлении услуги с ID ${id} ${data}`, error.stack);
       throw new InternalServerErrorException('Ошибка обновления услуги');
     }
   }

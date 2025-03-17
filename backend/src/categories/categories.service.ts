@@ -1,12 +1,11 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { CustomLogger} from "../logger";
 
 @Injectable()
 export class CategoryService {
-  private readonly logger = new CustomLogger();
+  private readonly logger = new Logger(CategoryService.name);
 
   constructor(private readonly _prismaService: PrismaService) {}
 
@@ -15,17 +14,19 @@ export class CategoryService {
       const errors = [];
 
       if (!data.userId) {
+        this.logger.warn(`При создании категории услуг отстутствовало ID пользователя ${data}`);
         errors.push(
             new HttpException('Нет ID пользователя', 400).getResponse(),
         );
       }
       if (!data.name) {
+        this.logger.warn(`При создании категории услуг отстутствовало название ${data}`);
         errors.push(
             new HttpException('Нет названия операции', 400).getResponse(),
         );
       }
       if (errors.length) {
-        throw new HttpException({ errors, status: 400 }, 400);
+        throw new HttpException({errors, status: 400}, 400);
       }
 
       return await this._prismaService.category.create({
@@ -38,10 +39,13 @@ export class CategoryService {
         },
       });
     } catch (error) {
-      console.log(error);
-      this.logger.error('Ошибка при создании категории', error);
-      if (error instanceof HttpException) throw error;
-      throw new HttpException('Ошибка сервера при создании категории', 500);
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        console.log(error);
+        this.logger.error(`Ошибка при создании категории услуг ${data.name} пользователем ${data.userId}`, error);
+        throw new HttpException('Ошибка сервера при создании категории', 500);
+      }
     }
   }
 
@@ -62,7 +66,8 @@ export class CategoryService {
       });
 
       if (!result) {
-        throw new HttpException('Категория не найдена', 404);
+        this.logger.warn('Категория не найдена');
+        throw new HttpException('Ошибка при поиске категории', 404);
       }
 
       return result;
@@ -106,9 +111,11 @@ export class CategoryService {
           error instanceof PrismaClientKnownRequestError &&
           error.code === 'P2025'
       ) {
-        throw new HttpException('Категория не найдена', 404);
+        this.logger.warn('Категория не найдена')
+        throw new HttpException('Ошибка при поиске категории', 404);
       }
       console.log(error);
+      this.logger.error('Ошибка при обновлении категории', error.stack);
       throw new HttpException('Ошибка сервера при обновлении категории', 500);
     }
   }
@@ -124,9 +131,11 @@ export class CategoryService {
           error instanceof PrismaClientKnownRequestError &&
           error.code === 'P2025'
       ) {
-        throw new HttpException('Категория не найдена', 404);
+        this.logger.warn('Категория не найдена')
+        throw new HttpException('Ошибка при поиске категории', 404);
       }
       console.log(error);
+      this.logger.error('Ошибка при удалении категории', error.stack);
       throw new HttpException('Ошибка сервера при удалении категории', 500);
     }
   }

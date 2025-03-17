@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users';
@@ -6,7 +6,6 @@ import { LoginDto, SignupDto } from './auth-dto';
 import { UserCreateDto } from '../users';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { CustomLogger } from '../logger';
 
 interface User {
   id: string;
@@ -16,7 +15,7 @@ interface User {
 
 @Injectable()
 export class AuthService {
-  private readonly logger = new CustomLogger();
+  private readonly logger = new Logger(AuthService.name);
 
   constructor(
       private readonly _usersService: UsersService,
@@ -33,13 +32,12 @@ export class AuthService {
     this.logger.log(`Попытка входа пользователя: ${loginDto.phoneNumber}`);
     const user = await this.validateUser(loginDto);
     if (!user) {
-      this.logger.warn('Неудачная попытка входа: неверные учетные данные');
+      this.logger.warn(`Неудачная попытка входа: неверные учетные данные ${user}`);
       throw new HttpException('Неверные учетные данные', 401);
     }
 
     const refreshTokenKey = await this.generateRefreshToken(user);
     await this._usersService.updateUser(user.id, { refreshToken: refreshTokenKey });
-
     this.logger.log(`Пользователь ${user.id} успешно вошел`);
     return {
       userId: user.id,

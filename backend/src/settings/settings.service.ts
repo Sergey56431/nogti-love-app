@@ -1,11 +1,11 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma';
 import { CreateSettingsDto, UpdateSettingsDto } from './dto';
-import { CustomLogger } from '../logger';
+import {ServicesService} from "../services";
 
 @Injectable()
 export class SettingsService {
-  private readonly logger = new CustomLogger();
+  private readonly logger = new Logger(ServicesService.name);
   constructor(private _prismaService: PrismaService) {}
 
   async create(createSettingsDto: CreateSettingsDto): Promise<CreateSettingsDto> {
@@ -13,11 +13,11 @@ export class SettingsService {
       const settings = await this._prismaService.settings.create({
         data: { ...createSettingsDto },
       });
-      this.logger.log(`Настройки успешно созданы для пользователя ${createSettingsDto.userId}`);
+      this.logger.log(`Настройки ${createSettingsDto} успешно созданы для пользователя ${createSettingsDto.userId}`);
       return settings;
     } catch (error) {
       console.log(error);
-      this.logger.error(`Ошибка создания настроек для пользователя ${createSettingsDto.userId}`, error.stack);
+      this.logger.error(`Ошибка создания настроек ${createSettingsDto} для пользователя ${createSettingsDto.userId}`, error.stack);
       throw new HttpException('Ошибка создания настроек', 500);
     }
   }
@@ -34,6 +34,9 @@ export class SettingsService {
       this.logger.log(`Настройки успешно получены для пользователя ${userId}`);
       return settings;
     } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
       console.log(error);
       this.logger.error(`Ошибка поиска настроек для пользователя ${userId}`, error.stack);
       throw new HttpException('Ошибка поиска настроек', 500);
@@ -46,12 +49,12 @@ export class SettingsService {
         where: { userId },
         data: { ...updateSettingsDto },
       });
-      this.logger.log(`Настройки успешно создны для пользователя ${userId}`);
+      this.logger.log(`Настройки успешно обновлены ${updateSettingsDto} для пользователя ${userId}`);
       return updatedSettings;
     } catch (error) {
       console.log(error);
-      this.logger.error(`Ошибка создания настроек для пользователя ${userId}`, error.stack);
-      throw new HttpException('Ошибка создания настроек', 500);
+      this.logger.error(`Ошибка обновления настроек ${updateSettingsDto} для пользователя ${userId}`, error.stack);
+      throw new HttpException('Ошибка обновления настроек', 500);
     }
   }
 

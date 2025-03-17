@@ -1,12 +1,11 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { CreateIncomeExpencesDto, UpdateIncomeExpences } from './dto';
 import { PrismaService } from '../prisma';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import {CustomLogger} from "../logger";
 
 @Injectable()
 export class IncomExpencesService {
-  private readonly logger = new CustomLogger();
+  private readonly logger = new Logger(IncomExpencesService.name);
   constructor(private readonly _prismaService: PrismaService) {}
 
   async create(createIncomExpenceDto: CreateIncomeExpencesDto) {
@@ -22,7 +21,6 @@ export class IncomExpencesService {
       );
 
     if (errors.length > 0) {
-      this.logger.warn('Некорректные данные для создания операции');
       throw new HttpException({ errors, status: 400 }, 400);
     }
 
@@ -45,11 +43,11 @@ export class IncomExpencesService {
         error instanceof PrismaClientKnownRequestError &&
         error.code === 'P2025'
       ) {
-        this.logger.warn('Категория или пользователь не найден');
+        this.logger.warn(`Категория ${categoryId} или пользователь ${userId} не найден`);
         throw new HttpException('Категория или пользователь не найден', 404);
       }
       console.log(error);
-      this.logger.error('Ошибка при создании операции', error.stack);
+      this.logger.error(`Ошибка при создании операции ${categoryId}`, error.stack);
       throw new HttpException('Ошибка при создании операции', 500);
     }
   }
@@ -66,7 +64,7 @@ export class IncomExpencesService {
         throw error;
       }
       console.log(error);
-      this.logger.error('Ошибка при поиске операций по пользователю', error.stack);
+      this.logger.error(`Ошибка при поиске операций по пользователю ${userId}`, error.stack);
       throw new HttpException(
         'Ошибка при поиске операций по пользователю',
         500,
@@ -77,7 +75,7 @@ export class IncomExpencesService {
   async findAll() {
     try {
       const operations = await this._prismaService.income_Expanses.findMany();
-      this.logger.log('Все операции успешно получены');
+      this.logger.log(`Все операции успешно получены`);
       return operations;
     } catch (error) {
       console.log(error);
