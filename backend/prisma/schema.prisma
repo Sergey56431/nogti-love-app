@@ -27,6 +27,7 @@ model User {
   createdRoles       CustomRole[]
   directs            Directs[]
   income_Expanses    Income_Expanses[]
+  client             Client[]
   settings           Settings?
 }
 
@@ -138,30 +139,16 @@ model Client {
     id              String      @id @default(uuid())
     name            String
     lastName        String?
-    phoneNumber     String
-    rate            float?
-    birthday        DataTime?
+    phoneNumber     String      @unique
+    rate            Float?
+    birthday        DateTime?
     description     String?
     password        String
     refreshToken    String?
-    roleId          String      @default('CLIENT')
-    masterId        String
-    score           number?
-}
-
-model Client {
-    id              String      @id @default(uuid())
-    name            String
-    lastName        String?
-    phoneNumber     String
-    rate            float?
-    birthday        DataTime?
-    description     String?
-    password        String
-    refreshToken    String?
-    roleId          String      @default('CLIENT')
-    masterId        String
-    score           number?
+    roleId          String      @default("CLIENT")
+    masterId        String?
+    user            User?       @relation(fields: [masterId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    score           Int?
 }
 
 enum TypeOperation {
