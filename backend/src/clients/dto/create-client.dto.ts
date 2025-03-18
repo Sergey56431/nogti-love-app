@@ -1,15 +1,15 @@
-export class UserCreateDto {
+export class CreateClientsDto {
   name: string;
   lastName: string;
-  password: string;
   phoneNumber: string;
   rate?: number;
   birthday?: Date;
   description?: string;
   refreshToken?: string;
-  id?: string;
-  role?: string;
+  masterId?: string;
+  roleId?: string;
   score?: number;
+  password: string;
 }
 
-export type TUserUpdateDto = Partial<UserCreateDto>;
+export type UpdateClientsDto = Partial<CreateClientsDto>;

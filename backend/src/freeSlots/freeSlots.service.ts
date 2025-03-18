@@ -3,7 +3,7 @@ import { PrismaService } from '../prisma';
 import { IFreeSlotsService } from './interfaces';
 
 @Injectable()
-export class FreeSlotsService implements IFreeSlotsService{
+export class FreeSlotsService implements IFreeSlotsService {
   constructor(private readonly _prismaService: PrismaService) {}
 
   async createFreeSlots(slots: { calendarId: string; time: string }[]) {

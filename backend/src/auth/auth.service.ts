@@ -1,4 +1,4 @@
-import { Injectable, HttpException, Inject } from '@nestjs/common';
+import { Injectable, Inject, HttpException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { LoginDto, SignupDto } from './auth-dto';
@@ -16,6 +16,7 @@ interface User {
 
 @Injectable()
 export class AuthService implements IAuthService {
+  private readonly logger = new Logger(AuthService.name);
   constructor(
     @Inject(UsersService)
     private readonly _usersService: IUsersService,
@@ -29,8 +30,12 @@ export class AuthService implements IAuthService {
     name: string;
     role: string;
   }> {
+    this.logger.log(`Попытка входа пользователя: ${loginDto.phoneNumber}`);
     const user = await this.validateUser(loginDto);
     if (!user) {
+      this.logger.warn(
+        `Неудачная попытка входа: неверные учетные данные ${user}`,
+      );
       throw new HttpException('Неверные учетные данные', 401);
     }
 
@@ -38,7 +43,7 @@ export class AuthService implements IAuthService {
     await this._usersService.updateUser(user.id, {
       refreshToken: refreshTokenKey,
     });
-
+    this.logger.log(`Пользователь ${user.id} успешно вошел`);
     return {
       userId: user.id,
       name: user.name,
@@ -48,16 +53,22 @@ export class AuthService implements IAuthService {
   }
 
   public async signUp(user: SignupDto): Promise<UserCreateDto> {
+    this.logger.log(`Регистрация нового пользователя: ${user.phoneNumber}`);
     return this._usersService.createUser(user);
   }
 
   public async refreshToken(userId: string): Promise<{ accessToken: string }> {
     try {
+      this.logger.log(`Обновление токена для пользователя: ${userId}`);
       const user = await this._usersService.findUserToRefresh(userId);
       if (!user) {
+        this.logger.warn(
+          `Пользователь ${userId} не найден при обновлении токена`,
+        );
         throw new HttpException('Пользователь не найден', 404);
       }
       if (!user.refreshToken) {
+        this.logger.warn(`Токен отсутствует у пользователя ${userId}`);
         throw new HttpException('Токен отсутствует', 401);
       }
 
@@ -66,11 +77,12 @@ export class AuthService implements IAuthService {
           secret: this._configService.get<string>('JWT_REFRESH_SECRET'),
           ignoreExpiration: true,
         });
-      } catch (e) {
+      } catch (error) {
+        console.log(error);
         await this.logout(userId);
-        console.error(e);
         throw new HttpException('Токен истек', 401);
       }
+      this.logger.log(`Токен обновлен для пользователя ${userId}`);
       return {
         accessToken: await this.generateAccessToken({
           id: user.id,
@@ -83,24 +95,31 @@ export class AuthService implements IAuthService {
         throw error;
       }
       console.log(error);
+      this.logger.error(
+        `Ошибка при обновлении токена пользователя ${userId}`,
+        error.stack,
+      );
       throw new HttpException('Ошибка при обновлении токена', 500);
     }
   }
 
   public async logout(userId: string) {
     try {
+      this.logger.log(`Выход пользователя ${userId}`);
       await this._usersService.updateUser(userId, { refreshToken: '' });
-      return {
-        status: 200,
-        message: 'Успешно',
-      };
+      return { status: 200, message: 'Успешно' };
     } catch (error) {
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code == 'P2025'
       ) {
+        this.logger.warn(`Пользователь ${userId} не найден при выходе`);
         throw new HttpException('Пользователь не найден', 404);
       }
+      this.logger.error(
+        `Ошибка при выходе пользователя ${userId}`,
+        error.stack,
+      );
       throw new HttpException(error, 500);
     }
   }
@@ -110,12 +129,14 @@ export class AuthService implements IAuthService {
   ): Promise<User | null> {
     const user = await this._usersService.findUniqUser(body.phoneNumber);
     if (user && (await bcrypt.compare(body.password, user.password))) {
+      this.logger.log(`Пользователь ${user.id} прошел валидацию`);
       return {
         id: user.id,
         name: user.name + ' ' + user.lastName,
         role: user.role,
       };
     } else {
+      this.logger.warn(`Ошибка валидации пользователя: ${body.phoneNumber}`);
       return null;
     }
   }
