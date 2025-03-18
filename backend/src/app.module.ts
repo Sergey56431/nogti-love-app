@@ -13,7 +13,8 @@ import { ServicesModule } from './services';
 import { SettingsModule } from './settings';
 import { CategoryOperationsModule } from './categoryOperations';
 import { TimeSlotAlgorithmModule } from './utilits';
-import { ClientsModule } from './clients/clients.module';
+import { RolesModule } from './roles/roles.module';
+import { ClientsModule } from './clients';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ClientsModule } from './clients/clients.module';
     CategoryOperationsModule,
     TimeSlotAlgorithmModule,
     ClientsModule,
+    RolesModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, JwtStrategy],
