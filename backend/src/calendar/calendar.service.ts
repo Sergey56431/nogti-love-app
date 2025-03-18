@@ -449,7 +449,9 @@ export class CalendarService implements ICalendarService {
       return await this._prismaService.calendar.findMany({
         where: { userId: userId },
         include: {
-          directs: true,
+          directs: {
+            where: { userId: userId },
+          },
           freeSlots: { select: { time: true } },
         },
       });
