@@ -134,6 +134,36 @@ model DirectsServices {
   @@index([directId, serviceId])
 }
 
+model Client {
+    id              String      @id @default(uuid())
+    name            String
+    lastName        String?
+    phoneNumber     String
+    rate            float?
+    birthday        DataTime?
+    description     String?
+    password        String
+    refreshToken    String?
+    roleId          String      @default('CLIENT')
+    masterId        String
+    score           number?
+}
+
+model Client {
+    id              String      @id @default(uuid())
+    name            String
+    lastName        String?
+    phoneNumber     String
+    rate            float?
+    birthday        DataTime?
+    description     String?
+    password        String
+    refreshToken    String?
+    roleId          String      @default('CLIENT')
+    masterId        String
+    score           number?
+}
+
 enum TypeOperation {
   income
   expense
