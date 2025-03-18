@@ -31,7 +31,7 @@ async function bootstrap() {
   app.enableCors({
     origin: (origin, callback) => {
       const allowedOrigins = [
-        'https://sergey56431-nogti-love-app-edae.twc1.net/',
+        'https://sergey56431-nogti-love-app-edae.twc1.net',
         'http://localhost:4200',
       ];
 
