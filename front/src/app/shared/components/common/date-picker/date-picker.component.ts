@@ -139,10 +139,13 @@ export class DatePickerComponent implements OnInit {
   }
 
   public fetchDirectsToDay(date: string) {
-    this._directService.fetchDirectsByDate(date).subscribe((directs) => {
-      this.directs.set(directs as DirectsClientType[]);
-      console.log(this.directs());
-    });
+    const user = this._authService.getUserInfo();
+    if (user && user.userId) {
+      this._directService.fetchDirectsByDateUser(date, user.userId).subscribe((directs) => {
+        this.directs.set(directs as DirectsClientType[]);
+        console.log(this.directs());
+      });
+    }
   }
 
   // Функция генерации календаря
