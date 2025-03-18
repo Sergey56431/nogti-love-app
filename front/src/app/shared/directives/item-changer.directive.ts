@@ -7,20 +7,20 @@ import {
   Renderer2,
   signal,
 } from '@angular/core';
-import { CalendarDay } from '@shared/components';
 import { DayState } from '@shared/utils';
+import { CalendarResponse } from '@shared/types';
 
 @Directive({
   selector: '[ItemChanger]',
   standalone: true,
 })
 export class ItemChangerDirective implements AfterViewInit {
-  private days = signal<CalendarDay[]>([]) ;
+  private days = signal<CalendarResponse[]>([]) ;
   private _allDays= computed(() => {
     return this.days();
   });
 
-  @Input() public set day(day: CalendarDay) {
+  @Input() public set day(day: CalendarResponse) {
     if (day != null){
       this.days().push(day);
     }

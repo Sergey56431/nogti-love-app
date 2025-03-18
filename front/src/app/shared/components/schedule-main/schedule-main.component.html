@@ -10,7 +10,7 @@
   </div>
 
   <div class="date-picker-content">
-    <app-date-picker #calendar></app-date-picker>
+    <app-date-picker #calendar (selectedDay)="_choiceDay.set($event)"></app-date-picker>
 
     @if (calendar.day) {
       <div class="timetable">

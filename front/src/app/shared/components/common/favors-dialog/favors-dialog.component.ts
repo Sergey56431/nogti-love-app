@@ -6,7 +6,7 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { DefaultResponseType, ServicesType, CategoriesType, UserInfoType } from '@shared/types';
+import { DefaultResponseType, ServicesType, CategoriesType, UserInfoType, Services } from '@shared/types';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FavorsService, CategoriesService } from '@shared/services';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -38,10 +38,6 @@ enum DialogVariants {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-/* TODO
- * - Редактирование выбранной услуги/категории
- * - Удаление выбранной услуги/категории
- */
 export class FavorsDialogComponent implements OnInit {
   public formsCount = signal<number>(0);
   protected readonly _dialogVariants = DialogVariants;
@@ -51,7 +47,7 @@ export class FavorsDialogComponent implements OnInit {
   protected _dialogVariant = '';
 
   protected _categoriesList = signal<CategoriesType[]>([]);
-  protected _favorEdit = signal<ServicesType | undefined>(undefined);
+  protected _favorEdit = signal<Services | undefined>(undefined);
   protected _categoryEdit = signal<CategoriesType | undefined>(undefined);
 
   private _userInfo = signal<UserInfoType | undefined>(undefined);
@@ -146,25 +142,24 @@ export class FavorsDialogComponent implements OnInit {
   // Функция для инициализации редактирования услуги
   private _editingFavorInit() {
     this._favors.clear();
-    this._favorEdit.set(this._dataFavor.data);
+    const favor: Services = this._dataFavor.data;
+    this._favorEdit.set(favor);
     this._dialogVariant = DialogVariants.SERVICE;
-    this._choosingCategory(this._favorEdit()?.service.categoryId ?? '');
+    this._choosingCategory(this._favorEdit()?.categoryId ?? '');
     try {
-      this._favorService.getFavorsById(this._favorEdit()?.service.id ?? '').subscribe((favor) => {
-        // Убедитесь, что favor имеет правильный тип
-        if (favor) {
+      if (favor) {
+        this._categoryService.getCategoryById(favor.categoryId).subscribe(category => {
+          this._favorsListForm.get('category')?.setValue((category as CategoriesType).id);
           const favorGroup = this._fb.group({
-            name: [(favor as ServicesType).service.name ?? '', Validators.required],
-            price: [(favor as ServicesType).service.price ?? 0, Validators.required],
-            time: [(favor as ServicesType).service.time ?? '', Validators.required],
+            name: [(favor as Services).name ?? '', Validators.required],
+            price: [(favor as Services).price ?? 0, Validators.required],
+            time: [(favor as Services).time ?? '', Validators.required],
           });
-
-          // Добавляем новую группу в FormArray
           this._favors.push(favorGroup);
-        } else {
-          console.error('Полученные данные не содержат favor');
-        }
-      });
+        });
+      } else {
+        console.error('Полученные данные не содержат favor');
+      }
     } catch (error) {
       console.error('Ошибка при получении данных:', error);
     }
@@ -176,18 +171,18 @@ export class FavorsDialogComponent implements OnInit {
     this._dialogVariant = DialogVariants.CATEGORY;
     this._categoryEdit.set(this._dataFavor.data);
     try {
-      this._categoryService.getCategoryById(this._categoryEdit()?.id ?? '').subscribe(category => {
-        if (category) {
-          const favorGroup = this._fb.group({
-            name: [(category as CategoriesType).name ?? '', Validators.required],
-          });
+      // this._categoryService.getCategoryById(this._categoryEdit()?.id ?? '').subscribe(category => {
+      if (this._categoryEdit()) {
+        const favorGroup = this._fb.group({
+          name: [this._categoryEdit()?.name ?? '', Validators.required],
+        });
 
-          // Добавляем новую группу в FormArray
-          this._categories.push(favorGroup);
-        } else {
-          console.error('Полученные данные не содержат favor');
-        }
-      });
+        // Добавляем новую группу в FormArray
+        this._categories.push(favorGroup);
+      } else {
+        console.error('Полученные данные не содержат favor');
+      }
+      // });
     } catch (err) {
       console.log(err);
     }
@@ -244,8 +239,7 @@ export class FavorsDialogComponent implements OnInit {
 
     from(categories).subscribe({
       next: (category) => {
-        this._categoryService.createCategory(category as CategoriesType).subscribe({
-        });
+        this._categoryService.createCategory(category as CategoriesType).subscribe({});
       },
       error: (err) => {
         this._showMessage('error', 'Ошибка при добавлении услуги');
@@ -263,15 +257,15 @@ export class FavorsDialogComponent implements OnInit {
     const favorEdit = this._favors?.value[0];
     Object.assign(favorEdit, { categoryId: this._choiceCategory() });
 
-    this._favorService.updateFavors(favorEdit, this._favorEdit()?.service.id ?? '').subscribe({
-      error: err =>{
+    this._favorService.updateFavors(favorEdit, this._favorEdit()?.id ?? '').subscribe({
+      error: err => {
         this._showMessage('error', 'Ошибка при обновлении услуги' + err);
         console.log(err);
       },
       complete: () => {
         this._showMessage('success', 'Услуга обновлена');
         this._close();
-      }
+      },
     });
   }
 
@@ -281,14 +275,14 @@ export class FavorsDialogComponent implements OnInit {
     Object.assign(categoryEdit, { userId: this._userInfo()?.userId });
 
     this._categoryService.updateCategory(categoryEdit, this._categoryEdit()?.id ?? '').subscribe({
-      error: err =>{
+      error: err => {
         this._showMessage('error', 'Ошибка при обновлении категории' + err);
         console.log(err);
       },
       complete: () => {
         this._showMessage('success', 'Категория обновлена');
         this._close();
-      }
+      },
     });
   }
 

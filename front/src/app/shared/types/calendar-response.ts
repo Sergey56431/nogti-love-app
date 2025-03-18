@@ -1,11 +1,15 @@
 import { DirectsClientType } from '@shared/types/directs-client.type';
+import { DayState } from '@shared/utils';
 
 export interface CalendarResponse {
-    id: string,
-    date: string,
-    state: string,
-    userId: string
-    directs: DirectsClientType[]
+  day: number;
+  date: string;
+  directs?: DirectsClientType[];
+  freeSlots?: string[];
+  id?: string;
+  state?: DayState;
+  time?: string;
+  userId?: string;
 }
 
 export interface CreateCalendarType extends CalendarResponse {

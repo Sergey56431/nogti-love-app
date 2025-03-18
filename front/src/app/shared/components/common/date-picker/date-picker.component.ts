@@ -12,16 +12,9 @@ import { Button } from 'primeng/button';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '@core/auth';
 import { CalendarResponse, DefaultResponseType } from '@shared/types';
-import { DayState, ProgressStatuses, SnackStatusesUtil } from '@shared/utils';
+import { ProgressStatuses, SnackStatusesUtil } from '@shared/utils';
 import { ItemChangerDirective } from '@shared/directives';
 import { DirectsClientType } from '@shared/types/directs-client.type';
-
-
-export interface CalendarDay {
-  day: number;
-  date: string;
-  state?: DayState;
-}
 
 @Component({
   selector: 'app-date-picker',
@@ -39,8 +32,8 @@ export class DatePickerComponent implements OnInit {
   public choiceDate = signal<string>('');
   public selectedDate = signal<string>('');
   protected _calendar = signal<CalendarResponse[]>([]);
-  protected _isChecked = signal<number | null>(null);
-  protected _date = signal<CalendarDay[]>([]);
+  protected _isChecked = signal<CalendarResponse | null>(null);
+  protected _date = signal<CalendarResponse[]>([]);
   public _mountCount = signal<number>(0);
   public _yearCount = signal<number>(0);
   protected _isStartMonth = computed(() => {
@@ -53,6 +46,7 @@ export class DatePickerComponent implements OnInit {
     loadDirects: Directs.GetDirects,
   });
 
+  @Output() selectedDay = new EventEmitter<CalendarResponse>();
   @Output() emitDate = new EventEmitter<string>();
   @Output() startDate = new EventEmitter<string>();
 
@@ -175,11 +169,20 @@ export class DatePickerComponent implements OnInit {
       const date = new Date(item.date).toLocaleDateString('ru-RU', options);
       this._date().find((i) => {
         if (i.date === date) {
-          Object.assign(i, { state: item.state });
+          Object.assign(i, {
+            id: item.id,
+            freeSlots: item.freeSlots,
+            state: item.state });
         }
       });
     }
     this._render.set(true);
+  }
+
+  // Функция выбора и передачи информации об этом дне в родительский компонент
+  protected _selectDay(day: CalendarResponse) {
+    this.selectedDay.emit(day);
+    this._isChecked.set(day);
   }
 
   // Метод для обновления календаря без перезагрузки страницы

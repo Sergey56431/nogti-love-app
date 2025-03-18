@@ -12,10 +12,11 @@ import { Select } from 'primeng/select';
 import { Textarea } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CategoriesService, DirectsService, FavorsService } from '@shared/services';
+import { CategoriesService, ClientsService, DirectsService } from '@shared/services';
 import { AuthService } from '@core/auth';
 import {
-  CategoriesType,
+  CalendarResponse,
+  CategoriesType, ClientType,
   DefaultResponseType,
   DirectsClientType,
   DirectsType,
@@ -25,6 +26,7 @@ import {
 import { MultiSelect } from 'primeng/multiselect';
 import { MessageService } from 'primeng/api';
 import { ProgressStatuses, SnackStatusesUtil } from '@shared/utils';
+import { orderBy } from 'lodash';
 
 @Component({
   selector: 'app-direct-visit',
@@ -44,9 +46,12 @@ import { ProgressStatuses, SnackStatusesUtil } from '@shared/utils';
 })
 export class DirectVisitComponent implements OnInit {
 
-  private _date = '';
+  protected _date: CalendarResponse | null = null;
+  protected _clients = signal<ClientType[]>([]);
   protected _categories = signal<CategoriesType[]>([]);
+  protected _timeSlots = signal<string[]>([]);
   protected _choiceFavor = signal<string[]>([]);
+  protected _timeSlotChoice = signal<{time: string } | null>(null);
   protected _favors = signal<ServicesType[]>([]);
   private _userInfo = signal<UserInfoType | undefined>(undefined);
 
@@ -55,7 +60,7 @@ export class DirectVisitComponent implements OnInit {
               private readonly _directsService: DirectsService,
               private readonly _categoryService: CategoriesService,
               private readonly _authService: AuthService,
-              private readonly _favorService: FavorsService,
+              private readonly _clientsService: ClientsService,
               private readonly _dialogConfig: DynamicDialogConfig,
               private readonly _ref: DynamicDialogRef) {
   }
@@ -64,11 +69,8 @@ export class DirectVisitComponent implements OnInit {
     name: new FormControl('', [Validators.required]),
     phone: new FormControl('', [
       Validators.required,
-      Validators.pattern(
-        '^((8|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$',
-      ),
+      Validators.pattern('^((8|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$'),
     ]),
-    category: new FormControl('', [Validators.required]),
     favor: new FormControl('', [Validators.required]),
     time: new FormControl('', [Validators.required]),
     comment: new FormControl(''),
@@ -77,25 +79,22 @@ export class DirectVisitComponent implements OnInit {
   // Инициализация
   public ngOnInit() {
     this._date = this._dialogConfig.data;
+    this._timeSlots.set(orderBy(this._date?.freeSlots ?? [], c => c, 'asc'));
+
+    console.log(this._date);
     this._userInfo.set(this._authService.getUserInfo());
     try {
       this._categoryService.getCategoryByUser(this._userInfo()?.userId ?? '').subscribe(categories => {
         if ((categories as DefaultResponseType).error === undefined) {
           this._categories.set(categories as CategoriesType[]);
+          this._categories().forEach(category => {
+            this._favors().push(...category?.services ?? []);
+          });
         }
       });
     } catch (err) {
       console.log(err);
     }
-  }
-
-  // Получение всех услуг
-  protected _fetchFavors(category: CategoriesType) {
-    this._favorService.getFavorsByCategory(category.id ?? '').subscribe((favors) => {
-      if ((favors as DefaultResponseType).error == null) {
-        this._favors.set(favors as ServicesType[]);
-      }
-    });
   }
 
   // Создание новой записи с последующей отправкой
@@ -106,10 +105,10 @@ export class DirectVisitComponent implements OnInit {
     const data: DirectsType = {
       userId: this._userInfo()?.userId ?? '',
       clientName: this._newVisitor.controls.name.value ?? '',
-      date: this._date ?? '',
+      date: this._date?.date.split('.').reverse().join('-') ?? '',
       comment: this._newVisitor.controls.comment.value ?? '',
       phone: this._newVisitor.controls.phone.value ?? '',
-      time: this._newVisitor.controls.time.value ?? '',
+      time: this._timeSlotChoice()?.time ?? '',
       services: favorsId,
     };
     this._sendNewDirect(data);

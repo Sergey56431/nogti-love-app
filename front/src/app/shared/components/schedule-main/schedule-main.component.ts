@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, Signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal, Signal, ViewChild } from '@angular/core';
 import { Button } from 'primeng/button';
 import { Menu } from 'primeng/menu';
 import {
@@ -14,6 +14,7 @@ import { orderBy } from 'lodash';
 import { ConfirmationService, MessageService, ToastMessageOptions } from 'primeng/api';
 import { SnackStatusesUtil } from '@shared/utils';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { CalendarResponse } from '@shared/types';
 
 @Component({
   selector: 'app-schedule-main',
@@ -28,6 +29,7 @@ export class ScheduleMainComponent {
   @ViewChild(DatePickerComponent) calendar?: DatePickerComponent;
 
   private _status: ToastMessageOptions = {} as ToastMessageOptions;
+  protected _choiceDay = signal<CalendarResponse | null>(null);
   protected _options = [
     { routerLink: '/schedule/edit', label: 'Редактировать расписание' },
     { routerLink: '/schedule', label: 'Список всех записей' },
@@ -64,7 +66,10 @@ export class ScheduleMainComponent {
         overflow: 'visible',
       },
       closable: true,
-      data: this.calendar?.selectedDate(),
+      data: {
+        date: this.calendar?.selectedDate(),
+        ...this._choiceDay(),
+      },
     });
   }
 

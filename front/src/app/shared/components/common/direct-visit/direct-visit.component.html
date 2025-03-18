@@ -11,23 +11,6 @@
       <label for="phone">Телефон</label>
     </p-floatlabel>
 
-    <p-floatlabel class="min-w-full" variant="on">
-      <p-inputmask class="w-full" inputId="time" formControlName="time" mask="99:99"/>
-      <label for="time">Время записи</label>
-    </p-floatlabel>
-
-    <p-floatlabel class="w-full" variant="on">
-      <p-select class="w-full"
-                [fluid]="true"
-                formControlName="category"
-                inputId="categoryId"
-                [options]="_categories()"
-                (onChange)="_fetchFavors($event.value)"
-                optionLabel="name"
-                styleClass="w-full" />
-      <label for="categoryId">Категория услуги</label>
-    </p-floatlabel>
-
     <p-floatlabel class="w-full" variant="on">
       <p-multi-select class="w-full"
                 [fluid]="true"
@@ -40,6 +23,12 @@
                 optionValue="id"
                 styleClass="w-full" />
       <label for="favorId">Услуга</label>
+    </p-floatlabel>
+
+    <p-floatlabel class="min-w-full" variant="on">
+      <p-select class="w-full" inputId="time" formControlName="time" (onChange)="_timeSlotChoice.set($event.value)"
+                [options]="this._timeSlots()" optionLabel="time"/>
+      <label for="time">Время записи</label>
     </p-floatlabel>
 
     <p-floatlabel variant="on">

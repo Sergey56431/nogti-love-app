@@ -9,7 +9,7 @@ import { CategoriesService, FavorsService } from '@shared/services';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Button } from 'primeng/button';
 import { TableModule } from 'primeng/table';
-import { CategoriesType, DefaultResponseType, ServicesType, UserInfoType } from '@shared/types';
+import { CategoriesType, DefaultResponseType, Services, ServicesType, UserInfoType } from '@shared/types';
 import { MessageService } from 'primeng/api';
 import { SnackStatusesUtil } from '@shared/utils';
 import { Tooltip } from 'primeng/tooltip';
@@ -66,13 +66,12 @@ export class FavorsPageComponent implements OnInit {
     });
   }
 
-  // Запрос на получение всех категорий
+  // Запрос на получение всех категорий и услуг
   private _getAllCategories(): void {
     const userId = this._userInfo.userId ?? ''; // Кэшируем userId для повторного использования
 
     this._categoryService.getCategoryByUser(userId).subscribe((result) => {
       const response = result as DefaultResponseType;
-
       // Проверяем наличие ошибки в ответе
       if (response.error === undefined) {
         // Устанавливаем категории и очищаем список услуг
@@ -117,7 +116,7 @@ export class FavorsPageComponent implements OnInit {
   }
 
   // Вызов модального окна для добавления категорий
-  protected _editPosition(favor: ServicesType, edit: string): void {
+  protected _editPosition(favor: Services, edit: string): void {
     this._ref = this._dialogService.open(FavorsDialogComponent, {
       header: 'Редактировать услуги / категории',
       draggable: false,
@@ -139,15 +138,13 @@ export class FavorsPageComponent implements OnInit {
   }
 
   // Удаление выбранной услуги
-  protected _removeFavor(favor: ServicesType): void {
-    this._favorsService.deleteFavors(favor.service.id ?? '').subscribe(result => {
+  protected _removeFavor(favor: Services): void {
+    this._favorsService.deleteFavors(favor.id ?? '').subscribe(result => {
       if ((result as DefaultResponseType).error === undefined) {
-        this._favorsList.update((prev) =>
-          prev.filter((item) => item.service.id !== favor.service.id),
-        );
-        this._showMessage('success', `Услуга "${favor.service.name}" успешно удалена`);
+        this._getAllCategories();
+        this._showMessage('success', `Услуга "${favor.name}" успешно удалена`);
       } else {
-        this._showMessage('error', `Ошибка удаления услуги "${favor.service.name}"`);
+        this._showMessage('error', `Ошибка удаления услуги "${favor.name}"`);
       }
     });
   }
