@@ -1,10 +1,21 @@
 import { Module } from '@nestjs/common';
-import { DirectsService } from './directs.service';
+import { BookSlotsAlgorithm, DirectsService } from './directs.service';
 import { DirectsController } from './directs.controller';
-import {PrismaService} from "../prisma";
+import { PrismaService } from '../prisma';
+import { FreeSlotModule } from '../freeSlots';
+import { TimeSlotAlgorithmModule } from '../utilits';
 
 @Module({
   controllers: [DirectsController],
-  providers: [DirectsService, PrismaService],
+  providers: [
+    PrismaService,
+    {
+      provide: DirectsService,
+      useClass: DirectsService,
+    },
+    BookSlotsAlgorithm,
+  ],
+  exports: [DirectsService],
+  imports: [FreeSlotModule, TimeSlotAlgorithmModule],
 })
 export class DirectsModule {}

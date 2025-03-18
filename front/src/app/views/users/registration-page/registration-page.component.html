@@ -3,25 +3,31 @@
     <div class="user-logo">
       <img src="/images/logo.png" alt="Логотип">
     </div>
-    <input class="input" formControlName="username" [class.error]="username?.invalid && (username?.dirty)"
-           type="text" placeholder="username">
 
-    <div class="input-error">
-      @if (username?.invalid && (username?.dirty)) {
-        <div>
-          @if (username?.errors?.['required']) {
-            <div class="text-danger">
-              Введите username
-            </div>
-          }
-          @if (username?.errors?.['pattern']) {
-            <div class="text-danger">
-              Некорректный username
-            </div>
-          }
-        </div>
-      }
-    </div>
+    <input class="input" formControlName="name" [class.error]="name?.invalid && (name?.dirty)"
+           type="text" placeholder="Ваше имя">
+    @if(name?.invalid && (name?.dirty)) {
+      <div>
+        @if(name?.errors?.['pattern']) {
+          <div class="text-danger">
+            Некорректно введено имя
+          </div>
+        }
+      </div>
+    }
+
+    <input class="input" formControlName="lastName" [class.error]="lastName?.invalid && (lastName?.dirty)"
+           type="text" placeholder="Ваша фамилия">
+
+    @if(lastName?.invalid && (lastName?.dirty)) {
+      <div>
+        @if(lastName?.errors?.['pattern']) {
+          <div class="text-danger">
+            Некорректно введена фамилия
+          </div>
+        }
+      </div>
+    }
 
     <input class="input" formControlName="password" [class.error]="password?.invalid && (password?.dirty)"
            type="password" placeholder="Пароль">
@@ -54,31 +60,6 @@
         @if (phone?.errors?.['pattern']) {
           <div class="text-danger">
             Неверно введён телефон
-          </div>
-        }
-      </div>
-    }
-
-    <input class="input" formControlName="name" [class.error]="name?.invalid && (name?.dirty)"
-           type="text" placeholder="Ваше имя">
-     @if(name?.invalid && (name?.dirty)) {
-       <div>
-         @if(name?.errors?.['pattern']) {
-           <div class="text-danger">
-             Некорректно введено имя
-           </div>
-         }
-       </div>
-     }
-
-    <input class="input" formControlName="lastName" [class.error]="lastName?.invalid && (lastName?.dirty)"
-           type="text" placeholder="Ваше фамилия">
-
-    @if(lastName?.invalid && (lastName?.dirty)) {
-      <div>
-        @if(lastName?.errors?.['pattern']) {
-          <div class="text-danger">
-            Некорректно введена фамилия
           </div>
         }
       </div>

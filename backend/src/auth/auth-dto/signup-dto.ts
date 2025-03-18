@@ -24,9 +24,7 @@ export class SignupDto {
     nullable: false,
     example: 'Vladislav2004',
   })
-  @IsString()
-  @IsNotEmpty()
-  username: string;
+
 
   @ApiProperty({
     description: 'Номер телефона пользвателя',

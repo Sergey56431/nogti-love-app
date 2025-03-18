@@ -3,19 +3,22 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { TUserUpdateDto, UserCreateDto } from './users-dto';
 import * as bcrypt from 'bcrypt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { IUsersService } from './interfaces/users.interface';
 
 @Injectable()
-export class UsersService {
+export class UsersService implements IUsersService {
   private _returnUserModel = {
     id: true,
     name: true,
     lastName: true,
-    username: true,
     phoneNumber: true,
-    refreshToken: false,
     score: true,
-    password: false,
+    rate: true,
+    birthday: true,
+    description: true,
     role: true,
+    refreshToken: false,
+    password: false,
   };
 
   constructor(private readonly _prismaService: PrismaService) {}
@@ -112,8 +115,8 @@ export class UsersService {
   }
 
   public async createUser(dto: UserCreateDto) {
-    const { password, username, phoneNumber } = dto;
-    if (!password || !username || !phoneNumber) {
+    const { password, phoneNumber } = dto;
+    if (!password || !phoneNumber) {
       throw new HttpException(
         'Отсутствуют необходимые данные для создания пользователя',
         400,
@@ -136,6 +139,9 @@ export class UsersService {
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
 
+      if (dto.birthday) {
+        dto.birthday = new Date(dto.birthday);
+      }
       const user = await this._prismaService.user.create({
         select: this._returnUserModel,
         data: { ...dto, password: hashedPassword },
@@ -147,6 +153,7 @@ export class UsersService {
           defaultBreakTime: '00:30',
           timeGranularity: '00:30',
           defaultWorkTime: '09:00-16:00',
+          settingsData: [{}],
         },
       });
 

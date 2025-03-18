@@ -1,12 +1,26 @@
-import { Body, Controller, Delete, Get, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { TokenGuard } from '../auth';
 import { CreateSettingsDto, UpdateSettingsDto } from './dto';
 import { SettingsService } from './settings.service';
+import { ISettingService } from './interfaces';
 
 @UseGuards(TokenGuard)
 @Controller('settings')
 export class SettingsController {
-  constructor(private readonly settingsServices: SettingsService) {}
+  constructor(
+    @Inject(SettingsService)
+    private readonly settingsServices: ISettingService,
+  ) {}
 
   @Post()
   create(@Body() createSettingsDto: CreateSettingsDto) {
@@ -15,7 +29,7 @@ export class SettingsController {
 
   @Get()
   find(@Query('userId') userId?: string) {
-    return this.settingsServices.find(userId);
+    return this.settingsServices.findByUser(userId);
   }
 
   @Put()

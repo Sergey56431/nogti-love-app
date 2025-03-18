@@ -16,6 +16,9 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '20'
+      - name: Проверка Linter
+        run: npm run lint
+        working-directory: ./backend
       - name: Установка зависимостей
         run: npm install
         working-directory: ./backend

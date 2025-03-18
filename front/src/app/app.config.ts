@@ -29,7 +29,7 @@ export const appConfig: ApplicationConfig = {
     ConfirmDialog,
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withDebugTracing()),
-    provideStore([]),
+    provideStore(),
     provideAnimationsAsync(),
     providePrimeNG({
       translation: Localization,
@@ -46,7 +46,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptorsFromDi()),
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     provideCharts(withDefaultRegisterables()),
-    provideStore([]),
     provideServiceWorker('ngsw-worker.js', {
       enabled: isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',

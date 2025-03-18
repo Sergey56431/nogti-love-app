@@ -1,16 +1,267 @@
 import {
   BadRequestException,
   HttpException,
+  Inject,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { DirectsState } from '@prisma/client';
+import { DayState, DirectsState } from '@prisma/client';
+import { CreateDirectDto } from './dto';
+import { IDirectsService } from './interfaces';
+import { FreeSlotsService } from '../freeSlots';
+import { IFreeSlotsService } from '../freeSlots/interfaces';
+import { TimeSlotUtilits } from '../utilits/TimeSlotAlgorithm';
+import { ITimeSlotUtilits } from '../utilits/interfaces/timeSlotAgorithm.interface';
 
 @Injectable()
-export class DirectsService {
-  constructor(private readonly _prismaService: PrismaService) {}
+export class BookSlotsAlgorithm {
+  constructor(
+    private readonly _prismaService: PrismaService,
+    @Inject(FreeSlotsService)
+    private readonly _freeSlotsService: IFreeSlotsService,
+    @Inject(TimeSlotUtilits)
+    private readonly _timeSlotUtilits: ITimeSlotUtilits,
+  ) {}
+
+  public async bookSlot(
+    userId: string,
+    dateStr: string,
+    time: string,
+    serviceIds: string[],
+    clientName: string,
+    phone: string,
+    comment: string | undefined,
+    calendarId: string,
+  ) {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      throw new HttpException('Некорректная дата', 400);
+    }
+
+    const userSettings = await this._timeSlotUtilits.getUserSettings(userId);
+    const breakMinutes = await this._timeSlotUtilits.convertTimeToMinutes(
+      userSettings.defaultBreakTime,
+    );
+
+    const granularityMinutes = await this._timeSlotUtilits.convertTimeToMinutes(
+      userSettings.timeGranularity,
+    );
+
+    const calendarDay = await this._prismaService.calendar.findUnique({
+      where: {
+        date_userId: {
+          date: date,
+          userId: userId,
+        },
+      },
+    });
+    if (!calendarDay) {
+      throw new HttpException('День не найден в календаре', 404);
+    }
+    if (calendarDay.state === DayState.notHave) {
+      throw new HttpException('Этот день недоступен для записи', 400);
+    }
+
+    const startFreeSlot = await this._freeSlotsService.findUniqueSlot(
+      calendarDay.id,
+      time,
+    );
+    if (!startFreeSlot) {
+      throw new HttpException('Слот не найден', 404);
+    }
+    if (startFreeSlot.isBooked) {
+      throw new HttpException('Слот уже занят', 409);
+    }
+
+    const totalServiceDuration =
+      await this._timeSlotUtilits.getServicesDuration(serviceIds);
+
+    const existingDirects = await this._prismaService.directs.findMany({
+      where: {
+        userId: userId,
+        calendar: {
+          date: date,
+        },
+        state: {
+          not: 'cancelled',
+        },
+      },
+      include: {
+        services: {
+          include: {
+            service: true,
+          },
+        },
+      },
+    });
+
+    const filteredDirects = existingDirects.filter(
+      (direct) => direct.state !== DirectsState.cancelled,
+    );
+
+    const appointments = await Promise.all(
+      filteredDirects.map(async (direct) => {
+        const servicesDuration = await direct.services.reduce(
+          async (accPromise, ds) => {
+            const acc = await accPromise;
+            const serviceMinutes =
+              await this._timeSlotUtilits.convertTimeToMinutes(ds.service.time);
+            return acc + serviceMinutes;
+          },
+          Promise.resolve(0),
+        );
+        const startTime = await this._timeSlotUtilits.convertTimeToMinutes(
+          direct.time,
+        );
+        return {
+          start: startTime,
+          end: startTime + servicesDuration,
+          id: direct.id,
+        };
+      }),
+    );
+
+    appointments.sort((a, b) => a.start - b.start);
+
+    const newAppointmentStart =
+      await this._timeSlotUtilits.convertTimeToMinutes(time);
+    const newAppointmentEnd = newAppointmentStart + totalServiceDuration;
+
+    //проверяе на пересечения со всеми существующими записями
+    for (const appointment of appointments) {
+      if (
+        newAppointmentStart < appointment.end &&
+        newAppointmentEnd > appointment.start
+      ) {
+        throw new HttpException(
+          'Время записи пересекается с существующей записью',
+          400,
+        );
+      }
+    }
+
+    //ищу ближайшую предыдущую запись
+    let previousAppointment: { start: number; end: number; id: string } | null =
+      null;
+    for (let i = appointments.length - 1; i >= 0; i--) {
+      if (appointments[i].end <= newAppointmentStart) {
+        previousAppointment = appointments[i];
+        break;
+      }
+    }
+
+    //проверяю перерыв, только если есть предыдущая запись
+    if (previousAppointment) {
+      const timeBetween = newAppointmentStart - previousAppointment.end;
+      if (timeBetween < breakMinutes) {
+        throw new HttpException('Недостаточный перерыв между записями', 400);
+      }
+    }
+
+    const createDirectDto: CreateDirectDto = {
+      userId: userId.toString(),
+      date: dateStr.toString(),
+      time: time.toString(),
+      clientName: clientName.toString(),
+      phone: phone.toString(),
+      comment: comment.toString(),
+      services: serviceIds.map((serviceId) => ({ serviceId })),
+      state: DirectsState.notConfirmed,
+    };
+
+    const direct = await this._prismaService.directs.create({
+      data: {
+        userId: createDirectDto.userId.toString(),
+        time: createDirectDto.time.toString(),
+        clientName: createDirectDto.clientName.toString(),
+        phone: createDirectDto.phone.toString(),
+        comment: createDirectDto.comment.toString(),
+        calendarId: calendarId,
+        state: createDirectDto.state,
+      },
+    });
+
+    let currentTime = newAppointmentStart;
+    while (currentTime < newAppointmentEnd) {
+      const currentTimeString =
+        await this._timeSlotUtilits.formatMinutesToTime(currentTime);
+      const currentSlot = await this._freeSlotsService.findUniqueSlot(
+        calendarDay.id,
+        currentTimeString,
+      );
+
+      if (currentSlot) {
+        await this._prismaService.freeSlot.update({
+          where: { id: currentSlot.id },
+          data: { isBooked: true },
+        });
+      }
+
+      currentTime += granularityMinutes;
+    }
+
+    const minServiceDuration =
+      await this._timeSlotUtilits.getMinimumServiceDuration(userId);
+    const hasFreeSlots = await this._timeSlotUtilits.hasFreeSlots(
+      calendarDay.id,
+    );
+
+    if (hasFreeSlots) {
+      let maxAvailableTime = 0;
+      let currentAvailableTime = 0;
+
+      const [startTime, endTime] = userSettings.defaultWorkTime.split('-');
+      let startMinutes =
+        await this._timeSlotUtilits.convertTimeToMinutes(startTime);
+      const endMinutes =
+        await this._timeSlotUtilits.convertTimeToMinutes(endTime);
+
+      while (startMinutes < endMinutes) {
+        const timeString =
+          await this._timeSlotUtilits.formatMinutesToTime(startMinutes);
+        const currentSlot = await this._freeSlotsService.findUniqueSlot(
+          calendarDay.id,
+          timeString,
+        );
+
+        if (currentSlot && !currentSlot.isBooked) {
+          currentAvailableTime += granularityMinutes;
+        } else {
+          maxAvailableTime = Math.max(maxAvailableTime, currentAvailableTime);
+          currentAvailableTime = 0;
+        }
+        startMinutes += granularityMinutes;
+      }
+      maxAvailableTime = Math.max(maxAvailableTime, currentAvailableTime);
+
+      if (maxAvailableTime < minServiceDuration + breakMinutes) {
+        await this._updateState(calendarDay.id, DayState.full);
+      } else {
+        await this._updateState(calendarDay.id, DayState.have);
+      }
+    } else {
+      await this._updateState(calendarDay.id, DayState.full);
+    }
+
+    return { ...createDirectDto, directId: direct.id };
+  }
+
+  private async _updateState(calendarId: string, state: DayState) {
+    return await this._prismaService.calendar.update({
+      where: { id: calendarId },
+      data: { state: state },
+    });
+  }
+}
+
+@Injectable()
+export class DirectsService implements IDirectsService {
+  constructor(
+    private readonly _prismaService: PrismaService,
+    private readonly _bookSlotsAlgorithm: BookSlotsAlgorithm,
+  ) {}
 
   public async findByDate(date: string) {
     try {
@@ -49,7 +300,7 @@ export class DirectsService {
     }
   }
 
-  public async create(createDirectDto) {
+  public async create(createDirectDto: CreateDirectDto) {
     try {
       const date = new Date(createDirectDto.date);
       if (isNaN(date.getTime())) {
@@ -90,18 +341,18 @@ export class DirectsService {
         throw new HttpException({ errors: errors }, 400);
       }
 
-      const createDirect = { ...createDirectDto };
-      delete createDirect.services;
-      delete createDirect.date;
+      const newDirect = await this._bookSlotsAlgorithm.bookSlot(
+        createDirectDto.userId,
+        createDirectDto.date,
+        createDirectDto.time,
+        createDirectDto.services.map((s) => s.serviceId),
+        createDirectDto.clientName,
+        createDirectDto.phone,
+        createDirectDto.comment,
+        calendar.id,
+      );
 
-      const direct = await this._prismaService.directs.create({
-        data: {
-          ...createDirect,
-          calendarId: calendar.id,
-        },
-      });
-
-      const servicePromises = createDirectDto.services.map(async (service) => {
+      const servicePromises = newDirect.services.map(async (service) => {
         const serviceExists = await this._prismaService.services.findUnique({
           where: { id: service.serviceId },
         });
@@ -111,14 +362,14 @@ export class DirectsService {
         return this._prismaService.directsServices.create({
           data: {
             serviceId: service.serviceId,
-            directId: direct.id,
+            directId: newDirect.directId,
           },
         });
       });
 
       await Promise.all(servicePromises);
 
-      return this.findOne(direct.id);
+      return this.findOne(newDirect.directId);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -214,7 +465,12 @@ export class DirectsService {
         throw new HttpException('Некорректная дата', 400);
       }
       const calendarId = await this._prismaService.calendar.findUnique({
-        where: { date: date, userId: updateDirectDto.userId },
+        where: {
+          date_userId: {
+            date: date,
+            userId: updateDirectDto.userId,
+          },
+        },
         select: { id: true },
       });
       if (!calendarId) {

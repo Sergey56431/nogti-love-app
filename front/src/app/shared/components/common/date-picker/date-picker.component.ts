@@ -12,16 +12,9 @@ import { Button } from 'primeng/button';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '@core/auth';
 import { CalendarResponse, DefaultResponseType } from '@shared/types';
-import { DayState, ProgressStatuses, SnackStatusesUtil } from '@shared/utils';
+import { ProgressStatuses, SnackStatusesUtil } from '@shared/utils';
 import { ItemChangerDirective } from '@shared/directives';
 import { DirectsClientType } from '@shared/types/directs-client.type';
-
-
-export interface CalendarDay {
-  day: number;
-  date: string;
-  state?: DayState;
-}
 
 @Component({
   selector: 'app-date-picker',
@@ -39,8 +32,8 @@ export class DatePickerComponent implements OnInit {
   public choiceDate = signal<string>('');
   public selectedDate = signal<string>('');
   protected _calendar = signal<CalendarResponse[]>([]);
-  protected _isChecked = signal<number | null>(null);
-  protected _date = signal<CalendarDay[]>([]);
+  protected _isChecked = signal<CalendarResponse | null>(null);
+  protected _date = signal<CalendarResponse[]>([]);
   public _mountCount = signal<number>(0);
   public _yearCount = signal<number>(0);
   protected _isStartMonth = computed(() => {
@@ -53,7 +46,9 @@ export class DatePickerComponent implements OnInit {
     loadDirects: Directs.GetDirects,
   });
 
+  @Output() selectedDay = new EventEmitter<CalendarResponse>();
   @Output() emitDate = new EventEmitter<string>();
+  @Output() startDate = new EventEmitter<string>();
 
   constructor(
     private readonly _toast: MessageService,
@@ -91,6 +86,7 @@ export class DatePickerComponent implements OnInit {
             this._setStateOfDate(calendar as CalendarResponse[]);
           }
         });
+
     }
   }
 
@@ -121,7 +117,7 @@ export class DatePickerComponent implements OnInit {
     this._daysInMonth(this._mountCount(), this._yearCount());
   }
 
-  // функция выбора даты с последующей отправкой запроса на получение всех записей в  этот день
+  // функция выбора даты с последующей отправкой запроса на получение всех записей в этот день
   protected _choiceDay(day: number) {
     this.choiceDate.set(`${this._yearCount()}-${this._mountCount() > 9 ? this._mountCount() : '0' + this._mountCount()}-${day > 9 ? day : '0' + day}`);
     this.day = `${day} ${this.month}`;
@@ -152,11 +148,12 @@ export class DatePickerComponent implements OnInit {
   // Функция генерации календаря
   private _daysInMonth(month: number, year: number): string {
     const days = new Date(year, month, 0).getDate();
+    this.startDate.emit(`${year.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${days}`);
     this._date.set([]);
     for (let i = 1; i <= days; i++) {
       this._date().push({
         day: i,
-        date: `${i > 9 ? i : '0' + i}.${this._mountCount() > 9 ? this._mountCount() : '0' + this._mountCount()}.${this._yearCount()}`,
+        date: `${i.toString().padStart(2, '0')}.${this._mountCount().toString().padStart(2, '0')}.${this._yearCount()}`,
       });
     }
     this._fetchUserFullCalendar();
@@ -172,11 +169,20 @@ export class DatePickerComponent implements OnInit {
       const date = new Date(item.date).toLocaleDateString('ru-RU', options);
       this._date().find((i) => {
         if (i.date === date) {
-          Object.assign(i, { state: item.state });
+          Object.assign(i, {
+            id: item.id,
+            freeSlots: item.freeSlots,
+            state: item.state });
         }
       });
     }
     this._render.set(true);
+  }
+
+  // Функция выбора и передачи информации об этом дне в родительский компонент
+  protected _selectDay(day: CalendarResponse) {
+    this.selectedDay.emit(day);
+    this._isChecked.set(day);
   }
 
   // Метод для обновления календаря без перезагрузки страницы

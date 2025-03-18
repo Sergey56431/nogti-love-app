@@ -2,10 +2,10 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {
+  CalendarEditType,
   CalendarResponse,
   CreateCalendarType,
   DefaultResponseType,
-  NotWorksDaysCalendarType,
 } from '@shared/types';
 import {environment} from '../../../../environments/environment';
 
@@ -41,8 +41,8 @@ export class CalendarService {
     return this.http.post<CalendarResponse | DefaultResponseType>(environment.api + 'calendar', data);
   }
 
-  public createSchedule(data: NotWorksDaysCalendarType):Observable<CalendarResponse[] | DefaultResponseType> {
-    return this.http.post<CalendarResponse[] | DefaultResponseType>(environment.api + 'calendar/all', data);
+  public createSchedule(data: CalendarEditType):Observable<CalendarEditType | DefaultResponseType> {
+    return this.http.post<CalendarEditType | DefaultResponseType>(environment.api + 'calendar/all', data);
   }
 
   public updateDate(data: Partial<CalendarResponse>, id: string):Observable<CalendarResponse | DefaultResponseType> {

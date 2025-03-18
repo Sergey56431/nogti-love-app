@@ -1,9 +1,11 @@
 export interface ServicesType {
-  service: {
-    id?: string;
-    name: string;
-    time: string;
-    price: number;
-    categoryId: string;
-  }
+  service: Services
+}
+
+export interface Services {
+  id?: string;
+  name: string;
+  time: string;
+  price: number;
+  categoryId: string;
 }

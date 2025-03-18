@@ -25,6 +25,7 @@ import { Button } from 'primeng/button';
 })
 export class SchedulePageComponent {
   protected _title = 'Расписание';
+
   protected _services = [
     { id: 1, name: 'Маникюр' },
     { id: 2, name: 'Педикюр' },
@@ -34,7 +35,8 @@ export class SchedulePageComponent {
     { id: 4, name: 'Юлия' },
     { id: 5, name: 'Лилия' },
   ];
-  private _statusDirects = [Status];
+
+  private _statusDirects = [Status.New, Status.Success, Status.Canceled, Status.Pending];
   protected _rangeTime = [15, 75];
   protected _choicePeriod = signal<Date[] | undefined>(undefined);
   protected _showFilters = signal<boolean>(false);

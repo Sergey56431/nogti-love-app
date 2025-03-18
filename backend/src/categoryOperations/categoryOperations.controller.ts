@@ -2,34 +2,40 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
+  Get, Inject,
   Post,
   Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
 import { CategoryOperationsService } from './categoryOperations.service';
-import { CreateCategoryOperationsDto, UpdateCategoryOperationsDto } from './dto';
+import {
+  CreateCategoryOperationsDto,
+  UpdateCategoryOperationsDto,
+} from './dto';
 import { TokenGuard } from '../auth';
-import { UpdateCategoryDto } from '../categories/dto';
+import { ICategoryOperationsService } from './interfaces';
 
 @UseGuards(TokenGuard)
 @Controller('categoryOperations')
 export class CategoryOperationsController {
-  constructor(private readonly categoryOperationsService: CategoryOperationsService) {}
+  constructor(
+    @Inject(CategoryOperationsService)
+    private readonly _categoryOperationsService: ICategoryOperationsService,
+  ) {}
 
   @Post()
   create(@Body() createCategoryOperationsDto: CreateCategoryOperationsDto) {
-    return this.categoryOperationsService.create(createCategoryOperationsDto);
+    return this._categoryOperationsService.create(createCategoryOperationsDto);
   }
   @Get()
   findOne(@Query('id') id: string, @Query('userId') userId: string) {
     if (id) {
-      return this.categoryOperationsService.findOne(id);
+      return this._categoryOperationsService.findOne(id);
     } else if (userId) {
-      return this.categoryOperationsService.findByUser(userId);
+      return this._categoryOperationsService.findByUser(userId);
     } else {
-      return this.categoryOperationsService.findAll();
+      return this._categoryOperationsService.findAll();
     }
   }
   @Put()
@@ -37,11 +43,13 @@ export class CategoryOperationsController {
     @Query('id') id: string,
     @Body() UpdateCategoryOperationsDto: UpdateCategoryOperationsDto,
   ) {
-    return this.categoryOperationsService.update(id, UpdateCategoryOperationsDto);
+    return this._categoryOperationsService.update(
+      id,
+      UpdateCategoryOperationsDto,
+    );
   }
   @Delete()
   remove(@Query('id') id: string) {
-    return this.categoryOperationsService.remove(id);
+    return this._categoryOperationsService.remove(id);
   }
 }
-

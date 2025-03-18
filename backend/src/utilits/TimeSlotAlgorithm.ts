@@ -1,5 +1,13 @@
 import { ServicesService } from '../services';
 import { SettingsService } from '../settings';
+import { Inject, Injectable } from '@nestjs/common';
+import { FreeSlotsService } from '../freeSlots';
+import { CategoryService } from '../categories';
+import { IServicesService } from '../services/interfaces';
+import { ISettingService } from '../settings/interfaces';
+import { IFreeSlotsService } from '../freeSlots/interfaces';
+import { ICategoryServices } from '../categories/interfaces';
+import { ITimeSlotUtilits } from './interfaces/timeSlotAgorithm.interface';
 
 interface UserSettings {
   userId: string;
@@ -8,32 +16,165 @@ interface UserSettings {
   timeGranularity: string; // "00:30"
 }
 
-export class TimeSlotAlgorithm {
+interface TimeBoundaries {
+  startMinutes: number;
+  endMinutes: number;
+  breakMinutes: number;
+  granularityMinutes: number;
+}
+
+class TimeInterval {
   constructor(
-    private readonly _servicesService: ServicesService,
-    private readonly _settingsService: SettingsService,
+    public start: number,
+    public end: number,
+  ) {}
+}
+
+@Injectable()
+export class TimeSlotUtilits implements ITimeSlotUtilits {
+  constructor(
+    @Inject(ServicesService)
+    private readonly _servicesService: IServicesService,
+    @Inject(SettingsService)
+    private readonly _settingsService: ISettingService,
+    @Inject(FreeSlotsService)
+    private readonly _freeSlotService: IFreeSlotsService,
+    @Inject(CategoryService)
+    private readonly _categoryService: ICategoryServices,
   ) {}
 
-  private async _convertTimeToMinutes(time: string): Promise<number> {
+  // ------------------ Вспомогательные методы
+  public async convertTimeToMinutes(time: string): Promise<number> {
     const time1: string[] = time.split(':');
-    return ((+time1[0]) * 60) + (+time1[1]);
+    return +time1[0] * 60 + +time1[1];
   }
-  private async _formatMinutesToTime(minutes: number): Promise<string> {
+
+  public async formatMinutesToTime(minutes: number): Promise<string> {
     return `${Math.floor(minutes / 60)
       .toString()
       .padStart(2, '0')}:${(minutes % 60).toString().padStart(2, '0')}`; //возвращает строку типа "02:23"; `округляем/только в меньшую(minutes / 60):остаток при делении minutes на 60`
   }
-  private async _getServicesDuration(serviceIds: string[]): Promise<number> {
+
+  // ------------------ Методы получения данных
+
+  public async getServicesDuration(serviceIds: string[]): Promise<number> {
     let alltime: number = 0;
-    serviceIds.forEach(async (id) => {
-      const timeServiseRequest = await this._servicesService.findOne(id);
-      alltime += await this._convertTimeToMinutes(timeServiseRequest.time);
-    });
+    for (const id of serviceIds) {
+      const service = await this._servicesService.findOne(id);
+      alltime += await this.convertTimeToMinutes(service.time);
+    }
     return alltime;
   }
 
-  private async _getUserSettings(userId: string): Promise<UserSettings> {
-    const user: UserSettings = await this._settingsService.find(userId);
-    return user;
+  public async getUserSettings(userId: string): Promise<any> {
+    const settings = await this._settingsService.findByUser(userId);
+    if (!settings) {
+      throw new Error(`Настройки не найдены для пользователя: ${userId}`);
+    }
+    delete settings.settingsData;
+    return settings;
+  }
+
+  public async getMinimumServiceDuration(userId: string): Promise<number> {
+    const categories = await this._categoryService.findByUser(userId);
+    if (categories.length === 0) {
+      return 0;
+    }
+
+    let minDuration = Infinity;
+
+    for (const category of categories) {
+      const services = await this._servicesService.findByCategory(category.id);
+      if (!services) {
+        return 0;
+      }
+      for (const service of services) {
+        const duration = await this.convertTimeToMinutes(service.time);
+        if (duration < minDuration) {
+          minDuration = duration;
+        }
+      }
+    }
+    return minDuration;
+  }
+
+  public async hasFreeSlots(calendarId: string): Promise<boolean> {
+    const freeSlots = await this._freeSlotService.findAllFreeSlots(calendarId);
+    return !!freeSlots;
+  }
+
+  public async getWorkTime(
+    settings: UserSettings,
+    customWorkTime?: string,
+  ): Promise<[string, string]> {
+    const workTime = customWorkTime || settings.defaultWorkTime;
+    return workTime.split('-') as [string, string];
+  }
+
+  // ----------------- Основная логика генерации окон
+
+  public async calculateTimeBoundaries(
+    startTime: string,
+    endTime: string,
+    settings: UserSettings,
+  ): Promise<TimeBoundaries> {
+    const startMinutes = await this.convertTimeToMinutes(startTime);
+    const endMinutes = await this.convertTimeToMinutes(endTime);
+    const breakMinutes = await this.convertTimeToMinutes(
+      settings.defaultBreakTime,
+    );
+    const granularityMinutes = await this.convertTimeToMinutes(
+      settings.timeGranularity,
+    );
+    return { startMinutes, endMinutes, breakMinutes, granularityMinutes };
+  }
+
+  public async generateSlots(
+    startMinutes: number,
+    endMinutes: number,
+    granularityMinutes: number,
+    breakMinutes: number,
+    existingAppointments: TimeInterval[],
+    calendarId: string,
+  ): Promise<{ calendarId: string; time: string }[]> {
+    let currentTime = startMinutes;
+    let lastEndTime = 0;
+    const slots = [];
+
+    while (currentTime < endMinutes) {
+      const slotEndTime = currentTime + granularityMinutes;
+      let isOverlapping = false;
+
+      for (const appointment of existingAppointments) {
+        const prevEndTimeWithBreak =
+          lastEndTime + (lastEndTime > 0 ? breakMinutes : 0);
+        if (currentTime < appointment.end && slotEndTime > appointment.start) {
+          isOverlapping = true;
+          break;
+        }
+        if (currentTime < prevEndTimeWithBreak) {
+          isOverlapping = true;
+          break;
+        }
+      }
+
+      if (!isOverlapping) {
+        const timeString = await this.formatMinutesToTime(currentTime);
+        slots.push({ calendarId, time: timeString }); // Добавил calendarId
+        lastEndTime = currentTime + granularityMinutes;
+      }
+      currentTime = slotEndTime;
+    }
+
+    // Проверка крайнего случая (добавляем слот в конце дня если нужно)
+    if (
+      existingAppointments.length === 0 ||
+      existingAppointments[existingAppointments.length - 1].end <= endMinutes
+    ) {
+      const timeString = await this.formatMinutesToTime(endMinutes);
+      slots.push({ calendarId, time: timeString });
+    }
+
+    return slots;
   }
 }
