@@ -24,7 +24,7 @@ export class UsersController {
   ) {}
 
   @Get()
-  public async findOne(
+  public async findUser(
     @Query('id') id: string,
     @Query('role') role: string,
     @Query('phoneNumber') phoneNumber: string,

@@ -17,11 +17,16 @@ export class SettingsService implements ISettingService {
           settingsData: createSettingsDto.settingsData as Prisma.JsonArray,
         },
       });
-      this.logger.log(`Настройки ${createSettingsDto} успешно созданы для пользователя ${createSettingsDto.userId}`);
+      this.logger.log(
+        `Настройки ${createSettingsDto} успешно созданы для пользователя ${createSettingsDto.userId}`,
+      );
       return settings;
     } catch (error) {
       console.log(error);
-      this.logger.error(`Ошибка создания настроек ${createSettingsDto} для пользователя ${createSettingsDto.userId}`, error.stack);
+      this.logger.error(
+        `Ошибка создания настроек ${createSettingsDto} для пользователя ${createSettingsDto.userId}`,
+        error.stack,
+      );
       throw new HttpException('Ошибка создания настроек', 500);
     }
   }
@@ -35,7 +40,10 @@ export class SettingsService implements ISettingService {
       return settings;
     } catch (error) {
       console.log(error);
-      this.logger.error(`Ошибка поиска настроек для пользователя ${userId}`, error.stack);
+      this.logger.error(
+        `Ошибка поиска настроек для пользователя ${userId}`,
+        error.stack,
+      );
       throw new HttpException('Ошибка поиска настроек', 500);
     }
   }
@@ -54,14 +62,19 @@ export class SettingsService implements ISettingService {
           settingsData: updatedSettingsData,
         },
       });
-      this.logger.log(`Настройки успешно обновлены ${updateSettingsDto} для пользователя ${userId}`);
+      this.logger.log(
+        `Настройки успешно обновлены ${updateSettingsDto} для пользователя ${userId}`,
+      );
       return updatedSettings;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
       console.log(error);
-      this.logger.error(`Ошибка обновления настроек ${updateSettingsDto} для пользователя ${userId}`, error.stack);
+      this.logger.error(
+        `Ошибка обновления настроек ${updateSettingsDto} для пользователя ${userId}`,
+        error.stack,
+      );
       throw new HttpException('Ошибка обновления настроек', 500);
     }
   }
@@ -74,7 +87,10 @@ export class SettingsService implements ISettingService {
       this.logger.log(`Настройки удалены для пользователя ${userId}`);
       return deletedSettings;
     } catch (error) {
-      this.logger.error(`Ошибка удаления настроек для пользователя ${userId}`, error.stack);
+      this.logger.error(
+        `Ошибка удаления настроек для пользователя ${userId}`,
+        error.stack,
+      );
       throw new HttpException('Ошибка удаления настроек', 500);
     }
   }

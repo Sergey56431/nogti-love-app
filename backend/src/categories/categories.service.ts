@@ -15,13 +15,17 @@ export class CategoryService implements ICategoryServices {
       const errors = [];
 
       if (!data.userId) {
-        this.logger.warn(`При создании категории услуг отстутствовало ID пользователя ${data}`);
+        this.logger.warn(
+          `При создании категории услуг отстутствовало ID пользователя ${data}`,
+        );
         errors.push(
           new HttpException('Нет ID пользователя', 400).getResponse(),
         );
       }
       if (!data.name) {
-        this.logger.warn(`При создании категории услуг отстутствовало название ${data}`);
+        this.logger.warn(
+          `При создании категории услуг отстутствовало название ${data}`,
+        );
         errors.push(
           new HttpException('Нет названия операции', 400).getResponse(),
         );
@@ -44,7 +48,10 @@ export class CategoryService implements ICategoryServices {
         throw error;
       } else {
         console.log(error);
-        this.logger.error(`Ошибка при создании категории услуг ${data} пользователем ${data.userId}`, error);
+        this.logger.error(
+          `Ошибка при создании категории услуг ${data} пользователем ${data.userId}`,
+          error,
+        );
         throw new HttpException('Ошибка сервера при создании категории', 500);
       }
     }
@@ -90,7 +97,10 @@ export class CategoryService implements ICategoryServices {
       });
     } catch (error) {
       console.log(error);
-      this.logger.error(`Ошибка при поиске категорий по пользователю ${userId}`, error);
+      this.logger.error(
+        `Ошибка при поиске категорий по пользователю ${userId}`,
+        error,
+      );
       throw new HttpException('Ошибка сервера при поиске категорий', 500);
     }
   }
@@ -109,16 +119,24 @@ export class CategoryService implements ICategoryServices {
       });
     } catch (error) {
       console.log(error);
-      this.logger.error(`Ошибка при обновлении категории c ID ${id}, ${data}`, error);
+      this.logger.error(
+        `Ошибка при обновлении категории c ID ${id}, ${data}`,
+        error,
+      );
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code == 'P2025'
       ) {
-        this.logger.warn(`Категория c ID ${id}, ${data} не найдена при обновлении`);
+        this.logger.warn(
+          `Категория c ID ${id}, ${data} не найдена при обновлении`,
+        );
         throw new HttpException('Категория не найдена', 404);
       }
       console.log(error);
-      this.logger.error(`Ошибка при обновлении категории c ID ${id}, ${data}`, error.stack);
+      this.logger.error(
+        `Ошибка при обновлении категории c ID ${id}, ${data}`,
+        error.stack,
+      );
       throw new HttpException('Ошибка сервера при обновлении категории', 500);
     }
   }

@@ -140,7 +140,9 @@ export class CalendarService implements ICalendarService {
 
     // Если год меньше текущего или год равен текущему, но месяц меньше текущего
     if (year < currentYear || (year === currentYear && month < currentMonth)) {
-      this.logger.warn(`Пользователь ввёл некоректрые данные: Нельзя создать календарь на прошлый месяц (${year} ${month})`);
+      this.logger.warn(
+        `Пользователь ввёл некоректрые данные: Нельзя создать календарь на прошлый месяц (${year} ${month})`,
+      );
       throw new HttpException(
         'Нельзя создать календарь на прошедший месяц',
         400,
@@ -176,7 +178,9 @@ export class CalendarService implements ICalendarService {
 
     // Дата принадлежит указанному месяцу и году
     if (yearFromDate !== year || monthFromDate !== month) {
-      this.logger.log(`Пользователь ввёл некоректрые данные: дата ${dateString} не находится в указанном месяце`);
+      this.logger.log(
+        `Пользователь ввёл некоректрые данные: дата ${dateString} не находится в указанном месяце`,
+      );
       throw new HttpException(
         `Дата ${dateString} не находится в указанном месяце`,
         404,
@@ -284,7 +288,9 @@ export class CalendarService implements ICalendarService {
     try {
       const date = new Date(createCalendarDto.date);
       if (isNaN(date.getTime())) {
-        this.logger.warn(`Некорректная дата при создании календаря ${createCalendarDto.date}`);
+        this.logger.warn(
+          `Некорректная дата при создании календаря ${createCalendarDto.date}`,
+        );
         throw new HttpException('Некорректная дата', 400);
       }
       console.log(date);
@@ -307,7 +313,10 @@ export class CalendarService implements ICalendarService {
         throw error;
       }
       console.log(error);
-      this.logger.error(`Ошибка при создании календаря с ID ${createCalendarDto.id}`, error.stack);
+      this.logger.error(
+        `Ошибка при создании календаря с ID ${createCalendarDto.id}`,
+        error.stack,
+      );
       throw new HttpException('Ошибка при создании дня календаря', 500);
     }
   }
@@ -316,7 +325,9 @@ export class CalendarService implements ICalendarService {
     const { customDays, userId, dateForCreate } = data;
 
     if (!userId || !dateForCreate) {
-      this.logger.warn(`Отсутствует ID пользователя ${userId} или дата для создания ${dateForCreate}`);
+      this.logger.warn(
+        `Отсутствует ID пользователя ${userId} или дата для создания ${dateForCreate}`,
+      );
       throw new HttpException(
         'Отсутствует ID пользователя или дата для создания',
         400,
@@ -363,7 +374,9 @@ export class CalendarService implements ICalendarService {
             existingDay.directs.length > 0 &&
             day.state === DayState.notHave
           ) {
-            this.logger.warn(`Нельзя сделать день ${day.date.toISOString().slice(0, 10)} нерабочим, так как на него есть записи.`);
+            this.logger.warn(
+              `Нельзя сделать день ${day.date.toISOString().slice(0, 10)} нерабочим, так как на него есть записи.`,
+            );
             throw new HttpException(
               `Нельзя сделать день ${day.date.toISOString().slice(0, 10)} нерабочим, так как на него есть записи.`,
               400,
@@ -472,7 +485,10 @@ export class CalendarService implements ICalendarService {
         throw error;
       }
       console.log(error);
-      this.logger.error(`Ошибка при поиске календаря по ID пользователя ${userId}`, error.stack);
+      this.logger.error(
+        `Ошибка при поиске календаря по ID пользователя ${userId}`,
+        error.stack,
+      );
       throw new HttpException('Ошибка сервера при поиске календаря', 500);
     }
   }
@@ -489,7 +505,9 @@ export class CalendarService implements ICalendarService {
         },
       });
       if (!result) {
-        this.logger.warn(`Пользователь ввел неверные данные для поиска календаря ${id}`);
+        this.logger.warn(
+          `Пользователь ввел неверные данные для поиска календаря ${id}`,
+        );
         throw new HttpException('День не найден', 404);
       }
 
@@ -510,7 +528,9 @@ export class CalendarService implements ICalendarService {
       const end = new Date(endDate);
 
       if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-        this.logger.log(`Пользователь ввел некорректную дату с интервалом от ${startDate} до ${endDate}`);
+        this.logger.log(
+          `Пользователь ввел некорректную дату с интервалом от ${startDate} до ${endDate}`,
+        );
         throw new HttpException('Некорректная дата', 400);
       }
 
@@ -574,7 +594,9 @@ export class CalendarService implements ICalendarService {
         error instanceof PrismaClientKnownRequestError &&
         error.code == 'P2025'
       ) {
-        this.logger.warn(`Ошибка при поиске дня календаря ${updateCalendarDto} для обновления по ID ${id}`);
+        this.logger.warn(
+          `Ошибка при поиске дня календаря ${updateCalendarDto} для обновления по ID ${id}`,
+        );
         throw new HttpException('День календаря не найден', 404);
       }
       console.log(error);
@@ -595,11 +617,16 @@ export class CalendarService implements ICalendarService {
         error instanceof PrismaClientKnownRequestError &&
         error.code == 'P2025'
       ) {
-        this.logger.warn(`Ошибка при поиске дня календаря для удаления по ID ${id}`);
+        this.logger.warn(
+          `Ошибка при поиске дня календаря для удаления по ID ${id}`,
+        );
         throw new HttpException('День календаря не найден', 404);
       }
       console.log(error);
-      this.logger.error(`Ошибка при удалении дня календаря по ID ${id}`, error.stack);
+      this.logger.error(
+        `Ошибка при удалении дня календаря по ID ${id}`,
+        error.stack,
+      );
       throw new HttpException('Ошибка сервера при удалении дня календаря', 500);
     }
   }
@@ -619,7 +646,10 @@ export class CalendarService implements ICalendarService {
         throw error;
       }
       console.log(error);
-      this.logger.error(`Пользователь ${userId} ввел неверные данные для поиска дня календаря ${date}`, error.stack);
+      this.logger.error(
+        `Пользователь ${userId} ввел неверные данные для поиска дня календаря ${date}`,
+        error.stack,
+      );
       throw new HttpException('Ошибка сервера при поиске дня календаря', 500);
     }
   }

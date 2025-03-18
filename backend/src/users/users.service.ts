@@ -31,7 +31,10 @@ export class UsersService implements IUsersService {
       });
     } catch (error) {
       console.log(error);
-      this.logger.error('Ошибка при получении списка пользователей', error.stack);
+      this.logger.error(
+        'Ошибка при получении списка пользователей',
+        error.stack,
+      );
       throw new HttpException(
         'Ошибка сервера при получении списка пользователей',
         500,
@@ -46,7 +49,10 @@ export class UsersService implements IUsersService {
       });
     } catch (error) {
       console.log(error);
-      this.logger.error(`Ошибка при поиске пользователя с номером ${phoneNumber}`, error.stack);
+      this.logger.error(
+        `Ошибка при поиске пользователя с номером ${phoneNumber}`,
+        error.stack,
+      );
       throw new HttpException('Ошибка сервера при поиске пользователя', 500);
     }
   }
@@ -58,7 +64,10 @@ export class UsersService implements IUsersService {
       });
     } catch (error) {
       console.log(error);
-      this.logger.error(`Ошибка при поиске пользователя по ID ${id}`, error.stack);
+      this.logger.error(
+        `Ошибка при поиске пользователя по ID ${id}`,
+        error.stack,
+      );
       throw new HttpException(
         'Ошибка сервера при поиске пользователя по ID',
         500,
@@ -84,7 +93,10 @@ export class UsersService implements IUsersService {
         throw error;
       }
       console.log(error);
-      this.logger.error(`Ошибка при поиске пользователя по ID ${id}`, error.stack);
+      this.logger.error(
+        `Ошибка при поиске пользователя по ID ${id}`,
+        error.stack,
+      );
       throw new HttpException(
         'Ошибка сервера при поиске пользователя по ID',
         500,
@@ -104,7 +116,9 @@ export class UsersService implements IUsersService {
       });
 
       if (!result[0]) {
-        this.logger.warn(`Пользователи по заданным критериям ${filter} не найдены`)
+        this.logger.warn(
+          `Пользователи по заданным критериям ${filter} не найдены`,
+        );
         throw new HttpException('Пользователи не найден', 404);
       }
 
@@ -114,7 +128,10 @@ export class UsersService implements IUsersService {
         throw error;
       }
       console.log(error);
-      this.logger.error(`Ошибка при поиске пользователей по фильтру ${filter}`, error.stack);
+      this.logger.error(
+        `Ошибка при поиске пользователей по фильтру ${filter}`,
+        error.stack,
+      );
       throw new HttpException(
         'Ошибка сервера при поиске пользователей по фильтру',
         500,
@@ -125,7 +142,9 @@ export class UsersService implements IUsersService {
   public async createUser(dto: UserCreateDto) {
     const { password, phoneNumber } = dto;
     if (!password || !phoneNumber) {
-      this.logger.warn(`Отсутствуют необходимые данные ${dto} для создания пользователя`);
+      this.logger.warn(
+        `Отсутствуют необходимые данные ${dto} для создания пользователя`,
+      );
       throw new HttpException(
         `Отсутствуют необходимые данные для создания пользователя`,
         400,
@@ -139,7 +158,9 @@ export class UsersService implements IUsersService {
     });
 
     if (existingUser) {
-      this.logger.warn(`Пользователь с таким phoneNumber ${dto} уже существует`);
+      this.logger.warn(
+        `Пользователь с таким phoneNumber ${dto} уже существует`,
+      );
       throw new HttpException(
         'Пользователь с таким phoneNumber уже существует',
         409,
@@ -199,7 +220,10 @@ export class UsersService implements IUsersService {
         throw new HttpException('Пользователь не найден', 404);
       }
       console.log(error);
-      this.logger.error(`Ошибка при обновлении пользователя с ID ${id} ${data}`, error.stack);
+      this.logger.error(
+        `Ошибка при обновлении пользователя с ID ${id} ${data}`,
+        error.stack,
+      );
       throw new HttpException(
         'Ошибка сервера при обновлении пользователя',
         500,
@@ -218,7 +242,10 @@ export class UsersService implements IUsersService {
         throw new HttpException('Пользователь не найден', 404);
       }
       console.log(error);
-      this.logger.error(`Ошибка при удалении пользователя с ID ${id}`, error.stack);
+      this.logger.error(
+        `Ошибка при удалении пользователя с ID ${id}`,
+        error.stack,
+      );
       throw new HttpException('Ошибка сервера при удалении пользователя', 500);
     }
   }
