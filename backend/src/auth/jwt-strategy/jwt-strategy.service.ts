@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { UserCreateDto, UsersService } from '../../users';
 import { IUsersService } from '../../users/interfaces';
 import * as process from 'process';
@@ -21,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: any): Promise<UserCreateDto> {
     const user = await this.usersService.findUserToRefresh(payload.id);
     if (!user) {
-      throw new Error('Invalid token');
+      throw new HttpException('Вы используете чужой токен', 401);
     }
     return user;
   }
