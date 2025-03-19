@@ -313,8 +313,13 @@ export class DirectsService implements IDirectsService {
         throw new HttpException('Некорректная дата', 400);
       }
 
-      const calendar = await this._prismaService.calendar.findFirst({
-        where: { date: date },
+      const calendar = await this._prismaService.calendar.findUnique({
+        where: {
+          date_userId: {
+            date: date,
+            userId: createDirectDto.userId,
+          },
+        },
       });
 
       const errors = [];
@@ -450,6 +455,75 @@ export class DirectsService implements IDirectsService {
         error.stack,
       );
       throw new HttpException('Ошибка при получении записи', 500);
+    }
+  }
+
+  public async findByUserDate(userId: string, date: string): Promise<object[]> {
+    try {
+      const date_ = new Date(date);
+      if (isNaN(date_.getTime())) {
+        this.logger.warn(`Пользователь ввел некорректную дату ${date}`);
+        throw new HttpException('Некорректная дата', 400);
+      }
+
+      const calendarDay = await this._prismaService.calendar.findUnique({
+        where: {
+          date_userId: {
+            date: date_,
+            userId: userId,
+          },
+        },
+      });
+
+      if (!calendarDay) {
+        this.logger.warn(
+          `Неверный ID  ${userId} пользователя или отсутствие у него календаря на данную дату ${date}`,
+        );
+        throw new HttpException(
+          'Неверный ID пользователя или отсутствие у него календаря на данную дату',
+          400,
+        );
+      }
+
+      const directs = await this._prismaService.directs.findMany({
+        where: {
+          userId: userId,
+          calendarId: calendarDay.id,
+        },
+        include: {
+          services: {
+            select: {
+              service: {
+                include: {
+                  category: {
+                    select: {
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      this.logger.log(
+        `Успешно найдено ${directs.length} записей для пользователя ${userId} на ${date}`,
+      );
+
+      return directs;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      console.log(error);
+      this.logger.error(
+        `Ошибка при поиске по дню ${date} и пользователю ${userId}`,
+      );
+      throw new HttpException(
+        'Ошибка сервера при поиске по дню и пользователю',
+        500,
+      );
     }
   }
 

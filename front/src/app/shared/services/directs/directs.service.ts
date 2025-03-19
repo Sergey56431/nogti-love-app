@@ -23,6 +23,15 @@ export class DirectsService {
     });
   }
 
+  public fetchDirectsByDateUser(date: string, userId: string): Observable<DirectsClientType[] | DefaultResponseType> {
+    return this._http.get<DirectsClientType[] | DefaultResponseType>(environment.api + 'directs', {
+      params: {
+        date: date,
+        userId: userId
+      }
+    });
+  }
+
   public fetchDirectsByUser(userId: string): Observable<DirectsClientType[] | DefaultResponseType> {
     return this._http.get<DirectsClientType[] | DefaultResponseType>(environment.api + 'directs', {
       params: {

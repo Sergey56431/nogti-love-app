@@ -3,7 +3,6 @@ import { IClientsService } from './interfaces';
 import { PrismaService } from '../prisma';
 import { CreateClientsDto, UpdateClientsDto } from './dto';
 import * as bcrypt from 'bcrypt';
-import { TUserUpdateDto } from '../users';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
