@@ -16,7 +16,7 @@ async function bootstrap() {
       console.log('starting with SSL.. \n');
     } catch (error) {
       console.error('Ошибка при чтении SSL сертификатов:', error);
-      process.exit(1); // Или другая обработка
+      process.exit(1);
     }
   } else {
     console.log('starting without SSL.. \n');
@@ -46,15 +46,17 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   });
 
-  const config = new DocumentBuilder()
-    .setTitle('CashBackApp API')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
+  if (process.env.PORT === '3000') {
+    const config = new DocumentBuilder()
+      .setTitle('CashBackApp API')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+    const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('api', app, document);
+    SwaggerModule.setup('api', app, document);
+  }
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
 bootstrap()

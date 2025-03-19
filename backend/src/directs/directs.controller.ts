@@ -84,8 +84,6 @@ export class DirectsController {
     return await this._directsService.create(createDirectDto);
   }
 
-
-
   @ApiOperation({ summary: 'Получить записи' })
   @ApiQuery({
     name: 'date',
@@ -213,12 +211,14 @@ export class DirectsController {
   })
   @ApiNotFoundResponse({ description: 'Запись не найдена' })
   @Get()
-  public async handleDirectsQuery(
+  public async find(
     @Query('date') date?: string,
     @Query('userId') userId?: string,
     @Query('id') id?: string,
   ) {
-    if (date) {
+    if (date && userId) {
+      return this._directsService.findByUserDate(userId, date);
+    } else if (date) {
       return this._directsService.findByDate(date);
     } else if (userId) {
       return this._directsService.findByUser(userId);
