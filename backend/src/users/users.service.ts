@@ -167,14 +167,11 @@ export class UsersService implements IUsersService {
       const hashedPassword = await bcrypt.hash(password, 10);
 
       if (dto.birthday) {
-        const parsedDate = new Date(dto.birthday);
-
-        if (isNaN(parsedDate.getTime())) {
-          this.logger.warn(`Пользователь ввел некорректную дату: ${dto.birthday}`);
+        dto.birthday = new Date(dto.birthday);
+        if (isNaN(dto.birthday.getTime())) {
+          this.logger.log(`Пользователь ввел некорректную дату ${dto.birthday}` );
           throw new HttpException('Некорректная дата', 400);
         }
-
-        dto.birthday = parsedDate;
       }
 
       const user = await this._prismaService.user.create({
