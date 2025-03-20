@@ -1,22 +1,21 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { TUserUpdateDto, UserCreateDto } from './users-dto';
 import * as bcrypt from 'bcrypt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { IUsersService } from './interfaces';
+import {CustomLogger} from "../logger";
 
 @Injectable()
 export class UsersService implements IUsersService {
-  private readonly logger = new Logger(UsersService.name);
+  private readonly logger = new CustomLogger();
   private _returnUserModel = {
     id: true,
     name: true,
     lastName: true,
     phoneNumber: true,
-    score: true,
     rate: true,
     birthday: true,
-    description: true,
     role: true,
     refreshToken: false,
     password: false,
@@ -105,9 +104,6 @@ export class UsersService implements IUsersService {
   }
 
   public async findFiltred(filter: any) {
-    if (isNaN(filter.score)) {
-      filter.score = undefined;
-    }
 
     try {
       const result = await this._prismaService.user.findMany({
@@ -172,7 +168,12 @@ export class UsersService implements IUsersService {
 
       if (dto.birthday) {
         dto.birthday = new Date(dto.birthday);
+        if (isNaN(dto.birthday.getTime())) {
+          this.logger.log(`Пользователь ввел некорректную дату ${dto.birthday}` );
+          throw new HttpException('Некорректная дата', 400);
+        }
       }
+
       const user = await this._prismaService.user.create({
         select: this._returnUserModel,
         data: { ...dto, password: hashedPassword },

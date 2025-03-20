@@ -1,12 +1,13 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma';
 import { CreateSettingsDto, UpdateSettingsDto } from './dto';
 import { ISettingService } from './interfaces';
 import { Prisma } from '@prisma/client';
+import {CustomLogger} from "../logger";
 
 @Injectable()
 export class SettingsService implements ISettingService {
-  private readonly logger = new Logger(SettingsService.name);
+  private readonly logger = new CustomLogger();
   constructor(private _prismaService: PrismaService) {}
 
   public async create(createSettingsDto: CreateSettingsDto): Promise<any> {

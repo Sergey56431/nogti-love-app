@@ -1,12 +1,13 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { CreateOperationsDto, UpdateOperationsDto } from './dto';
 import { PrismaService } from '../prisma';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { IOperationsService } from './interfaces';
+import {CustomLogger} from "../logger";
 
 @Injectable()
 export class OperationsService implements IOperationsService {
-  private readonly logger = new Logger(OperationsService.name);
+  private readonly logger = new CustomLogger();
   constructor(private readonly _prismaService: PrismaService) {}
 
   async create(createIncomExpenceDto: CreateOperationsDto) {
