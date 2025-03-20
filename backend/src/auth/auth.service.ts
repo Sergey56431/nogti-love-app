@@ -1,4 +1,4 @@
-import { Injectable, Inject, HttpException, Logger } from '@nestjs/common';
+import { Injectable, Inject, HttpException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { LoginDto, SignupDto } from './auth-dto';
@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { IUsersService } from '../users/interfaces';
 import { IAuthService } from './interfaces';
+import { CustomLogger } from '../logger';
 
 interface User {
   id: string;
@@ -16,7 +17,7 @@ interface User {
 
 @Injectable()
 export class AuthService implements IAuthService {
-  private readonly logger = new Logger(AuthService.name);
+  private readonly logger = new CustomLogger();
   constructor(
     @Inject(UsersService)
     private readonly _usersService: IUsersService,

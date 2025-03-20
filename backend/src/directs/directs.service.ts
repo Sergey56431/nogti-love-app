@@ -268,7 +268,7 @@ export class DirectsService implements IDirectsService {
     try {
       const date_ = new Date(date);
       if (isNaN(date_.getTime())) {
-        this.logger.log(`Пользователь ввел некорректную дату ${date}`);
+        this.logger.warn(`Пользователь ввел некорректную дату ${date}`);
         throw new HttpException('Некорректная дата', 400);
       }
       return await this._prismaService.directs.findMany({
@@ -307,7 +307,7 @@ export class DirectsService implements IDirectsService {
     try {
       const date = new Date(createDirectDto.date);
       if (isNaN(date.getTime())) {
-        this.logger.log(
+        this.logger.warn(
           `Пользователь ввел некорректную дату ${date} для создания записи, ${createDirectDto}`,
         );
         throw new HttpException('Некорректная дата', 400);
@@ -568,7 +568,7 @@ export class DirectsService implements IDirectsService {
     try {
       const date = new Date(updateDirectDto.date);
       if (isNaN(date.getTime())) {
-        this.logger.log(
+        this.logger.warn(
           `Пользователь ввел некорректную дату ${updateDirectDto.date} при обновлении записи ${id}, ${updateDirectDto}`,
         );
         throw new HttpException('Некорректная дата', 400);
@@ -593,7 +593,7 @@ export class DirectsService implements IDirectsService {
         updateDirectDto.state &&
         !Object.values(DirectsState).includes(updateDirectDto.state)
       ) {
-        this.logger.log(
+        this.logger.warn(
           `Неверный статус ${updateDirectDto.state} при обновлении записи ${id}, ${updateDirectDto}`,
         );
         throw new HttpException('Ошибка статуса записи', 400);

@@ -1,4 +1,4 @@
-import { HttpException, Inject, Injectable, Logger } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { UpdateCalendarDto } from './dto';
 import { PrismaService } from '../prisma';
 import { Calendar, DayState } from '@prisma/client';
@@ -9,6 +9,8 @@ import { ICalendarService } from './interfaces';
 import { IFreeSlotsService } from '../freeSlots/interfaces';
 import { TimeSlotUtilits } from '../utilits';
 import { ITimeSlotUtilits } from '../utilits/interfaces';
+import {CustomLogger} from "../logger";
+
 
 interface DayData {
   state: DayState;
@@ -25,6 +27,7 @@ class TimeInterval {
 
 @Injectable()
 export class GenerateSlotsAlgorithm {
+  private readonly logger = new CustomLogger();
   constructor(
     private readonly _prismaService: PrismaService,
     @Inject(TimeSlotUtilits)
@@ -124,7 +127,7 @@ export class GenerateSlotsAlgorithm {
 
 @Injectable()
 export class CalendarService implements ICalendarService {
-  private readonly logger = new Logger(CalendarService.name);
+  private readonly logger = new CustomLogger();
   constructor(
     private readonly _prismaService: PrismaService,
     @Inject(FreeSlotsService)
