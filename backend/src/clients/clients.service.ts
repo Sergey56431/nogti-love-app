@@ -4,7 +4,6 @@ import { PrismaService } from '../prisma';
 import { CreateClientsDto, UpdateClientsDto } from './dto';
 import * as bcrypt from 'bcrypt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-
 @Injectable()
 export class ClientsService implements IClientsService {
   private readonly logger = new Logger(ClientsService.name);
@@ -173,6 +172,20 @@ export class ClientsService implements IClientsService {
       console.log(error);
       this.logger.error(`Ошибка при удалении клиента с ID ${id}`, error.stack);
       throw new HttpException('Ошибка сервера при удалении клиента', 500);
+    }
+  }
+
+  public async findUniqClient(phoneNumber: string) {
+    try {
+      return await this._prismaService.user.findUnique({
+        where: { phoneNumber },
+      });
+    } catch (error) {
+      this.logger.error(
+        `Ошибка при поиске клиента с номером ${phoneNumber}`,
+        error.stack,
+      );
+      throw new HttpException('Ошибка сервера при поиске пользователя', 500);
     }
   }
 }

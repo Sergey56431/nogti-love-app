@@ -16,10 +16,6 @@ import { TimeSlotAlgorithmModule } from './utilits';
 import { RolesModule } from './roles/roles.module';
 import { ClientsModule } from './clients';
 import { AuthClientModule } from './auth-client/auth-client.module';
-import { AuthClientService } from './apps/main/src/auth-client/auth-client.service';
-import { AuthClientModule } from './apps/main/src/auth-client/auth-client.module';
-import { AuthClientService } from './auth-client/auth-client.service';
-import { AuthClientModule } from './auth-client/auth-client.module';
 
 @Module({
   imports: [
@@ -35,9 +31,9 @@ import { AuthClientModule } from './auth-client/auth-client.module';
     TimeSlotAlgorithmModule,
     ClientsModule,
     RolesModule,
-    AuthClientModule
+    AuthClientModule,
   ],
   controllers: [AppController],
-  providers: [AppService, PrismaService, JwtStrategy, AuthClientService],
+  providers: [AppService, PrismaService, JwtStrategy],
 })
 export class AppModule {}
