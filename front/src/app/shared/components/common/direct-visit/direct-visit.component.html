@@ -1,13 +1,14 @@
 <div class="p-4 w-full">
   <form class="flex flex-col gap-3 w-full" [formGroup]="_newVisitor">
 
-    <p-floatlabel class="w-full" variant="on">
-      <input pInputText id="name" [fluid]="true" formControlName="name" autocomplete="off" />
-      <label for="name">Имя</label>
+    <p-floatlabel class="min-w-full" variant="on">
+      <p-select class="w-full" inputId="name" formControlName="name" (onChange)="_choiceClient.set($event.value)"
+                [options]="_clients()" optionLabel="name" optionValue="name"/>
+      <label for="name">Клиент</label>
     </p-floatlabel>
 
     <p-floatlabel class="min-w-full" variant="on">
-      <p-inputmask class="w-full" id="phone" formControlName="phone" mask="8-999-999-99-99" [disabled]="true" />
+      <input pInputText class="w-full" id="phone" formControlName="phone" [value]="_choiceClient()?.phoneNumber" [disabled]="true" />
       <label for="phone">Телефон</label>
     </p-floatlabel>
 
@@ -27,7 +28,7 @@
 
     <p-floatlabel class="min-w-full" variant="on">
       <p-select class="w-full" inputId="time" formControlName="time" (onChange)="_timeSlotChoice.set($event.value)"
-                [options]="this._timeSlots()" optionLabel="time"/>
+                [options]="_timeSlots()" optionLabel="time"/>
       <label for="time">Время записи</label>
     </p-floatlabel>
 
