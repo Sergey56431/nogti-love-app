@@ -12,11 +12,11 @@ import { Select } from 'primeng/select';
 import { Textarea } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CategoriesService, ClientsService, DirectsService } from '@shared/services';
+import { CalendarService, CategoriesService, ClientsService, DirectsService } from '@shared/services';
 import { AuthService } from '@core/auth';
 import {
   CalendarResponse,
-  CategoriesType, ClientType,
+  CategoriesType, ClientInfoType, ClientType,
   DefaultResponseType,
   DirectsClientType,
   DirectsType,
@@ -47,11 +47,12 @@ import { orderBy } from 'lodash';
 export class DirectVisitComponent implements OnInit {
 
   protected _date: CalendarResponse | null = null;
-  protected _clients = signal<ClientType[]>([]);
+  protected _clients = signal<ClientInfoType[]>([]);
   protected _categories = signal<CategoriesType[]>([]);
   protected _timeSlots = signal<string[]>([]);
   protected _choiceFavor = signal<string[]>([]);
-  protected _timeSlotChoice = signal<{time: string } | null>(null);
+  protected _choiceClient = signal<ClientInfoType | undefined>(undefined);
+  protected _timeSlotChoice = signal<{ time: string } | null>(null);
   protected _favors = signal<ServicesType[]>([]);
   private _userInfo = signal<UserInfoType | undefined>(undefined);
 
@@ -59,6 +60,7 @@ export class DirectVisitComponent implements OnInit {
               private readonly _toast: MessageService,
               private readonly _directsService: DirectsService,
               private readonly _categoryService: CategoriesService,
+              private readonly _calendarService: CalendarService,
               private readonly _authService: AuthService,
               private readonly _clientsService: ClientsService,
               private readonly _dialogConfig: DynamicDialogConfig,
@@ -67,10 +69,7 @@ export class DirectVisitComponent implements OnInit {
 
   protected _newVisitor = this._fb.group({
     name: new FormControl('', [Validators.required]),
-    phone: new FormControl('', [
-      Validators.required,
-      Validators.pattern('^((8|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$'),
-    ]),
+    phone: new FormControl(undefined),
     favor: new FormControl('', [Validators.required]),
     time: new FormControl('', [Validators.required]),
     comment: new FormControl(''),
@@ -78,12 +77,17 @@ export class DirectVisitComponent implements OnInit {
 
   // Инициализация
   public ngOnInit() {
-    this._date = this._dialogConfig.data;
-    this._timeSlots.set(orderBy(this._date?.freeSlots ?? [], c => c, 'asc'));
-
-    console.log(this._date);
-    this._userInfo.set(this._authService.getUserInfo());
     try {
+      this._date = this._dialogConfig.data;
+      this._userInfo.set(this._authService.getUserInfo());
+      this._calendarService.fetchDayById(this._date?.id ?? '').subscribe(date => {
+        this._timeSlots.set(orderBy((date as CalendarResponse).freeSlots ?? [], c => c, 'asc'));
+      });
+      this._clientsService.fetchAdminClients(this._userInfo()?.userId ?? '').subscribe(clients => {
+        this._clients.set(clients as ClientInfoType[]);
+        console.error(clients);
+      });
+
       this._categoryService.getCategoryByUser(this._userInfo()?.userId ?? '').subscribe(categories => {
         if ((categories as DefaultResponseType).error === undefined) {
           this._categories.set(categories as CategoriesType[]);
@@ -93,7 +97,7 @@ export class DirectVisitComponent implements OnInit {
         }
       });
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
@@ -103,11 +107,12 @@ export class DirectVisitComponent implements OnInit {
       return { serviceId: favors ?? '' };
     });
     const data: DirectsType = {
+      id: this._choiceClient()?.userId ?? '',
       userId: this._userInfo()?.userId ?? '',
-      clientName: this._newVisitor.controls.name.value ?? '',
+      clientName: this._choiceClient()?.name ?? '',
       date: this._date?.date.split('.').reverse().join('-') ?? '',
       comment: this._newVisitor.controls.comment.value ?? '',
-      phone: this._newVisitor.controls.phone.value ?? '',
+      phone: this._choiceClient()?.phoneNumber ?? '',
       time: this._timeSlotChoice()?.time ?? '',
       services: favorsId,
     };
@@ -127,7 +132,7 @@ export class DirectVisitComponent implements OnInit {
         const message = `Пользователь ${data.clientName} не записан!`;
         const _snack = SnackStatusesUtil.getStatuses(ProgressStatuses.ERROR, message);
         this._toast.add(_snack!);
-        console.log(err);
+        console.error(err);
       },
     });
   }

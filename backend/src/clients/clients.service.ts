@@ -19,7 +19,6 @@ export class ClientsService implements IClientsService {
     rate: true,
     birthday: true,
     description: true,
-    role: true,
     refreshToken: false,
     password: false,
     masterId: true,
@@ -32,7 +31,7 @@ export class ClientsService implements IClientsService {
         select: this._returnClientModel,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       this.logger.error('Ошибка при получении списка клиентов', error.stack);
       throw new HttpException(
         'Ошибка сервера при получении списка клиентов',
@@ -48,7 +47,7 @@ export class ClientsService implements IClientsService {
         select: this._returnClientModel,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Ошибка при поиске клиента по ID мастера ${masterId}`,
         error.stack,
@@ -74,7 +73,7 @@ export class ClientsService implements IClientsService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(`Ошибка при поиске клиента по ID ${id}`, error.stack);
       throw new HttpException('Ошибка сервера при поиске клиента по ID', 500);
     }
@@ -126,7 +125,7 @@ export class ClientsService implements IClientsService {
         );
         throw new HttpException('Клиент с таким именем уже существует', 409);
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Ошибка при создании клиента ${createClientsDto}`,
         error.stack,
@@ -151,7 +150,7 @@ export class ClientsService implements IClientsService {
         this.logger.warn(`Клиент с ID ${id} не найден ${data}`);
         throw new HttpException('Клиент не найден', 404);
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Ошибка при обновлении клиента с ID ${id} ${data}`,
         error.stack,
@@ -170,7 +169,7 @@ export class ClientsService implements IClientsService {
         this.logger.warn(`Клиент с ID ${id} не найден при удалении`);
         throw new HttpException('Клиент не найден', 404);
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(`Ошибка при удалении клиента с ID ${id}`, error.stack);
       throw new HttpException('Ошибка сервера при удалении клиента', 500);
     }

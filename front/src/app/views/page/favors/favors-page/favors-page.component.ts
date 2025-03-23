@@ -49,7 +49,7 @@ export class FavorsPageComponent implements OnInit {
     } catch (err) {
       const status = SnackStatusesUtil.getStatuses('error', 'Ошибка получения данных');
       this._snackService.add(status);
-      console.log(err);
+      console.error(err);
     }
 
   }

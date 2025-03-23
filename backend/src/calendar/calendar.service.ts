@@ -125,6 +125,7 @@ export class GenerateSlotsAlgorithm {
 @Injectable()
 export class CalendarService implements ICalendarService {
   private readonly logger = new Logger(CalendarService.name);
+
   constructor(
     private readonly _prismaService: PrismaService,
     @Inject(FreeSlotsService)
@@ -293,7 +294,6 @@ export class CalendarService implements ICalendarService {
         );
         throw new HttpException('Некорректная дата', 400);
       }
-      console.log(date);
       return await this._prismaService.calendar.create({
         data: {
           date: date,
@@ -312,7 +312,7 @@ export class CalendarService implements ICalendarService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Ошибка при создании календаря с ID ${createCalendarDto.id}`,
         error.stack,
@@ -436,7 +436,9 @@ export class CalendarService implements ICalendarService {
 
       return await this._prismaService.calendar.findMany({
         where: { userId, date: { gte: firstDayOfMonth, lte: lastDayOfMonth } },
-        include: { freeSlots: { select: { time: true } } },
+        include: { freeSlots: {  where: {
+              isBooked: false,
+            }, select: { time: true } } },
       });
     } catch (error) {
       if (error instanceof HttpException) {
@@ -449,7 +451,7 @@ export class CalendarService implements ICalendarService {
         this.logger.warn(`Пользователь ${userId} не найден`);
         throw new HttpException('Пользователь не найден', 404);
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(`Ошибка при создании календаря`, error.stack);
       throw new HttpException('Ошибка при создании календаря', 500);
     }
@@ -463,7 +465,7 @@ export class CalendarService implements ICalendarService {
         },
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       this.logger.error(`Ошибка при поиске всего календаря`, error.stack);
       throw new HttpException('Ошибка при поиске всего календаря', 500);
     }
@@ -477,14 +479,19 @@ export class CalendarService implements ICalendarService {
           directs: {
             where: { userId: userId },
           },
-          freeSlots: { select: { time: true } },
+          freeSlots: {
+            where: {
+              isBooked: false,
+            },
+            select: { time: true },
+          },
         },
       });
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Ошибка при поиске календаря по ID пользователя ${userId}`,
         error.stack,
@@ -501,7 +508,12 @@ export class CalendarService implements ICalendarService {
         },
         include: {
           directs: true,
-          freeSlots: { select: { time: true } },
+          freeSlots: {
+            where: {
+              isBooked: false,
+            },
+            select: { time: true },
+          },
         },
       });
       if (!result) {
@@ -516,7 +528,7 @@ export class CalendarService implements ICalendarService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(`Ошибка при поиске дня календаря`, error.stack);
       throw new HttpException('Ошибка сервера при поиске дня календаря', 500);
     }
@@ -543,14 +555,19 @@ export class CalendarService implements ICalendarService {
         },
         include: {
           directs: true,
-          freeSlots: { select: { time: true } },
+          freeSlots: {
+            where: {
+              isBooked: false,
+            },
+            select: { time: true },
+          },
         },
       });
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.log(error);
+      console.error(error);
       this.logger.error('Ошибка при поиске интервала дней', error.stack);
       throw new HttpException('Ошибка сервера при поиске интервала дней', 500);
     }
@@ -586,7 +603,12 @@ export class CalendarService implements ICalendarService {
               },
             },
           },
-          freeSlots: { select: { time: true } },
+          freeSlots: {
+            where: {
+              isBooked: false,
+            },
+            select: { time: true },
+          },
         },
       });
     } catch (error) {
@@ -599,7 +621,7 @@ export class CalendarService implements ICalendarService {
         );
         throw new HttpException('День календаря не найден', 404);
       }
-      console.log(error);
+      console.error(error);
       throw new HttpException(
         'Ошибка сервера при обновлении дня календаря',
         500,
@@ -622,7 +644,7 @@ export class CalendarService implements ICalendarService {
         );
         throw new HttpException('День календаря не найден', 404);
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Ошибка при удалении дня календаря по ID ${id}`,
         error.stack,
@@ -645,7 +667,7 @@ export class CalendarService implements ICalendarService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Пользователь ${userId} ввел неверные данные для поиска дня календаря ${date}`,
         error.stack,

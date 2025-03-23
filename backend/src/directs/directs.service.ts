@@ -297,7 +297,7 @@ export class DirectsService implements IDirectsService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(`Ошибка при поиске по дате ${date}`, error.stack);
       throw new HttpException('Ошибка при получении записей', 500);
     }
@@ -406,7 +406,7 @@ export class DirectsService implements IDirectsService {
         );
         throw new HttpException('Запись не найдена', 404);
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Ошибка при создании записи, ${createDirectDto}`,
         error,
@@ -419,7 +419,7 @@ export class DirectsService implements IDirectsService {
     try {
       return await this._prismaService.directs.findMany();
     } catch (error) {
-      console.log(error);
+      console.error(error);
       this.logger.error('Ошибка при получении всех записей', error.stack);
       throw new HttpException('Ошибка сервера при получении всех записей', 500);
     }
@@ -449,7 +449,7 @@ export class DirectsService implements IDirectsService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Ошибка при поиске записи по ID пользователя ${id}`,
         error.stack,
@@ -516,7 +516,7 @@ export class DirectsService implements IDirectsService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Ошибка при поиске по дню ${date} и пользователю ${userId}`,
       );
@@ -558,7 +558,7 @@ export class DirectsService implements IDirectsService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(`Ошибка при поиске записи ${id}`, error.stack);
       throw new HttpException('Ошибка при получении записи', 500);
     }
@@ -676,7 +676,7 @@ export class DirectsService implements IDirectsService {
         );
         throw new HttpException(`Пользователь не найден`, 404);
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Ошибка при обновлении записи ${id}, ${updateDirectDto}`,
         error.stack,
@@ -698,7 +698,7 @@ export class DirectsService implements IDirectsService {
         this.logger.warn(`Запись для удаления не найдена ${id}`);
         throw new HttpException(`Запись не найдена`, 404);
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(`Ошибка при удалении записи ${id}`, error);
       throw new HttpException('Ошибка сервера при удалении данных', 500);
     }

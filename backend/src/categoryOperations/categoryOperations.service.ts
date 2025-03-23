@@ -66,7 +66,7 @@ export class CategoryOperationsService implements ICategoryOperationsService {
         );
         throw new HttpException('Пользователь не найден', 404);
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Пользователь ${data.userId} ввел неверные данные для создания категории операции`,
         error.stack,
@@ -85,7 +85,7 @@ export class CategoryOperationsService implements ICategoryOperationsService {
       this.logger.log('Успешно получены все категории операций');
       return categoryOperations;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Ошибка при поиске всех категорий операций`,
         error.stack,
@@ -111,7 +111,7 @@ export class CategoryOperationsService implements ICategoryOperationsService {
       this.logger.log(`Категория операции с ID ${id} успешно найдена`);
       return result;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Ошибка при поиске категории операции с ID ${id}`,
         error.stack,
@@ -145,7 +145,7 @@ export class CategoryOperationsService implements ICategoryOperationsService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Ошибка при поиске категорий операции пользователя с ID ${userId}`,
         error.stack,
@@ -182,7 +182,7 @@ export class CategoryOperationsService implements ICategoryOperationsService {
         );
         throw new HttpException('Категория операции не найдена', 404);
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Пользователь ${data.userId} ввел неверные данные для обновления категории операции ${id}`,
         error.stack,
@@ -210,7 +210,7 @@ export class CategoryOperationsService implements ICategoryOperationsService {
         );
         throw new HttpException('Категория операции не найдена', 404);
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Ошибка при удалении категории операции с ID ${id}`,
         error.stack,

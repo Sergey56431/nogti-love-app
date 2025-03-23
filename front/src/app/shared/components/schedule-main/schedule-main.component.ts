@@ -7,7 +7,7 @@ import {
   DirectVisitComponent,
 } from '@shared/components';
 import { DirectsClientType } from '@shared/types/directs-client.type';
-import { DialogService } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { DirectsService } from '@shared/services';
 import { Tooltip } from 'primeng/tooltip';
 import { orderBy } from 'lodash';
@@ -28,6 +28,7 @@ import { CalendarResponse } from '@shared/types';
 export class ScheduleMainComponent {
   @ViewChild(DatePickerComponent) calendar?: DatePickerComponent;
 
+  private _ref: DynamicDialogRef | undefined;
   private _status: ToastMessageOptions = {} as ToastMessageOptions;
   protected _choiceDay = signal<CalendarResponse | null>(null);
   protected _options = [
@@ -56,8 +57,7 @@ export class ScheduleMainComponent {
   }
 
   protected _newDirect() {
-
-    this._dialogOpen.open(DirectVisitComponent, {
+    this._ref = this._dialogOpen.open(DirectVisitComponent, {
       header: 'Добавить новую запись',
       width: '500px',
       modal: true,
@@ -70,6 +70,9 @@ export class ScheduleMainComponent {
         date: this.calendar?.selectedDate(),
         ...this._choiceDay(),
       },
+    });
+    this._ref.onClose.subscribe(() => {
+      this.calendar?._refreshDatePicker();
     });
   }
 
@@ -102,7 +105,7 @@ export class ScheduleMainComponent {
             error: err => {
               this._status = SnackStatusesUtil.getStatuses('Ошибка', err);
               this._snackBar.add(this._status);
-              console.log(err);
+              console.error(err);
             },
             complete: () => {
               this.calendar?.fetchDirectsToDay(this.calendar?.selectedDate());

@@ -14,8 +14,7 @@
                      (onSelect)="test(period.value)" />
       <button class="btn schedule-filter-btn"
               [class.active]="_showFilters()"
-              (click)="showFiltersWindow()">Фильтры
-      </button>
+              (click)="showFiltersWindow()">Фильтры</button>
 
       @if (_showFilters()) {
         <div class="schedule-filters-check w-full">
@@ -76,9 +75,12 @@
         </div>
       }
 
-    </div>
-    <!--    <app-client-card></app-client-card>-->
 
+
+    </div>
+      @if (!_showFilters()) {
+<!--        Реализовать здесь карточку клиента (Старая не работает)-->
+      }
   </div>
 </div>
 
