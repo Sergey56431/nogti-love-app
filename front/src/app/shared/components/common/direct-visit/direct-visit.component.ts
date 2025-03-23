@@ -79,6 +79,7 @@ export class DirectVisitComponent implements OnInit {
   // Инициализация
   public ngOnInit() {
     this._date = this._dialogConfig.data;
+
     this._timeSlots.set(orderBy(this._date?.freeSlots ?? [], c => c, 'asc'));
 
     console.log(this._date);
