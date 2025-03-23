@@ -13,10 +13,8 @@ export class UsersService implements IUsersService {
     name: true,
     lastName: true,
     phoneNumber: true,
-    score: true,
     rate: true,
     birthday: true,
-    description: true,
     role: true,
     refreshToken: false,
     password: false,
@@ -181,10 +179,20 @@ export class UsersService implements IUsersService {
       await this._prismaService.settings.create({
         data: {
           userId: user.id,
-          defaultBreakTime: '00:30',
-          timeGranularity: '00:30',
-          defaultWorkTime: '09:00-16:00',
-          settingsData: [{}],
+          settingsData: [
+            {
+              name: 'workTime',
+              value: '09:00-16:00',
+            },
+            {
+              name: 'timeGranularity',
+              value: '00:30',
+            },
+            {
+              name: 'breakTime',
+              value: '00:30',
+            },
+          ],
         },
       });
 

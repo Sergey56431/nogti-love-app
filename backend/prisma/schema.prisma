@@ -40,9 +40,6 @@ model CustomRole {
 
 model Settings {
     id                  String    @id @default(uuid())
-    defaultWorkTime     String    @default("09:00-16:00")
-    defaultBreakTime    String    @default("00:30")
-    timeGranularity     String    @default("00:30")
     settingsData        Json
     userId              String    @unique
     user                User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
