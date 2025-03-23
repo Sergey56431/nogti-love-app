@@ -65,7 +65,6 @@ export class ClientDetailComponent implements OnInit {
       this._clientService.fetchAdminClient(this._clientId()).subscribe((client) => {
         if (client as ClientInfoType) {
           this._client.set(client as ClientInfoType);
-          console.log(this._client());
         }
       });
     });
@@ -99,14 +98,13 @@ export class ClientDetailComponent implements OnInit {
 
   private _sendClientDescription(data: Partial<UserInfoType>) {
     let message: ToastMessageOptions;
-    console.log(this._clientId());
     this._clientService.updateClientData(this._clientId(), data).subscribe({
       next: client => {
         this._client.set(client);
         message= SnackStatusesUtil.getStatuses('success', 'Информация успешно обновлена')!;
       }, error: err => {
         message= SnackStatusesUtil.getStatuses('error', 'Ошибка при обновлении информации')!;
-        console.log(err);
+        console.error(err);
       },
       complete: () => {
         this._toast.add(message);

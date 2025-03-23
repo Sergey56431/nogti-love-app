@@ -5,7 +5,7 @@ import { Checkbox } from 'primeng/checkbox';
 import { Slider } from 'primeng/slider';
 import { Status } from '@shared/utils';
 import { RouterLink } from '@angular/router';
-import { Button } from 'primeng/button';
+import { ButtonModule } from 'primeng/button';
 import { ClientCardComponent } from '@shared/components';
 
 @Component({
@@ -18,7 +18,7 @@ import { ClientCardComponent } from '@shared/components';
     Slider,
     FormsModule,
     RouterLink,
-    Button,
+    ButtonModule,
     ClientCardComponent,
   ],
   templateUrl: './schedule-page.component.html',
@@ -68,6 +68,6 @@ export class SchedulePageComponent {
   }
 
   protected _choiceServices(value: string) {
-    console.log(value);
+    console.error(value);
   }
 }

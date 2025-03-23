@@ -47,7 +47,7 @@ export class CategoryService implements ICategoryServices {
       if (error instanceof HttpException) {
         throw error;
       } else {
-        console.log(error);
+        console.error(error);
         this.logger.error(
           `Ошибка при создании категории услуг ${data} пользователем ${data.userId}`,
           error,
@@ -61,7 +61,7 @@ export class CategoryService implements ICategoryServices {
     try {
       return await this._prismaService.category.findMany();
     } catch (error) {
-      console.log(error);
+      console.error(error);
       this.logger.error('Ошибка при поиске всех категорий', error);
       throw new HttpException('Ошибка сервера при поиске всех категорий', 500);
     }
@@ -83,7 +83,7 @@ export class CategoryService implements ICategoryServices {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(`Ошибка при поиске категории ${id}`, error);
       throw new HttpException('Ошибка сервера при поиске категории', 500);
     }
@@ -96,7 +96,7 @@ export class CategoryService implements ICategoryServices {
         include: { services: true },
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Ошибка при поиске категорий по пользователю ${userId}`,
         error,
@@ -118,7 +118,7 @@ export class CategoryService implements ICategoryServices {
         },
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Ошибка при обновлении категории c ID ${id}, ${data}`,
         error,
@@ -132,7 +132,7 @@ export class CategoryService implements ICategoryServices {
         );
         throw new HttpException('Категория не найдена', 404);
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Ошибка при обновлении категории c ID ${id}, ${data}`,
         error.stack,
@@ -155,7 +155,7 @@ export class CategoryService implements ICategoryServices {
         this.logger.warn(`Категория ${id} не найдена при удалении`);
         throw new HttpException('Категория не найдена', 404);
       }
-      console.log(error);
+      console.error(error);
       this.logger.error('Ошибка при удалении категории', error.stack);
       throw new HttpException('Ошибка сервера при удалении категории', 500);
     }

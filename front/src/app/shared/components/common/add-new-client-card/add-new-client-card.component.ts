@@ -57,7 +57,7 @@ export class AddNewClientCardComponent {
       score: Number(this._newClientForm.value.score),
       masterId: master?.userId,
     };
-    console.log(body);
+    console.error(body);
     if (body){
       this._sendNewClient(body);
     }
@@ -72,7 +72,7 @@ export class AddNewClientCardComponent {
       },
       error: err => {
         message = SnackStatusesUtil.getStatuses('success', 'Клиент не добавлен, проиошла ошибка')!;
-        console.log(err);
+        console.error(err);
       },
       complete: () => {
         this._toast.add(message);

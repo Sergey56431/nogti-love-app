@@ -124,7 +124,7 @@ export class ClientsPageComponent implements OnInit {
                   'Невозможно удалить клиента',
                 )!;
                 this._messageService.add(message);
-                console.log(err);
+                console.error(err);
               },
               complete: () => {
                 this._messageService.add(message);
@@ -137,7 +137,7 @@ export class ClientsPageComponent implements OnInit {
               'Невозможно выполнит операцию',
             )!;
             this._messageService.add(message);
-            console.log(e);
+            console.error(e);
           }
         }
       },

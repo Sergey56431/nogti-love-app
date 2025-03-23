@@ -69,10 +69,7 @@ export class DirectVisitComponent implements OnInit {
 
   protected _newVisitor = this._fb.group({
     name: new FormControl('', [Validators.required]),
-    phone: new FormControl('', [
-      Validators.required,
-      Validators.pattern('^((8|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$'),
-    ]),
+    phone: new FormControl(undefined),
     favor: new FormControl('', [Validators.required]),
     time: new FormControl('', [Validators.required]),
     comment: new FormControl(''),
@@ -85,10 +82,10 @@ export class DirectVisitComponent implements OnInit {
       this._userInfo.set(this._authService.getUserInfo());
       this._calendarService.fetchDayById(this._date?.id ?? '').subscribe(date => {
         this._timeSlots.set(orderBy((date as CalendarResponse).freeSlots ?? [], c => c, 'asc'));
-        console.log(this._timeSlots());
       });
       this._clientsService.fetchAdminClients(this._userInfo()?.userId ?? '').subscribe(clients => {
         this._clients.set(clients as ClientInfoType[]);
+        console.error(clients);
       });
 
       this._categoryService.getCategoryByUser(this._userInfo()?.userId ?? '').subscribe(categories => {
@@ -110,11 +107,12 @@ export class DirectVisitComponent implements OnInit {
       return { serviceId: favors ?? '' };
     });
     const data: DirectsType = {
+      id: this._choiceClient()?.userId ?? '',
       userId: this._userInfo()?.userId ?? '',
-      clientName: this._newVisitor.controls.name.value ?? '',
+      clientName: this._choiceClient()?.name ?? '',
       date: this._date?.date.split('.').reverse().join('-') ?? '',
       comment: this._newVisitor.controls.comment.value ?? '',
-      phone: this._newVisitor.controls.phone.value ?? '',
+      phone: this._choiceClient()?.phoneNumber ?? '',
       time: this._timeSlotChoice()?.time ?? '',
       services: favorsId,
     };

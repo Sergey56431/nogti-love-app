@@ -6,7 +6,7 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { DirectsClientType } from '@shared/types/directs-client.type';
 import { Rating } from 'primeng/rating';
 import { FormsModule } from '@angular/forms';
-import { UserInfoType } from '@shared/types';
+import { ClientInfoType, UserInfoType } from '@shared/types';
 import { ClientsService } from '@shared/services';
 
 @Component({
@@ -27,12 +27,13 @@ export class ClientCardComponent implements OnInit {
               private readonly _ref: DynamicDialogRef) {}
 
   ngOnInit(): void {
-    this._directInfo.set(this._config.data);
+    if (!this._config.data) {
+      this._directInfo.set(this._config.data);
+    }
     this._createUserFavorsList();
-    this._clientService.getClient(this._directInfo()?.id ?? '').subscribe(client => {
-      this._userInfo.set(client);
+    this._clientService.fetchAdminClient(this._directInfo()?.userId ?? '').subscribe(client => {
+      this._userInfo.set(client as ClientInfoType);
     });
-    console.log(this._userInfo());
   }
 
   private _createUserFavorsList() {

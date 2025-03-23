@@ -105,7 +105,7 @@ export class ScheduleMainComponent {
             error: err => {
               this._status = SnackStatusesUtil.getStatuses('Ошибка', err);
               this._snackBar.add(this._status);
-              console.log(err);
+              console.error(err);
             },
             complete: () => {
               this.calendar?.fetchDirectsToDay(this.calendar?.selectedDate());
