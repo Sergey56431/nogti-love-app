@@ -85,7 +85,7 @@ export class DirectVisitComponent implements OnInit {
       this._userInfo.set(this._authService.getUserInfo());
       this._calendarService.fetchDayById(this._date?.id ?? '').subscribe(date => {
         this._timeSlots.set(orderBy((date as CalendarResponse).freeSlots ?? [], c => c, 'asc'));
-
+        console.log(this._timeSlots());
       });
       this._clientsService.fetchAdminClients(this._userInfo()?.userId ?? '').subscribe(clients => {
         this._clients.set(clients as ClientInfoType[]);
