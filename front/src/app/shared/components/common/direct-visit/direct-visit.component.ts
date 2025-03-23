@@ -16,7 +16,7 @@ import { CalendarService, CategoriesService, ClientsService, DirectsService } fr
 import { AuthService } from '@core/auth';
 import {
   CalendarResponse,
-  CategoriesType, ClientInfoType, ClientType,
+  CategoriesType, ClientInfoType,
   DefaultResponseType,
   DirectsClientType,
   DirectsType,
