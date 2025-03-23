@@ -38,6 +38,9 @@ model CustomRole {
 
 model Settings {
     id                  String    @id @default(uuid())
+    defaultWorkTime     String    @default("09:00-16:00")
+    defaultBreakTime    String    @default("00:30")
+    timeGranularity     String    @default("00:30")
     settingsData        Json
     userId              String    @unique
     user                User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -131,39 +134,55 @@ model DirectsServices {
 }
 
 model Client {
-    id              String      @id @default(uuid())
+    id              String              @id @default(uuid())
     name            String
     lastName        String?
-    phoneNumber     String      @unique
+    phoneNumber     String              @unique
     rate            Float?
     birthday        DateTime?
     description     String?
     password        String
     refreshToken    String?
-    roleId          String      @default("CLIENT")
+    roleId          String              @default("CLIENT")
     masterId        String?
-    ReferalId       String?
-    ReferrerId      String?
-    referalTier1    ReferalTier1[]
-    referalTier2    ReferalTier2[]
-    referalTier3    ReferalTier3[]
-    user            User?           @relation(fields: [masterId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    tier1Referrals  ReferalTier1[]      @relation(name: "ReferralTier1Referral")
+    tier2Referrals  ReferalTier2[]      @relation(name: "ReferralTier2Referral")
+    tier3Referrals  ReferalTier3[]      @relation(name: "ReferralTier3Referral")
+    referrerTier1   ReferalTier1[]      @relation(name: "ReferralTier1Referrer")
+    referrerTier2   ReferalTier2[]      @relation(name: "ReferralTier2Referrer")
+    referrerTier3   ReferalTier3[]      @relation(name: "ReferralTier3Referrer")
+    user            User?               @relation(fields: [masterId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     score           Int?
 }
 
 model ReferalTier1 {
-    ReferrerId      String
-    ReferalId       String
+    referrerId      String
+    referalId       String
+    referrer        Client          @relation(name: "ReferralTier1Referrer", fields: [referrerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    referral        Client          @relation(name: "ReferralTier1Referral", fields: [referalId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    @@id([referrerId, referalId])
+    @@index([referrerId])
+    @@index([referalId])
 }
 
 model ReferalTier2 {
-    ReferrerId      String
-    ReferalId       String
+    referrerId      String
+    referalId       String
+    referrer        Client          @relation(name: "ReferralTier2Referrer", fields: [referrerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    referral        Client          @relation(name: "ReferralTier2Referral", fields: [referalId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    @@id([referrerId, referalId])
+    @@index([referrerId])
+    @@index([referalId])
 }
 
 model ReferalTier3 {
-    ReferrerId      String
-    ReferalId       String
+    referrerId      String
+    referalId       String
+    referrer        Client          @relation(name: "ReferralTier3Referrer", fields: [referrerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    referral        Client          @relation(name: "ReferralTier3Referral", fields: [referalId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    @@id([referrerId, referalId])
+    @@index([referrerId])
+    @@index([referalId])
 }
 
 enum TypeOperation {
