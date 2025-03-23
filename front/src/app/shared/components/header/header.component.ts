@@ -74,7 +74,6 @@ export class HeaderComponent implements OnInit {
 
   logout() {
     if (this._user()) {
-      console.log(this._user());
       this._authService.logout(this._user().userId ?? '').subscribe(() =>{
         this.doLogout();
       });

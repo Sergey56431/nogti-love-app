@@ -123,7 +123,6 @@ export class ScheduleEditComponent implements OnInit {
     this._dayState = findedDay?.state === DayState.WORKING;
     if (findedDay){
       const time = this._setMyWorkTime(findedDay);
-      console.log(findedDay);
       this._startHour = Number(time![0]);
       this._endHour = Number(time![1]);
     }
@@ -140,7 +139,6 @@ export class ScheduleEditComponent implements OnInit {
         state: this._dayState ? DayState.WORKING : DayState.NOT_WORKING,
       };
       this._changeDayInfo();
-      console.log(this._scheduleCustom());
     }
   }
 

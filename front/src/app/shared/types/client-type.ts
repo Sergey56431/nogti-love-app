@@ -8,4 +8,11 @@ export interface ClientType {
   username: string;
   comment?: string;
   lastVisit?: string;
+  rate?: number;
+  birthday?: Date;
+  description?: string;
+  refreshToken?: string;
+  masterId?: string;
+  roleId?: string;
+  password?: string;
 }

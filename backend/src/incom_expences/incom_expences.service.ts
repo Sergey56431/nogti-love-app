@@ -51,7 +51,7 @@ export class OperationsService implements IOperationsService {
         );
         throw new HttpException('Категория или пользователь не найден', 404);
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Ошибка при создании операции, ${createIncomExpenceDto}`,
         error.stack,
@@ -71,7 +71,7 @@ export class OperationsService implements IOperationsService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(
         `Ошибка при поиске операций по пользователю ${userId}`,
         error.stack,
@@ -89,7 +89,7 @@ export class OperationsService implements IOperationsService {
       this.logger.log(`Все операции успешно получены`);
       return operations;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       this.logger.error('Ошибка при поиске всех операций', error.stack);
       throw new HttpException('Ошибка при поиске всех операций', 500);
     }
@@ -112,7 +112,7 @@ export class OperationsService implements IOperationsService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(`Ошибка при поиске операции с ID ${id}`, error.stack);
       throw new HttpException('Ошибка при поиске операции', 500);
     }
@@ -172,7 +172,7 @@ export class OperationsService implements IOperationsService {
         this.logger.warn(`Операция с ID ${id} не найдена при удалении`);
         throw new HttpException('Операция не найдена', 404);
       }
-      console.log(error);
+      console.error(error);
       this.logger.error(`Ошибка при удалении операции с ID ${id}`, error.stack);
       throw new HttpException('Ошибка при удалении операции', 500);
     }

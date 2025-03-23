@@ -57,7 +57,6 @@ export class SettingsPageComponent implements OnInit {
     } else {
       this._canSend.set(false);
     }
-    console.log(this._newSettings());
   }
 
   protected _saveSettings(): void {
@@ -69,6 +68,5 @@ export class SettingsPageComponent implements OnInit {
     this._newSettings.set({});
     this._canSend.set(false);
     this._actions.getSettings(this._userInfo().userId ?? '');
-    console.log(this._settings());
   }
 }

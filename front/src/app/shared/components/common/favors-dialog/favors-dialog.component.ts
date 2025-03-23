@@ -105,7 +105,7 @@ export class FavorsDialogComponent implements OnInit {
       .getCategoryByUser(this._userInfo()?.userId ?? '')
       .pipe(
         catchError((error: ErrorHandler) => {
-          console.log(error);
+          console.error(error);
           return [];
         }),
       )
@@ -184,7 +184,7 @@ export class FavorsDialogComponent implements OnInit {
       }
       // });
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
@@ -221,7 +221,7 @@ export class FavorsDialogComponent implements OnInit {
       },
       error: (err) => {
         this._showMessage('error', 'Ошибка при добавлении услуги');
-        console.log(err);
+        console.error(err);
       },
       complete: () => {
         this._showMessage('success', 'Услуга добавлена');
@@ -243,7 +243,7 @@ export class FavorsDialogComponent implements OnInit {
       },
       error: (err) => {
         this._showMessage('error', 'Ошибка при добавлении услуги');
-        console.log(err);
+        console.error(err);
       },
       complete: () => {
         this._showMessage('success', 'Категория добавлена');
@@ -260,7 +260,7 @@ export class FavorsDialogComponent implements OnInit {
     this._favorService.updateFavors(favorEdit, this._favorEdit()?.id ?? '').subscribe({
       error: err => {
         this._showMessage('error', 'Ошибка при обновлении услуги' + err);
-        console.log(err);
+        console.error(err);
       },
       complete: () => {
         this._showMessage('success', 'Услуга обновлена');
@@ -277,7 +277,7 @@ export class FavorsDialogComponent implements OnInit {
     this._categoryService.updateCategory(categoryEdit, this._categoryEdit()?.id ?? '').subscribe({
       error: err => {
         this._showMessage('error', 'Ошибка при обновлении категории' + err);
-        console.log(err);
+        console.error(err);
       },
       complete: () => {
         this._showMessage('success', 'Категория обновлена');
