@@ -6,6 +6,7 @@ import { Slider } from 'primeng/slider';
 import { Status } from '@shared/utils';
 import { RouterLink } from '@angular/router';
 import { Button } from 'primeng/button';
+import { ClientCardComponent } from '@shared/components';
 
 @Component({
   selector: 'app-schedule-page',
@@ -18,6 +19,7 @@ import { Button } from 'primeng/button';
     FormsModule,
     RouterLink,
     Button,
+    ClientCardComponent,
   ],
   templateUrl: './schedule-page.component.html',
   styleUrl: './schedule-page.component.scss',

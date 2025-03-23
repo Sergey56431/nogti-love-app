@@ -10,7 +10,7 @@ import { Breadcrumb } from 'primeng/breadcrumb';
 import { ActivatedRoute } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
 import { ClientsService } from '@shared/services';
-import { UserInfoType } from '@shared/types';
+import { ClientInfoType, UserInfoType } from '@shared/types';
 import { Rating } from 'primeng/rating';
 import { FormsModule } from '@angular/forms';
 import { Textarea } from 'primeng/textarea';
@@ -42,7 +42,7 @@ export class ClientDetailComponent implements OnInit {
   protected _newScore = signal<number | string | null>(null);
   private _clientId = signal<string>('');
 
-  protected _client = signal<UserInfoType | undefined>(undefined);
+  protected _client = signal<ClientInfoType | undefined>(undefined);
   protected _clientRating = signal<number>(0);
   protected _clientDescription = signal<string>('');
 
@@ -62,9 +62,9 @@ export class ClientDetailComponent implements OnInit {
   public ngOnInit() {
     this._activatedRoute.params.subscribe((params) => {
       this._clientId.set(params['id']);
-      this._clientService.getClient(this._clientId()).subscribe((client) => {
-        if (client) {
-          this._client.set(client);
+      this._clientService.fetchAdminClient(this._clientId()).subscribe((client) => {
+        if (client as ClientInfoType) {
+          this._client.set(client as ClientInfoType);
           console.log(this._client());
         }
       });
@@ -79,28 +79,28 @@ export class ClientDetailComponent implements OnInit {
   }
 
   protected _saveNewInfo(): void {
-    const body: Partial<UserInfoType> = {} as Partial<UserInfoType>;
+    const data: Partial<UserInfoType> = {} as Partial<UserInfoType>;
     if (this._clientRating() != 0) {
-      Object.assign(body, { rate: this._clientRating() });
+      Object.assign(data, { rate: this._clientRating() });
     }
     if (this._clientDescription() != '') {
-      Object.assign(body, { description: this._clientDescription() });
+      Object.assign(data, { description: this._clientDescription() });
     }
     if (this._newScore() != null) {
-      Object.assign(body, { score: this._newScore() });
+      Object.assign(data, { score: this._newScore() });
     }
-    if (Object.keys(body).length > 0) {
-      this._sendClientDescription(body);
+    if (Object.keys(data).length > 0) {
+      this._sendClientDescription(data);
     } else {
       const message = SnackStatusesUtil.getStatuses('error', 'Не указана информация для редактирования')!;
       this._toast.add(message);
     }
   }
 
-  private _sendClientDescription(body: Partial<UserInfoType>) {
+  private _sendClientDescription(data: Partial<UserInfoType>) {
     let message: ToastMessageOptions;
     console.log(this._clientId());
-    this._clientService.updateClient(this._clientId(), body).subscribe({
+    this._clientService.updateClientData(this._clientId(), data).subscribe({
       next: client => {
         this._client.set(client);
         message= SnackStatusesUtil.getStatuses('success', 'Информация успешно обновлена')!;
