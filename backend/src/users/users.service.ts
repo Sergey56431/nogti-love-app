@@ -8,7 +8,7 @@ import {CustomLogger} from "../logger";
 
 @Injectable()
 export class UsersService implements IUsersService {
-  private readonly logger = new CustomLogger();
+  private readonly _logger = new CustomLogger();
   private _returnUserModel = {
     id: true,
     name: true,
@@ -30,7 +30,7 @@ export class UsersService implements IUsersService {
       });
     } catch (error) {
       console.log(error);
-      this.logger.error(
+      this._logger.error(
         'Ошибка при получении списка пользователей',
         error.stack,
       );
@@ -48,7 +48,7 @@ export class UsersService implements IUsersService {
       });
     } catch (error) {
       console.log(error);
-      this.logger.error(
+      this._logger.error(
         `Ошибка при поиске пользователя с номером ${phoneNumber}`,
         error.stack,
       );
@@ -63,7 +63,7 @@ export class UsersService implements IUsersService {
       });
     } catch (error) {
       console.log(error);
-      this.logger.error(
+      this._logger.error(
         `Ошибка при поиске пользователя по ID ${id}`,
         error.stack,
       );
@@ -82,7 +82,7 @@ export class UsersService implements IUsersService {
       });
 
       if (!result) {
-        this.logger.warn(`Пользователь с ID ${id} не найден`);
+        this._logger.warn(`Пользователь с ID ${id} не найден`);
         throw new HttpException('Пользователь не найден', 404);
       }
 
@@ -92,7 +92,7 @@ export class UsersService implements IUsersService {
         throw error;
       }
       console.log(error);
-      this.logger.error(
+      this._logger.error(
         `Ошибка при поиске пользователя по ID ${id}`,
         error.stack,
       );
@@ -112,7 +112,7 @@ export class UsersService implements IUsersService {
       });
 
       if (!result[0]) {
-        this.logger.warn(
+        this._logger.warn(
           `Пользователи по заданным критериям ${filter} не найдены`,
         );
         throw new HttpException('Пользователи не найден', 404);
@@ -124,7 +124,7 @@ export class UsersService implements IUsersService {
         throw error;
       }
       console.log(error);
-      this.logger.error(
+      this._logger.error(
         `Ошибка при поиске пользователей по фильтру ${filter}`,
         error.stack,
       );
@@ -138,7 +138,7 @@ export class UsersService implements IUsersService {
   public async createUser(dto: UserCreateDto) {
     const { password, phoneNumber } = dto;
     if (!password || !phoneNumber) {
-      this.logger.warn(
+      this._logger.warn(
         `Отсутствуют необходимые данные ${dto} для создания пользователя`,
       );
       throw new HttpException(
@@ -154,7 +154,7 @@ export class UsersService implements IUsersService {
     });
 
     if (existingUser) {
-      this.logger.warn(
+      this._logger.warn(
         `Пользователь с таким phoneNumber ${dto} уже существует`,
       );
       throw new HttpException(
@@ -169,7 +169,7 @@ export class UsersService implements IUsersService {
       if (dto.birthday) {
         dto.birthday = new Date(dto.birthday);
         if (isNaN(dto.birthday.getTime())) {
-          this.logger.log(`Пользователь ввел некорректную дату ${dto.birthday}` );
+          this._logger.log(`Пользователь ввел некорректную дату ${dto.birthday}` );
           throw new HttpException('Некорректная дата', 400);
         }
       }
@@ -192,21 +192,21 @@ export class UsersService implements IUsersService {
       return user;
     } catch (error) {
       if (error.code === 'P2002') {
-        this.logger.warn(`Пользователь с таким именем уже существует ${dto}`);
+        this._logger.warn(`Пользователь с таким именем уже существует ${dto}`);
         throw new HttpException(
           'Пользователь с таким именем уже существует',
           409,
         );
       }
       console.log(error);
-      this.logger.error(`Ошибка при создании пользователя ${dto}`, error.stack);
+      this._logger.error(`Ошибка при создании пользователя ${dto}`, error.stack);
       throw new HttpException('Ошибка сервера при создании пользователя', 500);
     }
   }
 
   public async updateUser(id: string, data: TUserUpdateDto) {
     if (!id) {
-      this.logger.warn(`Отсутствует ID пользователя ${data}`);
+      this._logger.warn(`Отсутствует ID пользователя ${data}`);
       throw new HttpException('Отсутствует ID пользователя', 400);
     }
     try {
@@ -217,11 +217,11 @@ export class UsersService implements IUsersService {
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
-        this.logger.warn(`Пользователь с ID ${id} не найден ${data}`);
+        this._logger.warn(`Пользователь с ID ${id} не найден ${data}`);
         throw new HttpException('Пользователь не найден', 404);
       }
       console.log(error);
-      this.logger.error(
+      this._logger.error(
         `Ошибка при обновлении пользователя с ID ${id} ${data}`,
         error.stack,
       );
@@ -239,11 +239,11 @@ export class UsersService implements IUsersService {
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
-        this.logger.warn(`Пользователь с ID ${id} не найден при удалении`);
+        this._logger.warn(`Пользователь с ID ${id} не найден при удалении`);
         throw new HttpException('Пользователь не найден', 404);
       }
       console.log(error);
-      this.logger.error(
+      this._logger.error(
         `Ошибка при удалении пользователя с ID ${id}`,
         error.stack,
       );

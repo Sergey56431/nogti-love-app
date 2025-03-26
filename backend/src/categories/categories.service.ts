@@ -7,7 +7,7 @@ import {CustomLogger} from "../logger";
 
 @Injectable()
 export class CategoryService implements ICategoryServices {
-  private readonly logger = new CustomLogger();
+  private readonly _logger = new CustomLogger();
   constructor(private readonly _prismaService: PrismaService) {}
 
   async create(data: CreateCategoryDto) {
@@ -15,7 +15,7 @@ export class CategoryService implements ICategoryServices {
       const errors = [];
 
       if (!data.userId) {
-        this.logger.warn(
+        this._logger.warn(
           `При создании категории услуг отстутствовало ID пользователя ${data}`,
         );
         errors.push(
@@ -23,7 +23,7 @@ export class CategoryService implements ICategoryServices {
         );
       }
       if (!data.name) {
-        this.logger.warn(
+        this._logger.warn(
           `При создании категории услуг отстутствовало название ${data}`,
         );
         errors.push(
@@ -48,7 +48,7 @@ export class CategoryService implements ICategoryServices {
         throw error;
       } else {
         console.log(error);
-        this.logger.error(
+        this._logger.error(
           `Ошибка при создании категории услуг ${data} пользователем ${data.userId}`,
           error,
         );
@@ -62,7 +62,7 @@ export class CategoryService implements ICategoryServices {
       return await this._prismaService.category.findMany();
     } catch (error) {
       console.log(error);
-      this.logger.error('Ошибка при поиске всех категорий', error);
+      this._logger.error('Ошибка при поиске всех категорий', error);
       throw new HttpException('Ошибка сервера при поиске всех категорий', 500);
     }
   }
@@ -74,7 +74,7 @@ export class CategoryService implements ICategoryServices {
       });
 
       if (!result) {
-        this.logger.warn(`Категория с ID ${id} не найдена`);
+        this._logger.warn(`Категория с ID ${id} не найдена`);
         throw new HttpException('Категория не найдена', 404);
       }
 
@@ -84,7 +84,7 @@ export class CategoryService implements ICategoryServices {
         throw error;
       }
       console.log(error);
-      this.logger.error(`Ошибка при поиске категории ${id}`, error);
+      this._logger.error(`Ошибка при поиске категории ${id}`, error);
       throw new HttpException('Ошибка сервера при поиске категории', 500);
     }
   }
@@ -97,7 +97,7 @@ export class CategoryService implements ICategoryServices {
       });
     } catch (error) {
       console.log(error);
-      this.logger.error(
+      this._logger.error(
         `Ошибка при поиске категорий по пользователю ${userId}`,
         error,
       );
@@ -119,7 +119,7 @@ export class CategoryService implements ICategoryServices {
       });
     } catch (error) {
       console.log(error);
-      this.logger.error(
+      this._logger.error(
         `Ошибка при обновлении категории c ID ${id}, ${data}`,
         error,
       );
@@ -127,13 +127,13 @@ export class CategoryService implements ICategoryServices {
         error instanceof PrismaClientKnownRequestError &&
         error.code == 'P2025'
       ) {
-        this.logger.warn(
+        this._logger.warn(
           `Категория c ID ${id}, ${data} не найдена при обновлении`,
         );
         throw new HttpException('Категория не найдена', 404);
       }
       console.log(error);
-      this.logger.error(
+      this._logger.error(
         `Ошибка при обновлении категории c ID ${id}, ${data}`,
         error.stack,
       );
@@ -147,16 +147,16 @@ export class CategoryService implements ICategoryServices {
         where: { id },
       });
     } catch (error) {
-      this.logger.error(`Ошибка при удалении категории ${id}`, error);
+      this._logger.error(`Ошибка при удалении категории ${id}`, error);
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code == 'P2025'
       ) {
-        this.logger.warn(`Категория ${id} не найдена при удалении`);
+        this._logger.warn(`Категория ${id} не найдена при удалении`);
         throw new HttpException('Категория не найдена', 404);
       }
       console.log(error);
-      this.logger.error('Ошибка при удалении категории', error.stack);
+      this._logger.error('Ошибка при удалении категории', error.stack);
       throw new HttpException('Ошибка сервера при удалении категории', 500);
     }
   }

@@ -145,8 +145,28 @@ model Client {
     refreshToken    String?
     roleId          String      @default("CLIENT")
     masterId        String?
-    user            User?       @relation(fields: [masterId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    ReferalId       String?
+    ReferrerId      String?
+    referalTier1    ReferalTier1[]
+    referalTier2    ReferalTier2[]
+    referalTier3    ReferalTier3[]
+    user            User?           @relation(fields: [masterId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     score           Int?
+}
+
+model ReferalTier1 {
+    ReferrerId      String
+    ReferalId       String
+}
+
+model ReferalTier2 {
+    ReferrerId      String
+    ReferalId       String
+}
+
+model ReferalTier3 {
+    ReferrerId      String
+    ReferalId       String
 }
 
 enum TypeOperation {
