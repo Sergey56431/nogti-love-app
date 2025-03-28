@@ -144,7 +144,7 @@ export class DatePickerComponent implements OnInit {
   public fetchDirectsToDay(date: string) {
     console.log('Дата в запросе', date);
     const user = this._authService.getUserInfo();
-    if (user && user.userId) {
+    if (user && user.userId && date) {
       this._directService.fetchDirectsByDateUser(date, user.userId).subscribe((directs) => {
         this.directs.set(directs as DirectsClientType[]);
       });
