@@ -46,10 +46,6 @@ export class CreateSettingsDto {
   @ValidateNested({ each: true })
   @Type(() => SettingItemDto)
   settingsData?: SettingItemDto[];
-
-  defaultBreakTime: string;
-  timeGranularity: string;
-  defaultWorkTime: string;
 }
 
 export type UpdateSettingsDto = Partial<CreateSettingsDto>;

@@ -29,7 +29,7 @@ export class CalendarService {
     });
   }
 
-  public fetchCalendarByDate(dateId: string): Observable<CalendarResponse | DefaultResponseType> {
+  public fetchDayById(dateId: string): Observable<CalendarResponse | DefaultResponseType> {
     return this.http.get<CalendarResponse | DefaultResponseType>(environment.api + 'calendar', {
       params: {
         id: dateId

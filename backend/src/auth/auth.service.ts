@@ -79,7 +79,7 @@ export class AuthService implements IAuthService {
           ignoreExpiration: true,
         });
       } catch (error) {
-        console.log(error);
+        console.error(error);
         await this.logout(userId);
         throw new HttpException('Токен истек', 401);
       }

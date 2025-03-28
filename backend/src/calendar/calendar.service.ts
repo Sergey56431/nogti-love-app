@@ -25,6 +25,11 @@ class TimeInterval {
   ) {}
 }
 
+interface UserSettings {
+  userId: string;
+  settingsData: { name: string; value: string }[];
+}
+
 @Injectable()
 export class GenerateSlotsAlgorithm {
   constructor(
@@ -84,10 +89,10 @@ export class GenerateSlotsAlgorithm {
     date_: string,
     customWorkTime?: string,
     calendarDay?: Calendar,
+    settings?: UserSettings,
   ) {
     const date = new Date(date_);
 
-    const settings = await this._timeSlotUtilits.getUserSettings(userId);
     const [startTime, endTime] = await this._timeSlotUtilits.getWorkTime(
       settings,
       customWorkTime,
@@ -131,6 +136,8 @@ export class CalendarService implements ICalendarService {
     private readonly _prismaService: PrismaService,
     @Inject(FreeSlotsService)
     private readonly _freeSlotService: IFreeSlotsService,
+    @Inject(TimeSlotUtilits)
+    private readonly _timeSlotUtilits: ITimeSlotUtilits,
     private readonly _generateSlotsAlgorithm: GenerateSlotsAlgorithm,
   ) {}
 
@@ -150,6 +157,9 @@ export class CalendarService implements ICalendarService {
         400,
       );
     }
+    this.logger.log(
+      'Год и месяц для которых создается календарь прошел проверку',
+    );
   }
 
   // корректность даты и что она принадлежит указанному месяцу
@@ -180,7 +190,7 @@ export class CalendarService implements ICalendarService {
 
     // Дата принадлежит указанному месяцу и году
     if (yearFromDate !== year || monthFromDate !== month) {
-      this._logger.log(
+      this._logger.warn(
         `Пользователь ввёл некоректрые данные: дата ${dateString} не находится в указанном месяце`,
       );
       throw new HttpException(
@@ -247,6 +257,7 @@ export class CalendarService implements ICalendarService {
         });
       }
     }
+    this.logger.log(`Инициализация дней прошла успешно`);
     return daysMap;
   }
 
@@ -269,13 +280,15 @@ export class CalendarService implements ICalendarService {
         workTime: state === DayState.notHave ? '' : (workTime ?? ''),
       });
     }
+    this.logger.log(`Все даты корректны и принадлежит текущему месяцу`);
+    this.logger.log(`Кастомные дни успешно добавлены`);
   }
 
   //Преобразует Map дней в массив объектов для Prisma
   private _getDaysToCreate(
     daysMap: Map<string, DayData>,
   ): { date: Date; state: DayState; userId: string; workTime: string }[] {
-    return [...daysMap.entries()].map(([dateString, dayData]) => {
+    const result = [...daysMap.entries()].map(([dateString, dayData]) => {
       const { state, userId, workTime } = dayData;
       return {
         date: new Date(dateString),
@@ -284,6 +297,8 @@ export class CalendarService implements ICalendarService {
         workTime,
       };
     });
+    this.logger.log(`Дни успешно преобразованы в массив объектов для БД`);
+    return result;
   }
 
   public async create(createCalendarDto) {
@@ -295,7 +310,6 @@ export class CalendarService implements ICalendarService {
         );
         throw new HttpException('Некорректная дата', 400);
       }
-      console.log(date);
       return await this._prismaService.calendar.create({
         data: {
           date: date,
@@ -325,6 +339,10 @@ export class CalendarService implements ICalendarService {
 
   public async create_all(data: CreateCalendarAllDto) {
     const { customDays, userId, dateForCreate } = data;
+
+    this.logger.log(
+      `Попытка создать календарь для пользователя ${userId} данные: \n ${data} \n[`,
+    );
 
     if (!userId || !dateForCreate) {
       this._logger.warn(
@@ -358,9 +376,7 @@ export class CalendarService implements ICalendarService {
       // массив объектов для записи в БД
       const daysToCreate = this._getDaysToCreate(daysMap);
 
-      const settings = await this._prismaService.settings.findFirst({
-        where: { userId },
-      });
+      const settings = await this._timeSlotUtilits.getUserSettings(userId);
 
       //Обработка каждого дня в транзакции
       await this._prismaService.$transaction(async (prisma) => {
@@ -402,7 +418,7 @@ export class CalendarService implements ICalendarService {
               time:
                 day.state === DayState.notHave
                   ? ''
-                  : day.workTime || settings.defaultWorkTime,
+                  : day.workTime || settings.settingsData[0].value,
             },
             create: {
               date: day.date,
@@ -410,7 +426,7 @@ export class CalendarService implements ICalendarService {
               time:
                 day.state === DayState.notHave
                   ? ''
-                  : day.workTime || settings.defaultWorkTime,
+                  : day.workTime || settings.settingsData[0].value,
               userId: day.userId,
             },
           });
@@ -421,6 +437,7 @@ export class CalendarService implements ICalendarService {
             await this._freeSlotService.removeMany(day_.id);
           }
         }
+        this.logger.log(`Дни успешно созданы`);
       });
 
       // генерация слотов
@@ -432,13 +449,22 @@ export class CalendarService implements ICalendarService {
             day.date.toISOString(),
             day.workTime,
             calendarDay,
+            settings,
           );
         await this._freeSlotService.createFreeSlots(slotsToCreate);
       }
-
+      this.logger.log(`Свободные окна успешно сгенерированы`);
+      this.logger.log(`\n]\n`);
       return await this._prismaService.calendar.findMany({
         where: { userId, date: { gte: firstDayOfMonth, lte: lastDayOfMonth } },
-        include: { freeSlots: { select: { time: true } } },
+        include: {
+          freeSlots: {
+            where: {
+              isBooked: false,
+            },
+            select: { time: true },
+          },
+        },
       });
     } catch (error) {
       if (error instanceof HttpException) {
@@ -479,7 +505,15 @@ export class CalendarService implements ICalendarService {
           directs: {
             where: { userId: userId },
           },
-          freeSlots: { select: { time: true } },
+          freeSlots: {
+            where: {
+              isBooked: false,
+            },
+            select: { time: true },
+          },
+        },
+        orderBy: {
+          date: 'asc',
         },
       });
     } catch (error) {
@@ -503,7 +537,12 @@ export class CalendarService implements ICalendarService {
         },
         include: {
           directs: true,
-          freeSlots: { select: { time: true } },
+          freeSlots: {
+            where: {
+              isBooked: false,
+            },
+            select: { time: true },
+          },
         },
       });
       if (!result) {
@@ -545,7 +584,12 @@ export class CalendarService implements ICalendarService {
         },
         include: {
           directs: true,
-          freeSlots: { select: { time: true } },
+          freeSlots: {
+            where: {
+              isBooked: false,
+            },
+            select: { time: true },
+          },
         },
       });
     } catch (error) {
@@ -588,7 +632,12 @@ export class CalendarService implements ICalendarService {
               },
             },
           },
-          freeSlots: { select: { time: true } },
+          freeSlots: {
+            where: {
+              isBooked: false,
+            },
+            select: { time: true },
+          },
         },
       });
     } catch (error) {
@@ -601,7 +650,7 @@ export class CalendarService implements ICalendarService {
         );
         throw new HttpException('День календаря не найден', 404);
       }
-      console.log(error);
+      console.error(error);
       throw new HttpException(
         'Ошибка сервера при обновлении дня календаря',
         500,

@@ -63,7 +63,7 @@ export class RegistrationPageComponent {
           error: err => {
             this._status = SnackStatusesUtil.getStatuses('error', 'Ошибка при регистрации');
             this._snackBar.add(this._status);
-            console.log(err);
+            console.error(err);
           },
           complete: () => {
             this._authService.login(this._signupForm.value.phone!, this._signupForm.value.password!)

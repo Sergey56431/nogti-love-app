@@ -8,7 +8,8 @@
   align-items: center;
   justify-content: center;
   background-size: cover;
-  background: url("../../assets/images/test-bg-form.jpg") no-repeat;
+  background-repeat: no-repeat;
+  background-image: url("../../assets/images/test-bg-form.jpg");
 
   .form {
     padding: 20px;

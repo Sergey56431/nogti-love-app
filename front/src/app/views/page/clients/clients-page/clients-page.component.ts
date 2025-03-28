@@ -9,7 +9,7 @@ import { ButtonModule } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
 import { RouterLink } from '@angular/router';
 import { ClientsService } from '@shared/services';
-import { ClientType } from '@shared/types';
+import { ClientInfoType, ClientType, DefaultResponseType, UserInfoType } from '@shared/types';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { AddNewClientCardComponent } from '@shared/components';
 import {
@@ -21,6 +21,7 @@ import { SnackStatusesUtil } from '@shared/utils';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { orderBy } from 'lodash';
+import { AuthService } from '@core/auth';
 
 @Component({
   selector: 'app-clients-page',
@@ -41,25 +42,33 @@ import { orderBy } from 'lodash';
 export class ClientsPageComponent implements OnInit {
   private _ref: DynamicDialogRef | undefined;
   protected title = 'Клиенты';
+  private _admin = signal<UserInfoType | undefined>(undefined);
   protected _clients = signal<ClientType[]>([]);
 
   constructor(
+    private readonly _authService: AuthService,
     private readonly _clientService: ClientsService,
     private readonly _dialogService: DialogService,
     private readonly _confirmationService: ConfirmationService,
-    private readonly messageService: MessageService,
+    private readonly _messageService: MessageService,
   ) {}
 
   public ngOnInit() {
+    this._admin.set(this._authService.getUserInfo());
     this._fetchAllClients();
   }
 
   private _fetchAllClients() {
-    this._clientService.getAllClients().subscribe((clients) => {
-      if (clients && clients.length > 0) {
-        this._clients.set(orderBy(clients, 'name', 'asc'));
-      }
-    });
+    if (this._admin()?.userId != null) {
+      this._clientService.fetchAdminClients(this._admin()?.userId ?? '').subscribe((clients) => {
+        if (clients && (clients as ClientInfoType[])?.length > 0) {
+          this._clients.set(orderBy(clients, 'name', 'asc'));
+        }
+      });
+    } else {
+      const message = SnackStatusesUtil.getStatuses('error', 'Неустановленный мастер');
+      this._messageService.add(message);
+    }
   }
 
   protected _addNewClient() {
@@ -102,11 +111,11 @@ export class ClientsPageComponent implements OnInit {
       accept: () => {
         if (client != null) {
           try {
-            this._clientService.deleteClient(client.id!).subscribe({
-              next: (user) => {
+            this._clientService.deleteClientById(client.id!).subscribe({
+              next: (user: ClientInfoType | DefaultResponseType) => {
                 message = SnackStatusesUtil.getStatuses(
                   'success',
-                  `Клиент ${user?.name} успешно удалён`,
+                  `Клиент ${(user as ClientInfoType)?.name} успешно удалён`,
                 )!;
               },
               error: (err) => {
@@ -114,11 +123,11 @@ export class ClientsPageComponent implements OnInit {
                   'error',
                   'Невозможно удалить клиента',
                 )!;
-                this.messageService.add(message);
-                console.log(err);
+                this._messageService.add(message);
+                console.error(err);
               },
               complete: () => {
-                this.messageService.add(message);
+                this._messageService.add(message);
                 this._fetchAllClients();
               },
             });
@@ -127,8 +136,8 @@ export class ClientsPageComponent implements OnInit {
               'error',
               'Невозможно выполнит операцию',
             )!;
-            this.messageService.add(message);
-            console.log(e);
+            this._messageService.add(message);
+            console.error(e);
           }
         }
       },

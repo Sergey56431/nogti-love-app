@@ -14,6 +14,7 @@ import { FreeSlotsService } from '../freeSlots';
 import { IFreeSlotsService } from '../freeSlots/interfaces';
 import { TimeSlotUtilits } from '../utilits';
 import { ITimeSlotUtilits } from '../utilits/interfaces';
+import { CreateSettingsDto } from '../settings/dto';
 
 @Injectable()
 export class BookSlotsAlgorithm {
@@ -40,13 +41,14 @@ export class BookSlotsAlgorithm {
       throw new HttpException('Некорректная дата', 400);
     }
 
-    const userSettings = await this._timeSlotUtilits.getUserSettings(userId);
+    const userSettings: CreateSettingsDto =
+      await this._timeSlotUtilits.getUserSettings(userId);
     const breakMinutes = await this._timeSlotUtilits.convertTimeToMinutes(
-      userSettings.defaultBreakTime,
+      userSettings.settingsData[2].value,
     );
 
     const granularityMinutes = await this._timeSlotUtilits.convertTimeToMinutes(
-      userSettings.timeGranularity,
+      userSettings.settingsData[1].value,
     );
 
     const calendarDay = await this._prismaService.calendar.findUnique({
@@ -212,7 +214,8 @@ export class BookSlotsAlgorithm {
       let maxAvailableTime = 0;
       let currentAvailableTime = 0;
 
-      const [startTime, endTime] = userSettings.defaultWorkTime.split('-');
+      const [startTime, endTime] =
+        userSettings.settingsData[0].value.split('-');
       let startMinutes =
         await this._timeSlotUtilits.convertTimeToMinutes(startTime);
       const endMinutes =

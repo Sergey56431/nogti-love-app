@@ -7,10 +7,11 @@ import { Button } from 'primeng/button';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ClientsService } from '@shared/services';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
-import { UserInfoType } from '@shared/types';
+import { ClientInfoType, UserInfoType } from '@shared/types';
 import { MessageService, ToastMessageOptions } from 'primeng/api';
 import { SnackStatusesUtil } from '@shared/utils';
 import { InputNumber } from 'primeng/inputnumber';
+import { AuthService } from '@core/auth';
 
 @Component({
   selector: 'app-add-new-client-card',
@@ -32,6 +33,7 @@ export class AddNewClientCardComponent {
 
   constructor(
     private readonly _fb: FormBuilder,
+    private readonly _authService: AuthService,
     private readonly _clientService: ClientsService,
     private readonly _toast: MessageService,
     private readonly _ref: DynamicDialogRef
@@ -46,15 +48,16 @@ export class AddNewClientCardComponent {
   });
 
   protected _createClient() {
-    const body: UserInfoType = {
+    const master = this._authService.getUserInfo();
+    const body: ClientInfoType = {
       name: this._newClientForm.value.name ?? '',
       phoneNumber: this._newClientForm.value.phoneNumber ?? '',
       lastName: this._newClientForm.value.lastName ?? '',
       password: this._newClientForm.value.password ?? '',
-      role: 'CLIENT',
       score: Number(this._newClientForm.value.score),
+      masterId: master?.userId,
     };
-    console.log(body);
+    console.error(body);
     if (body){
       this._sendNewClient(body);
     }
@@ -62,14 +65,14 @@ export class AddNewClientCardComponent {
 
   private _sendNewClient(body: UserInfoType) {
     let message: ToastMessageOptions;
-    this._clientService.createClient(body).subscribe({
+    this._clientService.createNewClient(body).subscribe({
       next: client => {
-        message = SnackStatusesUtil.getStatuses('success', `Клиент "$${client?.name}" успешно добавлен`)!;
+        message = SnackStatusesUtil.getStatuses('success', `Клиент "${client?.name}" успешно добавлен`)!;
         this._close('cancel');
       },
       error: err => {
         message = SnackStatusesUtil.getStatuses('success', 'Клиент не добавлен, проиошла ошибка')!;
-        console.log(err);
+        console.error(err);
       },
       complete: () => {
         this._toast.add(message);

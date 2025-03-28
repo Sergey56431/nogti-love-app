@@ -20,7 +20,6 @@ export class ClientsService implements IClientsService {
     rate: true,
     birthday: true,
     description: true,
-    role: true,
     refreshToken: false,
     password: false,
     masterId: true,
