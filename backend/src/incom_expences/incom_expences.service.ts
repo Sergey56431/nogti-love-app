@@ -1,12 +1,13 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { CreateOperationsDto, UpdateOperationsDto } from './dto';
 import { PrismaService } from '../prisma';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { IOperationsService } from './interfaces';
+import {CustomLogger} from "../logger";
 
 @Injectable()
 export class OperationsService implements IOperationsService {
-  private readonly logger = new Logger(OperationsService.name);
+  private readonly _logger = new CustomLogger();
   constructor(private readonly _prismaService: PrismaService) {}
 
   async create(createIncomExpenceDto: CreateOperationsDto) {
@@ -39,20 +40,20 @@ export class OperationsService implements IOperationsService {
           },
         },
       );
-      this.logger.log(`Операция успешно создана ${createdOperation}`);
+      this._logger.log(`Операция успешно создана ${createdOperation}`);
       return createdOperation;
     } catch (error) {
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code === 'P2025'
       ) {
-        this.logger.warn(
+        this._logger.warn(
           `Категория операции ${categoryId} или пользователь ${userId} не найден при создании операции, ${createIncomExpenceDto}`,
         );
         throw new HttpException('Категория или пользователь не найден', 404);
       }
-      console.error(error);
-      this.logger.error(
+      console.log(error);
+      this._logger.error(
         `Ошибка при создании операции, ${createIncomExpenceDto}`,
         error.stack,
       );
@@ -65,14 +66,14 @@ export class OperationsService implements IOperationsService {
       const operations = await this._prismaService.income_Expanses.findMany({
         where: { userId },
       });
-      this.logger.log(`Операции пользователя с ID ${userId} успешно найдены`);
+      this._logger.log(`Операции пользователя с ID ${userId} успешно найдены`);
       return operations;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.error(error);
-      this.logger.error(
+      console.log(error);
+      this._logger.error(
         `Ошибка при поиске операций по пользователю ${userId}`,
         error.stack,
       );
@@ -86,11 +87,11 @@ export class OperationsService implements IOperationsService {
   async findAll() {
     try {
       const operations = await this._prismaService.income_Expanses.findMany();
-      this.logger.log(`Все операции успешно получены`);
+      this._logger.log(`Все операции успешно получены`);
       return operations;
     } catch (error) {
-      console.error(error);
-      this.logger.error('Ошибка при поиске всех операций', error.stack);
+      console.log(error);
+      this._logger.error('Ошибка при поиске всех операций', error.stack);
       throw new HttpException('Ошибка при поиске всех операций', 500);
     }
   }
@@ -103,17 +104,17 @@ export class OperationsService implements IOperationsService {
         },
       });
       if (!result) {
-        this.logger.warn(`Операция с ID ${id} не найдена`);
+        this._logger.warn(`Операция с ID ${id} не найдена`);
         throw new HttpException('Операция не найдена', 404);
       }
-      this.logger.log(`Операция с ID ${id} успешно найдена`);
+      this._logger.log(`Операция с ID ${id} успешно найдена`);
       return result;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.error(error);
-      this.logger.error(`Ошибка при поиске операции с ID ${id}`, error.stack);
+      console.log(error);
+      this._logger.error(`Ошибка при поиске операции с ID ${id}`, error.stack);
       throw new HttpException('Ошибка при поиске операции', 500);
     }
   }
@@ -145,13 +146,13 @@ export class OperationsService implements IOperationsService {
         error instanceof PrismaClientKnownRequestError &&
         error.code === 'P2025'
       ) {
-        this.logger.warn(
+        this._logger.warn(
           `Операция с ID ${id} не найдена при обновлении, \n ${updateIncomExpenceDto}`,
         );
         throw new HttpException('Операция не найдена', 404);
       }
       console.error(error);
-      this.logger.error(
+      this._logger.error(
         `Ошибка при обновлении операции с ID ${id}, \n ${updateIncomExpenceDto}`,
         error.stack,
       );
@@ -169,11 +170,11 @@ export class OperationsService implements IOperationsService {
         error instanceof PrismaClientKnownRequestError &&
         error.code === 'P2025'
       ) {
-        this.logger.warn(`Операция с ID ${id} не найдена при удалении`);
+        this._logger.warn(`Операция с ID ${id} не найдена при удалении`);
         throw new HttpException('Операция не найдена', 404);
       }
-      console.error(error);
-      this.logger.error(`Ошибка при удалении операции с ID ${id}`, error.stack);
+      console.log(error);
+      this._logger.error(`Ошибка при удалении операции с ID ${id}`, error.stack);
       throw new HttpException('Ошибка при удалении операции', 500);
     }
   }
