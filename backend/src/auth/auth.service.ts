@@ -64,7 +64,7 @@ export class AuthService implements IAuthService {
       const user = await this._usersService.findUserToRefresh(userId);
       if (!user) {
         this._logger.warn(
-          `Пользователь ${userId} не найден при обновлении токена`,
+          `Пользователь ${userId} не найден при обновлении токена.`,
         );
         throw new HttpException('Пользователь не найден', 404);
       }
