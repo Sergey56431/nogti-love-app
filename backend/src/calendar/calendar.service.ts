@@ -1,4 +1,4 @@
-import { HttpException, Inject, Injectable, Logger } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { UpdateCalendarDto } from './dto';
 import { PrismaService } from '../prisma';
 import { Calendar, DayState } from '@prisma/client';
@@ -9,6 +9,8 @@ import { ICalendarService } from './interfaces';
 import { IFreeSlotsService } from '../freeSlots/interfaces';
 import { TimeSlotUtilits } from '../utilits';
 import { ITimeSlotUtilits } from '../utilits/interfaces';
+import { CustomLogger } from "../logger";
+
 
 interface DayData {
   state: DayState;
@@ -129,8 +131,7 @@ export class GenerateSlotsAlgorithm {
 
 @Injectable()
 export class CalendarService implements ICalendarService {
-  private readonly logger = new Logger(CalendarService.name);
-
+  private readonly _logger = new CustomLogger();
   constructor(
     private readonly _prismaService: PrismaService,
     @Inject(FreeSlotsService)
@@ -148,7 +149,7 @@ export class CalendarService implements ICalendarService {
 
     // Если год меньше текущего или год равен текущему, но месяц меньше текущего
     if (year < currentYear || (year === currentYear && month < currentMonth)) {
-      this.logger.warn(
+      this._logger.warn(
         `Пользователь ввёл некоректрые данные: Нельзя создать календарь на прошлый месяц (${year} ${month})`,
       );
       throw new HttpException(
@@ -170,7 +171,7 @@ export class CalendarService implements ICalendarService {
 
     // Проверка что все части даты числа
     if (isNaN(yearFromDate) || isNaN(monthFromDate) || isNaN(dayFromDate)) {
-      this.logger.warn(`Пользователь ввел неверный формат даты ${dateString}`);
+      this._logger.warn(`Пользователь ввел неверный формат даты ${dateString}`);
       throw new HttpException(`Некорректный формат даты: ${dateString}`, 400);
     }
 
@@ -183,14 +184,14 @@ export class CalendarService implements ICalendarService {
       date.getMonth() + 1 !== monthFromDate ||
       date.getDate() !== dayFromDate
     ) {
-      this.logger.warn(`Пользователь ввел некорректную дату ${dateString}`);
+      this._logger.warn(`Пользователь ввел некорректную дату ${dateString}`);
       throw new HttpException(`Некорректная дата: ${dateString}`, 400);
     }
 
     // Дата принадлежит указанному месяцу и году
     if (yearFromDate !== year || monthFromDate !== month) {
-      this.logger.warn(
-        `Пользователь ввёл некорректные данные: дата ${dateString} не находится в указанном месяце`,
+      this._logger.warn(
+        `Пользователь ввёл некоректрые данные: дата ${dateString} не находится в указанном месяце`,
       );
       throw new HttpException(
         `Дата ${dateString} не находится в указанном месяце`,
@@ -304,7 +305,7 @@ export class CalendarService implements ICalendarService {
     try {
       const date = new Date(createCalendarDto.date);
       if (isNaN(date.getTime())) {
-        this.logger.warn(
+        this._logger.warn(
           `Некорректная дата при создании календаря ${createCalendarDto.date}`,
         );
         throw new HttpException('Некорректная дата', 400);
@@ -327,8 +328,8 @@ export class CalendarService implements ICalendarService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.error(error);
-      this.logger.error(
+      console.log(error);
+      this._logger.error(
         `Ошибка при создании календаря с ID ${createCalendarDto.id}`,
         error.stack,
       );
@@ -344,7 +345,7 @@ export class CalendarService implements ICalendarService {
     );
 
     if (!userId || !dateForCreate) {
-      this.logger.warn(
+      this._logger.warn(
         `Отсутствует ID пользователя ${userId} или дата для создания ${dateForCreate}`,
       );
       throw new HttpException(
@@ -391,7 +392,7 @@ export class CalendarService implements ICalendarService {
             existingDay.directs.length > 0 &&
             day.state === DayState.notHave
           ) {
-            this.logger.warn(
+            this._logger.warn(
               `Нельзя сделать день ${day.date.toISOString().slice(0, 10)} нерабочим, так как на него есть записи.`,
             );
             throw new HttpException(
@@ -473,11 +474,11 @@ export class CalendarService implements ICalendarService {
         error instanceof PrismaClientKnownRequestError &&
         error.code == 'P2003'
       ) {
-        this.logger.warn(`Пользователь ${userId} не найден`);
+        this._logger.warn(`Пользователь ${userId} не найден`);
         throw new HttpException('Пользователь не найден', 404);
       }
-      console.error(error);
-      this.logger.error(`Ошибка при создании календаря`, error.stack);
+      console.log(error);
+      this._logger.error(`Ошибка при создании календаря`, error.stack);
       throw new HttpException('Ошибка при создании календаря', 500);
     }
   }
@@ -490,8 +491,8 @@ export class CalendarService implements ICalendarService {
         },
       });
     } catch (error) {
-      console.error(error);
-      this.logger.error(`Ошибка при поиске всего календаря`, error.stack);
+      console.log(error);
+      this._logger.error(`Ошибка при поиске всего календаря`, error.stack);
       throw new HttpException('Ошибка при поиске всего календаря', 500);
     }
   }
@@ -519,8 +520,8 @@ export class CalendarService implements ICalendarService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.error(error);
-      this.logger.error(
+      console.log(error);
+      this._logger.error(
         `Ошибка при поиске календаря по ID пользователя ${userId}`,
         error.stack,
       );
@@ -545,7 +546,7 @@ export class CalendarService implements ICalendarService {
         },
       });
       if (!result) {
-        this.logger.warn(
+        this._logger.warn(
           `Пользователь ввел неверные данные для поиска календаря ${id}`,
         );
         throw new HttpException('День не найден', 404);
@@ -556,8 +557,8 @@ export class CalendarService implements ICalendarService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.error(error);
-      this.logger.error(`Ошибка при поиске дня календаря`, error.stack);
+      console.log(error);
+      this._logger.error(`Ошибка при поиске дня календаря`, error.stack);
       throw new HttpException('Ошибка сервера при поиске дня календаря', 500);
     }
   }
@@ -568,7 +569,7 @@ export class CalendarService implements ICalendarService {
       const end = new Date(endDate);
 
       if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-        this.logger.log(
+        this._logger.log(
           `Пользователь ввел некорректную дату с интервалом от ${startDate} до ${endDate}`,
         );
         throw new HttpException('Некорректная дата', 400);
@@ -595,8 +596,8 @@ export class CalendarService implements ICalendarService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.error(error);
-      this.logger.error('Ошибка при поиске интервала дней', error.stack);
+      console.log(error);
+      this._logger.error('Ошибка при поиске интервала дней', error.stack);
       throw new HttpException('Ошибка сервера при поиске интервала дней', 500);
     }
   }
@@ -644,7 +645,7 @@ export class CalendarService implements ICalendarService {
         error instanceof PrismaClientKnownRequestError &&
         error.code == 'P2025'
       ) {
-        this.logger.warn(
+        this._logger.warn(
           `Ошибка при поиске дня календаря ${updateCalendarDto} для обновления по ID ${id}`,
         );
         throw new HttpException('День календаря не найден', 404);
@@ -667,13 +668,13 @@ export class CalendarService implements ICalendarService {
         error instanceof PrismaClientKnownRequestError &&
         error.code == 'P2025'
       ) {
-        this.logger.warn(
+        this._logger.warn(
           `Ошибка при поиске дня календаря для удаления по ID ${id}`,
         );
         throw new HttpException('День календаря не найден', 404);
       }
-      console.error(error);
-      this.logger.error(
+      console.log(error);
+      this._logger.error(
         `Ошибка при удалении дня календаря по ID ${id}`,
         error.stack,
       );
@@ -695,8 +696,8 @@ export class CalendarService implements ICalendarService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.error(error);
-      this.logger.error(
+      console.log(error);
+      this._logger.error(
         `Пользователь ${userId} ввел неверные данные для поиска дня календаря ${date}`,
         error.stack,
       );

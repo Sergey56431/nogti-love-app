@@ -271,7 +271,7 @@ export class DirectsService implements IDirectsService {
     try {
       const date_ = new Date(date);
       if (isNaN(date_.getTime())) {
-        this._logger.log(`Пользователь ввел некорректную дату ${date}`);
+        this._logger.warn(`Пользователь ввел некорректную дату ${date}`);
         throw new HttpException('Некорректная дата', 400);
       }
       return await this._prismaService.directs.findMany({
@@ -300,7 +300,7 @@ export class DirectsService implements IDirectsService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.error(error);
+      console.log(error);
       this._logger.error(`Ошибка при поиске по дате ${date}`, error.stack);
       throw new HttpException('Ошибка при получении записей', 500);
     }
@@ -310,7 +310,7 @@ export class DirectsService implements IDirectsService {
     try {
       const date = new Date(createDirectDto.date);
       if (isNaN(date.getTime())) {
-        this._logger.log(
+        this._logger.warn(
           `Пользователь ввел некорректную дату ${date} для создания записи, ${createDirectDto}`,
         );
         throw new HttpException('Некорректная дата', 400);
@@ -409,7 +409,7 @@ export class DirectsService implements IDirectsService {
         );
         throw new HttpException('Запись не найдена', 404);
       }
-      console.error(error);
+      console.log(error);
       this._logger.error(
         `Ошибка при создании записи, ${createDirectDto}`,
         error,
@@ -422,7 +422,7 @@ export class DirectsService implements IDirectsService {
     try {
       return await this._prismaService.directs.findMany();
     } catch (error) {
-      console.error(error);
+      console.log(error);
       this._logger.error('Ошибка при получении всех записей', error.stack);
       throw new HttpException('Ошибка сервера при получении всех записей', 500);
     }
@@ -452,7 +452,7 @@ export class DirectsService implements IDirectsService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.error(error);
+      console.log(error);
       this._logger.error(
         `Ошибка при поиске записи по ID пользователя ${id}`,
         error.stack,
@@ -519,7 +519,7 @@ export class DirectsService implements IDirectsService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.error(error);
+      console.log(error);
       this._logger.error(
         `Ошибка при поиске по дню ${date} и пользователю ${userId}`,
       );
@@ -561,7 +561,7 @@ export class DirectsService implements IDirectsService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.error(error);
+      console.log(error);
       this._logger.error(`Ошибка при поиске записи ${id}`, error.stack);
       throw new HttpException('Ошибка при получении записи', 500);
     }
@@ -571,7 +571,7 @@ export class DirectsService implements IDirectsService {
     try {
       const date = new Date(updateDirectDto.date);
       if (isNaN(date.getTime())) {
-        this._logger.log(
+        this._logger.warn(
           `Пользователь ввел некорректную дату ${updateDirectDto.date} при обновлении записи ${id}, ${updateDirectDto}`,
         );
         throw new HttpException('Некорректная дата', 400);
@@ -596,7 +596,7 @@ export class DirectsService implements IDirectsService {
         updateDirectDto.state &&
         !Object.values(DirectsState).includes(updateDirectDto.state)
       ) {
-        this._logger.log(
+        this._logger.warn(
           `Неверный статус ${updateDirectDto.state} при обновлении записи ${id}, ${updateDirectDto}`,
         );
         throw new HttpException('Ошибка статуса записи', 400);
@@ -679,7 +679,7 @@ export class DirectsService implements IDirectsService {
         );
         throw new HttpException(`Пользователь не найден`, 404);
       }
-      console.error(error);
+      console.log(error);
       this._logger.error(
         `Ошибка при обновлении записи ${id}, ${updateDirectDto}`,
         error.stack,
@@ -701,7 +701,7 @@ export class DirectsService implements IDirectsService {
         this._logger.warn(`Запись для удаления не найдена ${id}`);
         throw new HttpException(`Запись не найдена`, 404);
       }
-      console.error(error);
+      console.log(error);
       this._logger.error(`Ошибка при удалении записи ${id}`, error);
       throw new HttpException('Ошибка сервера при удалении данных', 500);
     }
