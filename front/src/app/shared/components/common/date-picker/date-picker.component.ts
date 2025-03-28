@@ -134,11 +134,15 @@ export class DatePickerComponent implements OnInit {
       .split('.')
       .reverse()
       .join('-');
+     console.log('Дата перд запросом', date);
+    console.log('Тестовая дата (мой вариант)', new Date(`${this._yearCount()}-${this._mountCount()}-${day}`));
+    console.log('Тестовая дата (типовой вариант)', new Date('2025-03-20'));
     this.selectedDate.set(date);
     this.fetchDirectsToDay(date);
   }
 
   public fetchDirectsToDay(date: string) {
+    console.log('Дата в запросе', date);
     const user = this._authService.getUserInfo();
     if (user && user.userId) {
       this._directService.fetchDirectsByDateUser(date, user.userId).subscribe((directs) => {
