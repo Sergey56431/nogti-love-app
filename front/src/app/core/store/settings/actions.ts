@@ -15,7 +15,6 @@ export namespace SettingsActions {
 
   export class GetSettingsSuccess {
     static readonly type = '[Settings] Get Settings Success';
-    constructor(public payload: SettingsType) {}
   }
 
   export class UpdateSettingsSuccess {

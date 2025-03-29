@@ -119,18 +119,11 @@ export class DatePickerComponent implements OnInit {
 
   // функция выбора даты с последующей отправкой запроса на получение всех записей в этот день
   protected _choiceDay(day: number) {
-    this.choiceDate.set(`${this._yearCount()}-${this._mountCount() > 9 ? this._mountCount() : '0' + this._mountCount()}-${day > 9 ? day : '0' + day}`);
-    this.day = `${day} ${this.month}`;
-    const options = {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-    };
+    this.choiceDate.set(`${this._yearCount()}-${this._mountCount().toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`);
+    this.day = `${day.toString().padStart(2, '0')} ${this.month}`;
     this.emitDate.emit(this.choiceDate());
-    const date = new Date(`${this._yearCount()}-${this._mountCount()}-${day}`)
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      .toLocaleDateString('ru-RU', options)
+    const date = new Date(`${this._yearCount()}-${this._mountCount().toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`)
+      .toLocaleDateString('ru-RU', {year: 'numeric', month: '2-digit', day: '2-digit'})
       .split('.')
       .reverse()
       .join('-');
