@@ -32,10 +32,10 @@ export class SettingsState {
     }
     this._settingsService.getSettings(action.userId).subscribe(settings => {
       ctx.setState(patch({
-        settings,
+        settings: settings,
       }));
 
-     return ctx.dispatch(new SettingsActions.GetSettingsSuccess(settings));
+     return ctx.dispatch(new SettingsActions.GetSettingsSuccess());
     });
   }
 
@@ -47,6 +47,7 @@ export class SettingsState {
     }
     this._settingsService.updateSettings(action.userId, action.settings).subscribe(settings => {
       ctx.setState(patch({
+        ...ctx.getState(),
         settings,
       }));
 
