@@ -23,7 +23,6 @@ export class AuthClientService {
   ) {}
   public async login(dto: LoginDto) {
     const client = await this._validateClient(dto);
-    console.log(client);
     if (!client) {
       throw new HttpException('Неверные учетные данные', 401);
     }

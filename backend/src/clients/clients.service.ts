@@ -19,7 +19,7 @@ export class ClientsService implements IClientsService {
     birthday: true,
     description: true,
     refreshToken: false,
-    password: true,
+    password: false,
     masterId: true,
     roleId: true,
   };
@@ -176,10 +176,8 @@ export class ClientsService implements IClientsService {
 
   public async findPhoneClient(phoneNumber: string) {
     try {
-      console.log('aboba', phoneNumber);
       return await this._prismaService.client.findUnique({
         where: { phoneNumber: phoneNumber },
-        select: this._returnClientModel,
       });
     } catch (error) {
       this.logger.error(
