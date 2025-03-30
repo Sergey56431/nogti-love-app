@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, OnInit, signal, Signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal, Signal } from '@angular/core';
 import { Breadcrumb } from 'primeng/breadcrumb';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
@@ -15,6 +15,8 @@ import { DayState, SnackStatusesUtil } from '@shared/utils';
 import { createDispatchMap, Store } from '@ngxs/store';
 import { SettingsActions, SettingsState } from '@core/store';
 import { Select } from 'primeng/select';
+import { SettingsType } from '@shared/types/settings.type';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-schedule-edit',
@@ -33,7 +35,8 @@ import { Select } from 'primeng/select';
   styleUrl: './schedule-edit.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ScheduleEditComponent implements OnInit {
+export class ScheduleEditComponent implements OnInit, OnDestroy {
+  private _subscription = inject(Subscription);
   protected _title = 'Расписание';
   protected _startHour = 0;
   protected _minute: string[] = [];
@@ -42,13 +45,8 @@ export class ScheduleEditComponent implements OnInit {
   protected _endMinute = signal<string>('00');
   protected _startDate = signal<string>('');
 
-  private readonly _settings = this._store.selectSignal(SettingsState.getSettings);
-  // @Select(SettingsState.getSettings) config$?: Observable<SettingsType>;
-  // private readonly _settings = signal<SettingsType | undefined>(undefined);
-  protected _adminSetting = computed(() => {
-    this._actions.getSettings(this._userId ?? '');
-    return this._settings();
-  });
+  private readonly _settings = this._store.select(SettingsState.getSettings);
+  protected _adminSetting = signal<SettingsType>({} as SettingsType);
 
   private _userId? = '';
   protected _dayState?: boolean = true;
@@ -94,6 +92,11 @@ export class ScheduleEditComponent implements OnInit {
   public ngOnInit(): void {
     this._userId = this._authService.getUserInfo().userId;
     this._actions.getSettings(this._userId ?? '');
+    this._subscription.add(this._settings.subscribe((settings) => {
+      if (settings) {
+        this._adminSetting.set(settings);
+      }
+    }));
     this._formingSchedule();
   }
 
@@ -101,8 +104,8 @@ export class ScheduleEditComponent implements OnInit {
     if (this._minute.length !== 0) {
       return;
     }
-    if (this._adminSetting()) { // undefined
-      const step = Number(this._settings()?.timeGranularity.split(':')[1]);
+    if (this._adminSetting()) {
+      const step = Number(this._adminSetting().timeGranularity.split(':')[1]);
       for (let i = 0; i < 60; i += step) {
         this._minute.push(i.toString());
       }
@@ -130,7 +133,6 @@ export class ScheduleEditComponent implements OnInit {
 
   protected _choiceDay(): void {
     this._mySchedule = this._scheduleCustom()?.customDays.find((item) => item.date === this._date());
-    // Исправить работу этого метода, он должен при выборе дня менять его статус на рабочий или не рабочий в зависимости от тригера
     if (this._mySchedule) {
       this._mySchedule = {
         date: this._date(),
@@ -174,7 +176,7 @@ export class ScheduleEditComponent implements OnInit {
   }
 
   protected _createSchedule(): void {
-    this._calendarService.createSchedule(this._scheduleCustom()).subscribe(result => {
+    this._subscription.add(this._calendarService.createSchedule(this._scheduleCustom()).subscribe(result => {
       if ((result as DefaultResponseType).error === undefined) {
         const successMessage = SnackStatusesUtil.getStatuses('success', 'Расписание успешно выставлено');
         this._snackBar.add(successMessage);
@@ -183,6 +185,10 @@ export class ScheduleEditComponent implements OnInit {
         const errorMessage = SnackStatusesUtil.getStatuses('error', 'Ошибка при выставлении расписания');
         this._snackBar.add(errorMessage);
       }
-    });
+    }));
+  }
+
+  public ngOnDestroy(): void {
+    this._subscription.unsubscribe();
   }
 }
