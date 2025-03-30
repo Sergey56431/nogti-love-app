@@ -23,11 +23,17 @@ export class ClientsController {
   ) {}
 
   @Get()
-  async find(@Query('id') id: string, @Query('masterId') masterId: string) {
+  async find(
+    @Query('id') id: string,
+    @Query('masterId') masterId: string,
+    @Query('phoneNumber') phoneNumber: string,
+  ) {
     if (id) {
       return await this._clientsService.findOne(id);
     } else if (masterId) {
       return await this._clientsService.findByMaster(masterId);
+    } else if (phoneNumber) {
+      return await this._clientsService.findPhoneClient(phoneNumber);
     }
     return await this._clientsService.findAll();
   }

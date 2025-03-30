@@ -5,7 +5,6 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { ClientsService } from '../clients';
-import { UpdateClientsDto } from '../clients/dto';
 import * as console from 'console';
 
 interface Client {
@@ -23,35 +22,40 @@ export class AuthClientService {
     private readonly _clientsService: ClientsService,
   ) {}
   public async login(dto: LoginDto) {
-    const client = this._validateClient(dto);
+    const client = await this._validateClient(dto);
     console.log(client);
     if (!client) {
       throw new HttpException('Неверные учетные данные', 401);
     }
-    // const refreshTokenKey = await this._generateRefreshToken(client);
-    // await this._clientsService.updateClient(client.id, {
-    //   refreshToken: refreshTokenKey,
-    // });
-    // return {
-    //   id: client.id,
-    //   name: client.name,
-    //   role: client.roleId,
-    //   access_token: await this._generateAccessToken(client),
-    // };
+    const refreshTokenKey = await this._generateRefreshToken(client);
+    await this._clientsService.updateClient(client.id, {
+      refreshToken: refreshTokenKey,
+    });
+    return {
+      id: client.id,
+      name: client.name,
+      role: client.roleId,
+      access_token: await this._generateAccessToken(client),
+    };
   }
   private async _validateClient(dto: LoginDto) {
-    const client = this._clientsService.findUniqClient(dto.phoneNumber);
-    console.log(client);
-    // if (client && (await bcrypt.compare(client.password, dto.password))) {
-    //   return {
-    //     id: client.id,
-    //     name: client.name,
-    //     roleId: client.roleId,
-    //     access_token: '',
-    //   };
-    // } else {
-    //   console.log('номер телефона или пароль введён неверно');
-    // }
+    const client: {
+      id: string;
+      name: string;
+      roleId: string;
+      password: string;
+    } = await this._clientsService.findPhoneClient(dto.phoneNumber);
+    if (client && (await bcrypt.compare(dto.password, client.password))) {
+      return {
+        id: client.id,
+        name: client.name,
+        roleId: client.roleId,
+        access_token: '',
+      };
+    } else {
+      console.log('номер телефона или пароль введён неверно');
+      return null;
+    }
   }
   private async _generateAccessToken(client: Client) {
     return this._jwtService.signAsync(client, {
