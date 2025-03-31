@@ -12,7 +12,6 @@ export interface IAuthService {
     access_token: string;
     userId: string;
     name: string;
-    role: string;
   }>;
   refreshToken(userId: string): Promise<{ accessToken: string }>;
   logout(userId: string);

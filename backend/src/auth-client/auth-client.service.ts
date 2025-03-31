@@ -10,7 +10,6 @@ import * as console from 'console';
 interface Client {
   id: string;
   name: string;
-  roleId: string;
   access_token: string;
 }
 @Injectable()
@@ -33,7 +32,6 @@ export class AuthClientService {
     return {
       id: client.id,
       name: client.name,
-      role: client.roleId,
       access_token: await this._generateAccessToken(client),
     };
   }
@@ -41,14 +39,12 @@ export class AuthClientService {
     const client: {
       id: string;
       name: string;
-      roleId: string;
       password: string;
     } = await this._clientsService.findPhoneClient(dto.phoneNumber);
     if (client && (await bcrypt.compare(dto.password, client.password))) {
       return {
         id: client.id,
         name: client.name,
-        roleId: client.roleId,
         access_token: '',
       };
     } else {

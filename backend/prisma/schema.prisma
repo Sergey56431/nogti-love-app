@@ -39,13 +39,13 @@ model CustomRole {
 }
 
 model Settings {
-    id                  String    @id @default(uuid())
-    defaultWorkTime     String    @default("09:00-16:00")
-    defaultBreakTime    String    @default("00:30")
-    timeGranularity     String    @default("00:30")
-    settingsData        Json
-    userId              String    @unique
-    user                User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id               String @id @default(uuid())
+  defaultWorkTime  String @default("09:00-16:00")
+  defaultBreakTime String @default("00:30")
+  timeGranularity  String @default("00:30")
+  settingsData     Json
+  userId           String @unique
+  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Calendar {
@@ -88,23 +88,23 @@ model Directs {
 }
 
 model Income_Expanses {
-  id                   String               @id @default(uuid())
-  categoryId           String
-  type                 TypeOperation
-  value                Float
-  createDate           DateTime?            @default(now())
-  updateDate           DateTime?
-  userId               String
-  categoryOperations   CategoryOperations   @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  user                 User                 @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  id                 String             @id @default(uuid())
+  categoryId         String
+  type               TypeOperation
+  value              Float
+  createDate         DateTime?          @default(now())
+  updateDate         DateTime?
+  userId             String
+  categoryOperations CategoryOperations @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  user               User               @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model CategoryOperations {
-  id                String              @id @default(uuid())
-  name              String
-  userId            String
-  income_Expanses   Income_Expanses[]
-  user              User                @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  id              String            @id @default(uuid())
+  name            String
+  userId          String
+  income_Expanses Income_Expanses[]
+  user            User              @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Category {
@@ -136,19 +136,18 @@ model DirectsServices {
 }
 
 model Client {
-    id              String      @id @default(uuid())
-    name            String
-    lastName        String?
-    phoneNumber     String      @unique
-    rate            Float?
-    birthday        DateTime?
-    description     String?
-    password        String
-    refreshToken    String?
-    roleId          String      @default("CLIENT")
-    masterId        String?
-    user            User?       @relation(fields: [masterId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    score           Int?
+  id           String    @id @default(uuid())
+  name         String
+  lastName     String?
+  phoneNumber  String    @unique
+  rate         Float?
+  birthday     DateTime?
+  description  String?
+  password     String
+  refreshToken String?
+  masterId     String?
+  user         User?     @relation(fields: [masterId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  score        Int?
 }
 
 enum TypeOperation {

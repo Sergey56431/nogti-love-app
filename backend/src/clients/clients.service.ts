@@ -21,7 +21,6 @@ export class ClientsService implements IClientsService {
     refreshToken: false,
     password: false,
     masterId: true,
-    roleId: true,
   };
 
   public async findAll() {
