@@ -11,7 +11,7 @@
                      selectionMode="range"
                      #period
                      [readonlyInput]="true"
-                     (onSelect)="test(period.value)" />
+                     (onSelect)="_selectPeriod(period.value)" />
       <button class="btn schedule-filter-btn"
               [class.active]="_showFilters()"
               (click)="showFiltersWindow()">Фильтры</button>
@@ -76,11 +76,17 @@
       }
 
 
-
     </div>
-      @if (!_showFilters()) {
-<!--        Реализовать здесь карточку клиента (Старая не работает)-->
-      }
+    <div>
+      <div class="directs-list">
+        @if (_directs != null && _directs.length === 0) {
+          @for (direct of _directs; track direct) {
+            <h2></h2>
+
+          }
+        }
+      </div>
+    </div>
   </div>
 </div>
 

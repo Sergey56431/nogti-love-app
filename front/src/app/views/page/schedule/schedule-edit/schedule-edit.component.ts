@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal, Signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, OnInit, signal, Signal } from '@angular/core';
 import { Breadcrumb } from 'primeng/breadcrumb';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
@@ -35,8 +35,8 @@ import { Subscription } from 'rxjs';
   styleUrl: './schedule-edit.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ScheduleEditComponent implements OnInit, OnDestroy {
-  private _subscription = inject(Subscription);
+export class ScheduleEditComponent implements OnInit {
+  private _subscription?: Subscription;
   protected _title = 'Расписание';
   protected _startHour = 0;
   protected _minute: string[] = [];
@@ -92,11 +92,11 @@ export class ScheduleEditComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this._userId = this._authService.getUserInfo().userId;
     this._actions.getSettings(this._userId ?? '');
-    this._subscription.add(this._settings.subscribe((settings) => {
+    this._subscription = this._settings.subscribe((settings) => {
       if (settings) {
         this._adminSetting.set(settings);
       }
-    }));
+    });
     this._formingSchedule();
   }
 
@@ -133,6 +133,7 @@ export class ScheduleEditComponent implements OnInit, OnDestroy {
 
   protected _choiceDay(): void {
     this._mySchedule = this._scheduleCustom()?.customDays.find((item) => item.date === this._date());
+    // Исправить работу этого метода, он должен при выборе дня менять его статус на рабочий или не рабочий в зависимости от тригера
     if (this._mySchedule) {
       this._mySchedule = {
         date: this._date(),
@@ -176,7 +177,7 @@ export class ScheduleEditComponent implements OnInit, OnDestroy {
   }
 
   protected _createSchedule(): void {
-    this._subscription.add(this._calendarService.createSchedule(this._scheduleCustom()).subscribe(result => {
+    this._subscription?.add(this._calendarService.createSchedule(this._scheduleCustom()).subscribe(result => {
       if ((result as DefaultResponseType).error === undefined) {
         const successMessage = SnackStatusesUtil.getStatuses('success', 'Расписание успешно выставлено');
         this._snackBar.add(successMessage);
@@ -186,9 +187,5 @@ export class ScheduleEditComponent implements OnInit, OnDestroy {
         this._snackBar.add(errorMessage);
       }
     }));
-  }
-
-  public ngOnDestroy(): void {
-    this._subscription.unsubscribe();
   }
 }
