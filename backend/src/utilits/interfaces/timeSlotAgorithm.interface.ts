@@ -1,6 +1,8 @@
 interface UserSettings {
   userId: string;
-  settingsData: { name: string; value: string }[];
+  defaultWorkTime: string; // "09:00-17:00"
+  defaultBreakTime: string; // "00:10"
+  timeGranularity: string; // "00:30"
 }
 
 interface TimeBoundaries {
