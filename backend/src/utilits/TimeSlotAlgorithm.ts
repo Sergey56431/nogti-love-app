@@ -1,19 +1,17 @@
 import { ServicesService } from '../services';
 import { SettingsService } from '../settings';
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { FreeSlotsService } from '../freeSlots';
 import { CategoryService } from '../categories';
 import { IServicesService } from '../services/interfaces';
 import { ISettingService } from '../settings/interfaces';
 import { IFreeSlotsService } from '../freeSlots/interfaces';
 import { ICategoryServices } from '../categories/interfaces';
-import { ITimeSlotUtilits } from './interfaces/timeSlotAgorithm.interface';
+import { ITimeSlotUtilits } from './interfaces';
 
 interface UserSettings {
   userId: string;
-  defaultWorkTime: string; // "09:00-17:00"
-  defaultBreakTime: string; // "00:10"
-  timeGranularity: string; // "00:30"
+  settingsData: { name: string; value: string }[];
 }
 
 interface TimeBoundaries {
@@ -69,9 +67,11 @@ export class TimeSlotUtilits implements ITimeSlotUtilits {
   public async getUserSettings(userId: string): Promise<any> {
     const settings = await this._settingsService.findByUser(userId);
     if (!settings) {
-      throw new Error(`Настройки не найдены для пользователя: ${userId}`);
+      throw new HttpException(
+        `Настройки не найдены для пользователя: ${userId}`,
+        404,
+      );
     }
-    delete settings.settingsData;
     return settings;
   }
 
@@ -107,7 +107,7 @@ export class TimeSlotUtilits implements ITimeSlotUtilits {
     settings: UserSettings,
     customWorkTime?: string,
   ): Promise<[string, string]> {
-    const workTime = customWorkTime || settings.defaultWorkTime;
+    const workTime = customWorkTime || settings.settingsData[0].value;
     return workTime.split('-') as [string, string];
   }
 
@@ -121,10 +121,10 @@ export class TimeSlotUtilits implements ITimeSlotUtilits {
     const startMinutes = await this.convertTimeToMinutes(startTime);
     const endMinutes = await this.convertTimeToMinutes(endTime);
     const breakMinutes = await this.convertTimeToMinutes(
-      settings.defaultBreakTime,
+      settings.settingsData[2].value,
     );
     const granularityMinutes = await this.convertTimeToMinutes(
-      settings.timeGranularity,
+      settings.settingsData[1].value,
     );
     return { startMinutes, endMinutes, breakMinutes, granularityMinutes };
   }
