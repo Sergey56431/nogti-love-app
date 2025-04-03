@@ -140,14 +140,16 @@ export class ClientsService implements IClientsService {
       throw new HttpException('Отсутствует ID клиента', 400);
     }
     try {
+      console.log(data, id);
       return await this._prismaService.client.update({
         select: this._returnClientModel,
-        where: { id },
-        data: data,
+        where: { id: id },
+        data: { ...data },
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         this.logger.warn(`Клиент с ID ${id} не найден ${data}`);
+        console.log(error);
         throw new HttpException('Клиент не найден', 404);
       }
       console.log(error);
