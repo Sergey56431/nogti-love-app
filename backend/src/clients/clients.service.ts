@@ -137,6 +137,7 @@ export class ClientsService implements IClientsService {
   public async updateClient(id: string, data: UpdateClientsDto) {
     if (!id) {
       this.logger.warn(`Отсутствует ID клиента ${data}`);
+      console.log(data, id);
       throw new HttpException('Отсутствует ID клиента', 400);
     }
     try {
