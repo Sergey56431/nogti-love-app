@@ -66,7 +66,7 @@ export class ClientsService {
   }
 
   public updateClientData(id: string, data: Partial<ClientInfoType>): Observable<ClientInfoType> {
-    return this.http.put<ClientInfoType>(environment.api + 'clients', { data: data }, {
+    return this.http.put<ClientInfoType>(environment.api + 'clients', data, {
       params: {
         id: id,
       },
