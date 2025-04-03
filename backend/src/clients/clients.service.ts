@@ -143,7 +143,7 @@ export class ClientsService implements IClientsService {
       return await this._prismaService.client.update({
         select: this._returnClientModel,
         where: { id },
-        data,
+        data: data,
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {

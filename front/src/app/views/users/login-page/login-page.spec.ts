@@ -10,7 +10,7 @@ import { of } from 'rxjs';
 describe('Страница авторизации', () => {
   let authService: AuthService;
   let router: Router;
-  let snackBar: MessageService;
+  // let snackBar: MessageService;
   let page: LoginPageComponent;
   let fixture: ComponentFixture<LoginPageComponent>;
 
