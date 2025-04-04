@@ -24,8 +24,6 @@ export class ClientsService implements IClientsService {
     password: false,
     masterId: true,
     roleId: true,
-    ReferrerId: true,
-    ReferalId: true,
   };
 
   public async findAll() {
