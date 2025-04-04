@@ -7,7 +7,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class ClientsService implements IClientsService {
-  private readonly logger = new Logger(ClientsService.name);
+  private readonly _logger = new Logger(ClientsService.name);
   constructor(private readonly _prismaService: PrismaService) {}
 
   private _returnClientModel = {
@@ -32,7 +32,7 @@ export class ClientsService implements IClientsService {
       });
     } catch (error) {
       console.log(error);
-      this.logger.error('Ошибка при получении списка клиентов', error.stack);
+      this._logger.error('Ошибка при получении списка клиентов', error.stack);
       throw new HttpException(
         'Ошибка сервера при получении списка клиентов',
         500,
@@ -48,7 +48,7 @@ export class ClientsService implements IClientsService {
       });
     } catch (error) {
       console.log(error);
-      this.logger.error(
+      this._logger.error(
         `Ошибка при поиске клиента по ID мастера ${masterId}`,
         error.stack,
       );
@@ -64,7 +64,7 @@ export class ClientsService implements IClientsService {
       });
 
       if (!result) {
-        this.logger.warn(`Клиент с ID ${id} не найден`);
+        this._logger.warn(`Клиент с ID ${id} не найден`);
         throw new HttpException('Клиент не найден', 404);
       }
 
@@ -74,7 +74,7 @@ export class ClientsService implements IClientsService {
         throw error;
       }
       console.log(error);
-      this.logger.error(`Ошибка при поиске клиента по ID ${id}`, error.stack);
+      this._logger.error(`Ошибка при поиске клиента по ID ${id}`, error.stack);
       throw new HttpException('Ошибка сервера при поиске клиента по ID', 500);
     }
   }
@@ -82,7 +82,7 @@ export class ClientsService implements IClientsService {
   public async createClient(createClientsDto: CreateClientsDto) {
     const { password, phoneNumber } = createClientsDto;
     if (!password || !phoneNumber) {
-      this.logger.warn(
+      this._logger.warn(
         `Отсутствуют необходимые данные ${createClientsDto} для создания клиента`,
       );
       throw new HttpException(
@@ -98,7 +98,7 @@ export class ClientsService implements IClientsService {
     });
 
     if (existingClient) {
-      this.logger.warn(
+      this._logger.warn(
         `Клиент с таким phoneNumber ${createClientsDto} уже существует`,
       );
       throw new HttpException('Клиент с таким phoneNumber уже существует', 409);
@@ -115,18 +115,18 @@ export class ClientsService implements IClientsService {
         data: { ...createClientsDto, password: hashedPassword },
       });
 
-      this.logger.log(`Клиент успешно создан, \n${createClientsDto}`);
+      this._logger.log(`Клиент успешно создан, \n${createClientsDto}`);
 
       return client;
     } catch (error) {
       if (error.code === 'P2002') {
-        this.logger.warn(
+        this._logger.warn(
           `Клиент с таким именем уже существует ${createClientsDto}`,
         );
         throw new HttpException('Клиент с таким именем уже существует', 409);
       }
       console.log(error);
-      this.logger.error(
+      this._logger.error(
         `Ошибка при создании клиента ${createClientsDto}`,
         error.stack,
       );
@@ -136,7 +136,7 @@ export class ClientsService implements IClientsService {
 
   public async updateClient(id: string, data: UpdateClientsDto) {
     if (!id) {
-      this.logger.warn(`Отсутствует ID клиента ${data}`);
+      this._logger.warn(`Отсутствует ID клиента ${data}`);
       throw new HttpException('Отсутствует ID клиента', 400);
     }
     try {
@@ -147,11 +147,11 @@ export class ClientsService implements IClientsService {
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
-        this.logger.warn(`Клиент с ID ${id} не найден ${data}`);
+        this._logger.warn(`Клиент с ID ${id} не найден ${data}`);
         throw new HttpException('Клиент не найден', 404);
       }
       console.log(error);
-      this.logger.error(
+      this._logger.error(
         `Ошибка при обновлении клиента с ID ${id} ${data}`,
         error.stack,
       );
@@ -166,11 +166,11 @@ export class ClientsService implements IClientsService {
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
-        this.logger.warn(`Клиент с ID ${id} не найден при удалении`);
+        this._logger.warn(`Клиент с ID ${id} не найден при удалении`);
         throw new HttpException('Клиент не найден', 404);
       }
       console.log(error);
-      this.logger.error(`Ошибка при удалении клиента с ID ${id}`, error.stack);
+      this._logger.error(`Ошибка при удалении клиента с ID ${id}`, error.stack);
       throw new HttpException('Ошибка сервера при удалении клиента', 500);
     }
   }
