@@ -60,6 +60,7 @@ export class SettingsService implements ISettingService {
       const updatedSettings = await this._prismaService.settings.update({
         where: { userId },
         data: {
+          ...updateSettingsDto,
           settingsData: updatedSettingsData,
         },
       });
