@@ -7,7 +7,6 @@ export class CreateClientsDto {
   description?: string;
   refreshToken?: string;
   masterId?: string;
-  roleId?: string;
   score?: number;
   password: string;
 }

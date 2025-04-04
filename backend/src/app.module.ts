@@ -15,6 +15,7 @@ import { CategoryOperationsModule } from './categoryOperations';
 import { TimeSlotAlgorithmModule } from './utilits';
 import { RolesModule } from './roles/roles.module';
 import { ClientsModule } from './clients';
+import { AuthClientModule } from './auth-client/auth-client.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ClientsModule } from './clients';
     TimeSlotAlgorithmModule,
     ClientsModule,
     RolesModule,
+    AuthClientModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, JwtStrategy],
