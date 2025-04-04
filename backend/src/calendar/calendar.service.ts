@@ -436,9 +436,14 @@ export class CalendarService implements ICalendarService {
 
       return await this._prismaService.calendar.findMany({
         where: { userId, date: { gte: firstDayOfMonth, lte: lastDayOfMonth } },
-        include: { freeSlots: {  where: {
+        include: {
+          freeSlots: {
+            where: {
               isBooked: false,
-            }, select: { time: true } } },
+            },
+            select: { time: true },
+          },
+        },
       });
     } catch (error) {
       if (error instanceof HttpException) {

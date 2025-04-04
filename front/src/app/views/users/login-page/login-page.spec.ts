@@ -18,7 +18,6 @@ describe('Страница авторизации', () => {
     TestBed.configureTestingModule({
       imports: [
         ReactiveFormsModule,
-        // Убедитесь, что HttpClientModule импортирован
         LoginPageComponent,
       ],
       providers: [
@@ -41,7 +40,7 @@ describe('Страница авторизации', () => {
     page = fixture.componentInstance;
     authService = TestBed.inject(AuthService);
     router = TestBed.inject(Router);
-    snackBar = TestBed.inject(MessageService);
+    // snackBar = TestBed.inject(MessageService);
   });
 
   it('Нельзя нажать кнопку входа, если поля не заполнены', () => {
