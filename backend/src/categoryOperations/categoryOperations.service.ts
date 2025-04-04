@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { HttpException } from '@nestjs/common';
 import {
   CreateCategoryOperationsDto,
@@ -7,10 +7,11 @@ import {
 import { PrismaService } from '../prisma';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { ICategoryOperationsService } from './interfaces';
+import {CustomLogger} from "../logger";
 
 @Injectable()
 export class CategoryOperationsService implements ICategoryOperationsService {
-  private readonly logger = new Logger(CategoryOperationsService.name);
+  private readonly _logger = new CustomLogger();
 
   constructor(private readonly _prismaService: PrismaService) {}
 
@@ -19,7 +20,7 @@ export class CategoryOperationsService implements ICategoryOperationsService {
       const errors = [];
 
       if (!data.userId) {
-        this.logger.warn(
+        this._logger.warn(
           `Нет ID пользователя для создания категории операций, ${data}`,
         );
         errors.push(
@@ -27,7 +28,7 @@ export class CategoryOperationsService implements ICategoryOperationsService {
         );
       }
       if (!data.name) {
-        this.logger.warn(
+        this._logger.warn(
           `Нет названия категорий операций для создания категории операций, ${data}`,
         );
         errors.push(
@@ -49,7 +50,7 @@ export class CategoryOperationsService implements ICategoryOperationsService {
           },
         });
 
-      this.logger.log(
+      this._logger.log(
         `Категория операции ${createdCategoryOperation} успешно создана для пользователя с ID ${data.userId}`,
       );
       return createdCategoryOperation;
@@ -61,13 +62,13 @@ export class CategoryOperationsService implements ICategoryOperationsService {
         error instanceof PrismaClientKnownRequestError &&
         error.code == 'P2003'
       ) {
-        this.logger.warn(
+        this._logger.warn(
           `Пользователь ${data.userId} не найден при создании категории ${data}`,
         );
         throw new HttpException('Пользователь не найден', 404);
       }
-      console.error(error);
-      this.logger.error(
+      console.log(error);
+      this._logger.error(
         `Пользователь ${data.userId} ввел неверные данные для создания категории операции`,
         error.stack,
       );
@@ -82,11 +83,11 @@ export class CategoryOperationsService implements ICategoryOperationsService {
     try {
       const categoryOperations =
         await this._prismaService.categoryOperations.findMany();
-      this.logger.log('Успешно получены все категории операций');
+      this._logger.log('Успешно получены все категории операций');
       return categoryOperations;
     } catch (error) {
-      console.error(error);
-      this.logger.error(
+      console.log(error);
+      this._logger.error(
         `Ошибка при поиске всех категорий операций`,
         error.stack,
       );
@@ -104,15 +105,15 @@ export class CategoryOperationsService implements ICategoryOperationsService {
       });
 
       if (!result) {
-        this.logger.warn(`Категория операции с ID ${id} не найдена`);
+        this._logger.warn(`Категория операции с ID ${id} не найдена`);
         throw new HttpException('Категория операции не найдена', 404);
       }
 
-      this.logger.log(`Категория операции с ID ${id} успешно найдена`);
+      this._logger.log(`Категория операции с ID ${id} успешно найдена`);
       return result;
     } catch (error) {
-      console.error(error);
-      this.logger.error(
+      console.log(error);
+      this._logger.error(
         `Ошибка при поиске категории операции с ID ${id}`,
         error.stack,
       );
@@ -131,13 +132,13 @@ export class CategoryOperationsService implements ICategoryOperationsService {
         });
 
       if (categoryOperations.length === 0) {
-        this.logger.warn(
+        this._logger.warn(
           `Категории операции для пользователя с ID ${userId} не найдены`,
         );
         throw new HttpException('Категории операции не найдены', 404);
       }
 
-      this.logger.log(
+      this._logger.log(
         `Успешно найдены категории операции для пользователя с ID ${userId}`,
       );
       return categoryOperations;
@@ -145,8 +146,8 @@ export class CategoryOperationsService implements ICategoryOperationsService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.error(error);
-      this.logger.error(
+      console.log(error);
+      this._logger.error(
         `Ошибка при поиске категорий операции пользователя с ID ${userId}`,
         error.stack,
       );
@@ -168,7 +169,7 @@ export class CategoryOperationsService implements ICategoryOperationsService {
           },
         });
 
-      this.logger.log(
+      this._logger.log(
         `Категория операции с ID ${id} успешно обновлена, ${data}`,
       );
       return updatedCategoryOperation;
@@ -177,13 +178,13 @@ export class CategoryOperationsService implements ICategoryOperationsService {
         error instanceof PrismaClientKnownRequestError &&
         error.code == 'P2025'
       ) {
-        this.logger.warn(
+        this._logger.warn(
           `Категория операции с ID ${id} не найдена при обновлении ${data}`,
         );
         throw new HttpException('Категория операции не найдена', 404);
       }
-      console.error(error);
-      this.logger.error(
+      console.log(error);
+      this._logger.error(
         `Пользователь ${data.userId} ввел неверные данные для обновления категории операции ${id}`,
         error.stack,
       );
@@ -196,7 +197,7 @@ export class CategoryOperationsService implements ICategoryOperationsService {
 
   async remove(id: string) {
     try {
-      this.logger.log(`Удаление категории операции с ID ${id}`);
+      this._logger.log(`Удаление категории операции с ID ${id}`);
       return await this._prismaService.categoryOperations.delete({
         where: { id },
       });
@@ -205,13 +206,13 @@ export class CategoryOperationsService implements ICategoryOperationsService {
         error instanceof PrismaClientKnownRequestError &&
         error.code == 'P2025'
       ) {
-        this.logger.warn(
+        this._logger.warn(
           `Категория операции с ID ${id} не найдена при удалении`,
         );
         throw new HttpException('Категория операции не найдена', 404);
       }
-      console.error(error);
-      this.logger.error(
+      console.log(error);
+      this._logger.error(
         `Ошибка при удалении категории операции с ID ${id}`,
         error.stack,
       );
