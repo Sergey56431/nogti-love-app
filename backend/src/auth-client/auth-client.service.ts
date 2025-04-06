@@ -6,6 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { ClientsService } from '../clients';
 import * as console from 'console';
+import { SignupDto } from 'src/auth/auth-dto';
 
 interface Client {
   id: string;
@@ -35,6 +36,10 @@ export class AuthClientService {
       access_token: await this._generateAccessToken(client),
     };
   }
+  public async singUp(client: SignupDto){
+    return this._clientsService.createClient(client)
+  }
+
   private async _validateClient(dto: LoginDto) {
     const client: {
       id: string;
