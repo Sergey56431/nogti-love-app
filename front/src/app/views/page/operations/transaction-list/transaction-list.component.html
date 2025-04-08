@@ -1,0 +1,9 @@
+<div class="page-content">
+  <h1 class="page-title">{{ _title }}</h1>
+
+  <div class="flex items-center">
+    <p-select-button [options]="_periodFilters" [(ngModel)]="_period" (onChange)="_selectedPeriod($event.value)" optionLabel="label" optionValue="value" aria-labelledby="basic" />
+  </div>
+
+</div>
+

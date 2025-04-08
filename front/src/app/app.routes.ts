@@ -69,12 +69,12 @@ export const routes: Routes = [
         title: 'Список операций',
       },
       {
-        path: 'category-operations/:category',
-        loadComponent: () => import('./views').then((c) => c.AllTransationsPageComponent),
+        path: 'operations-list',
+        loadComponent: () => import('./views').then((c) => c.TransactionListComponent),
         title: 'Список операций',
       },
       {
-        path: 'category-operations',
+        path: 'edit-categories',
         loadComponent: () => import('./views').then((c) => c.OperationsCategoryComponent),
         title: 'Категории операций',
       },
