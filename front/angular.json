@@ -60,6 +60,7 @@
                   "maximumError": "10kB"
                 }
               ],
+              "optimization": true,
               "outputHashing": "all",
               "serviceWorker": "ngsw-config.json"
             },

@@ -1,8 +1,24 @@
 <div class="page-content">
   <h1 class="page-title">{{ _title }}</h1>
 
-  <div class="flex items-center">
-    <p-select-button [options]="_periodFilters" [(ngModel)]="_period" (onChange)="_selectedPeriod($event.value)" optionLabel="label" optionValue="value" aria-labelledby="basic" />
+  <div class="flex flex-col items-start gap-2">
+    <div class="flex items-center">
+      <p-select-button [options]="_typeFilters" [(ngModel)]="_type" (onChange)="_selectedTypeOrPeriod()"
+                       optionLabel="label" optionValue="value" aria-labelledby="basic" [allowEmpty]="false"
+                       size="large" />
+    </div>
+
+    <div class="flex items-center">
+      <p-select-button [options]="_periodFilters" [(ngModel)]="_period" (onChange)="_selectedTypeOrPeriod()"
+                       optionLabel="label" optionValue="value" aria-labelledby="basic" [allowEmpty]="false"
+                       size="large" />
+    </div>
+  </div>
+
+  <div>
+    <p-table [value]="_operationsList()">
+
+    </p-table>
   </div>
 
 </div>

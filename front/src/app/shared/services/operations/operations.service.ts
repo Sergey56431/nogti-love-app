@@ -16,8 +16,8 @@ export class OperationsService {
     return this._http.get<OperationsInterface[] | DefaultResponseType>(environment.api + 'operations');
   }
 
-  public fetchOperationsByUser(userId: string): Observable<OperationsInterface | DefaultResponseType> {
-    return this._http.get<OperationsInterface | DefaultResponseType>(
+  public fetchOperationsByUser(userId: string): Observable<OperationsInterface[] | DefaultResponseType> {
+    return this._http.get<OperationsInterface[] | DefaultResponseType>(
       environment.api + 'operations/', {
         params: {
           userId: userId,
