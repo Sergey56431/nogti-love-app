@@ -13,12 +13,12 @@ export class OperationsService {
   }
 
   public fetchAllOperations(): Observable<OperationsInterface[] | DefaultResponseType> {
-    return this._http.get<OperationsInterface[] | DefaultResponseType>(environment.api + 'operations');
+    return this._http.get<OperationsInterface[] | DefaultResponseType>(environment.api + 'operation');
   }
 
   public fetchOperationsByUser(userId: string): Observable<OperationsInterface[] | DefaultResponseType> {
     return this._http.get<OperationsInterface[] | DefaultResponseType>(
-      environment.api + 'operations/', {
+      environment.api + 'operation', {
         params: {
           userId: userId,
         },
@@ -27,7 +27,7 @@ export class OperationsService {
   }
 
   public fetchOneOperation(id: string): Observable<OperationsInterface | DefaultResponseType> {
-    return this._http.get<OperationsInterface | DefaultResponseType>(environment.api + 'operations/', {
+    return this._http.get<OperationsInterface | DefaultResponseType>(environment.api + 'operation/', {
       params: {
         id: id,
       },
@@ -35,7 +35,7 @@ export class OperationsService {
   }
 
   public createOperation(operation: OperationsInterface, userId: string): Observable<OperationsInterface | DefaultResponseType> {
-    return this._http.post<OperationsInterface>(environment.api + 'operations', {
+    return this._http.post<OperationsInterface>(environment.api + 'operation', {
       params: {
         userId: userId,
       },
@@ -43,8 +43,8 @@ export class OperationsService {
     });
   }
 
-  public updateOperation(operation: OperationsInterface, id: string): Observable<OperationsInterface | DefaultResponseType> {
-    return this._http.put<OperationsInterface | DefaultResponseType>(environment.api + 'operations/', {
+  public updateOperation(operation: Partial<OperationsInterface>, id: string): Observable<OperationsInterface | DefaultResponseType> {
+    return this._http.put<OperationsInterface | DefaultResponseType>(environment.api + 'operation/', {
       params: {
         id: id,
       },
@@ -53,7 +53,7 @@ export class OperationsService {
   }
 
   public deleteOperation(id: string): Observable<OperationsInterface | DefaultResponseType> {
-    return this._http.delete<OperationsInterface | DefaultResponseType>(environment.api + 'operations/', {
+    return this._http.delete<OperationsInterface | DefaultResponseType>(environment.api + 'operation/', {
       params: {
         id: id,
       },

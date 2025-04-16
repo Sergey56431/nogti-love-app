@@ -6,6 +6,8 @@ import { TableModule } from 'primeng/table';
 import { AuthService } from '@core/auth';
 import { createDispatchMap, select } from '@ngxs/store';
 import { OperationsState, Transactions } from '@core/store';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { Button } from 'primeng/button';
 
 enum PeriodValue {
   ALL= 'all',
@@ -28,7 +30,9 @@ enum OperationType {
     SelectButton,
     FormsModule,
     TableModule,
+    Button,
   ],
+  providers: [ConfirmationService, MessageService],
   templateUrl: './transaction-list.component.html',
   styleUrl: './transaction-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -79,9 +83,11 @@ export class TransactionListComponent implements OnInit {
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _authService = inject(AuthService);
   private readonly _router = inject(Router);
+  private readonly _confirmationService = inject(ConfirmationService);
 
   private readonly _actions = createDispatchMap({
-    getOperations: Transactions.GetOperations
+    getOperations: Transactions.GetOperations,
+    deleteOperations: Transactions.DeleteOperation
   });
 
   public ngOnInit(): void {
@@ -106,8 +112,29 @@ export class TransactionListComponent implements OnInit {
     // Здесь будет логика вызова окна для редактирования операции
   }
 
-  protected _deleteOperations() {
-    // Здесь будет логика для удаления операции
+  protected _deleteOperations(id: string) {
+    this._confirmationService.confirm({
+      message: 'Вы уверены, что хотите удалить эту операцию?',
+      header: 'Подтверждение',
+      icon: 'pi pi-exclamation-triangle',
+      closable: true,
+      closeOnEscape: true,
+      rejectButtonProps: {
+        label: 'Отмена',
+        severity: 'secondary',
+        outlined: true,
+        icon: 'pi pi-times',
+      },
+      acceptButtonProps: {
+        severity: 'danger',
+        outlined: false,
+        icon: 'pi pi-trash',
+        label: 'Удалить',
+      },
+      accept: () => {
+        this._actions.deleteOperations(id);
+      }
+    });
   }
 
   protected _createOperations() {
