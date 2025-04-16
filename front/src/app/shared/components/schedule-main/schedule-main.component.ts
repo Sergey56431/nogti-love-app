@@ -72,7 +72,7 @@ export class ScheduleMainComponent {
       },
     });
     this._ref.onClose.subscribe(() => {
-      this.calendar?._refreshDatePicker();
+      this.calendar?.fetchDirectsToDay(this.calendar?.selectedDate());
     });
   }
 
