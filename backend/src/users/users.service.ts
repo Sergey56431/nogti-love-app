@@ -17,7 +17,7 @@ export class UsersService implements IUsersService {
     // score: false,
     rate: true,
     birthday: true,
-    description: true,
+    // description: true,
     role: true,
     refreshToken: false,
     password: false,

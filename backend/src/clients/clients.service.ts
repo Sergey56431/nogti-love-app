@@ -1,14 +1,13 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { IClientsService } from './interfaces';
 import { PrismaService } from '../prisma';
 import { CreateClientsDto, UpdateClientsDto } from './dto';
 import * as bcrypt from 'bcrypt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import {CustomLogger} from "../logger";
 
 @Injectable()
 export class ClientsService implements IClientsService {
-  private readonly _logger = new CustomLogger();
+  private readonly _logger = new Logger(ClientsService.name);
   constructor(private readonly _prismaService: PrismaService) {}
 
   private _returnClientModel = {
@@ -138,11 +137,9 @@ export class ClientsService implements IClientsService {
   public async updateClient(id: string, data: UpdateClientsDto) {
     if (!id) {
       this._logger.warn(`Отсутствует ID клиента ${data}`);
-      console.log(data, id);
       throw new HttpException('Отсутствует ID клиента', 400);
     }
     try {
-      console.log(data, id);
       return await this._prismaService.client.update({
         select: this._returnClientModel,
         where: { id: id },
@@ -151,7 +148,6 @@ export class ClientsService implements IClientsService {
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         this._logger.warn(`Клиент с ID ${id} не найден ${data}`);
-        console.log(error);
         throw new HttpException('Клиент не найден', 404);
       }
       console.log(error);
@@ -178,5 +174,4 @@ export class ClientsService implements IClientsService {
       throw new HttpException('Ошибка сервера при удалении клиента', 500);
     }
   }
-
 }
