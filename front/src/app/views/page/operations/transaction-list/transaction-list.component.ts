@@ -6,7 +6,7 @@ import { TableModule } from 'primeng/table';
 import { AuthService } from '@core/auth';
 import { createDispatchMap, select } from '@ngxs/store';
 import { OperationsState, Transactions } from '@core/store';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService } from 'primeng/api';
 import { Button } from 'primeng/button';
 
 enum PeriodValue {
@@ -32,7 +32,6 @@ enum OperationType {
     TableModule,
     Button,
   ],
-  providers: [ConfirmationService, MessageService],
   templateUrl: './transaction-list.component.html',
   styleUrl: './transaction-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
