@@ -32,7 +32,7 @@ export class ScheduleMainComponent {
   private _status: ToastMessageOptions = {} as ToastMessageOptions;
   protected _choiceDay = signal<CalendarResponse | null>(null);
   protected _options = [
-    { routerLink: '/schedule/edit', label: 'Редактировать расписание' },
+    { routerLink: '/schedule-edit', label: 'Редактировать расписание' },
     { routerLink: '/schedule', label: 'Список всех записей' },
     {
       label: 'Обновить расписание',
@@ -72,7 +72,7 @@ export class ScheduleMainComponent {
       },
     });
     this._ref.onClose.subscribe(() => {
-      this.calendar?._refreshDatePicker();
+      this.calendar?.fetchDirectsToDay(this.calendar?.selectedDate());
     });
   }
 

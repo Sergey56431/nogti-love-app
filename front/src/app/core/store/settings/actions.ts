@@ -5,12 +5,12 @@ export namespace SettingsActions {
 
   export class GetSettings {
     static readonly type = '[Settings] Get Settings';
-    constructor(public userId: string) {}
+    constructor(public readonly userId: string) {}
   }
 
   export class UpdateSettings {
     static readonly type = '[Settings] Update Settings';
-    constructor(public userId: string, public settings: Partial<SettingsType>) {}
+    constructor(public readonly userId: string, public settings: Partial<SettingsType>) {}
   }
 
   export class GetSettingsSuccess {
@@ -19,6 +19,6 @@ export namespace SettingsActions {
 
   export class UpdateSettingsSuccess {
     static readonly type = '[Settings] Update Settings Success';
-    constructor(public payload: SettingsType) {}
+    constructor(public readonly payload: SettingsType) {}
   }
 }

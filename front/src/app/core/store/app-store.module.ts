@@ -3,11 +3,12 @@ import { NgxsModule } from '@ngxs/store';
 import { SettingsState } from './settings';
 import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
+import { OperationsState } from './operations';
 
 @NgModule({
   declarations: [],
   imports: [
-  NgxsModule.forRoot([SettingsState]),
+  NgxsModule.forRoot([SettingsState, OperationsState]),
   NgxsLoggerPluginModule.forRoot(),
   NgxsReduxDevtoolsPluginModule.forRoot()
   ],

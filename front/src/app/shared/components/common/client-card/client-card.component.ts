@@ -27,11 +27,12 @@ export class ClientCardComponent implements OnInit {
               private readonly _ref: DynamicDialogRef) {}
 
   ngOnInit(): void {
-    if (!this._config.data) {
+    if (this._config.data) {
       this._directInfo.set(this._config.data);
     }
+    console.log(this._directInfo());
     this._createUserFavorsList();
-    this._clientService.fetchAdminClient(this._directInfo()?.userId ?? '').subscribe(client => {
+    this._clientService.fetchAdminClient(this._directInfo()?.id ?? '').subscribe(client => {
       this._userInfo.set(client as ClientInfoType);
     });
   }
