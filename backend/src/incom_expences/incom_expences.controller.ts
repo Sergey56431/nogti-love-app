@@ -10,7 +10,11 @@ import {
   Inject,
 } from '@nestjs/common';
 import { OperationsService } from './incom_expences.service';
-import { CreateOperationsDto, UpdateOperationsDto } from './dto';
+import {
+  CreateOperationsDto,
+  FindOperationsDto,
+  UpdateOperationsDto,
+} from './dto';
 import { TokenGuard } from '../auth';
 import {
   ApiBody,
@@ -120,15 +124,12 @@ export class IncomeExpencesController {
       'Ошибка при поиске категорий по пользователю / Ошибка при поиске всех операций / Ошибка при поиске операции',
   })
   @Get()
-  public async findAll(
-    @Query('userId') userId: string,
-    @Query('id') id: string,
-  ) {
-    if (userId) {
-      return this._operationsService.findByUser(userId);
-    } else if (id) {
-      return this._operationsService.findOne(id);
-    } else return this._operationsService.findAll();
+  public async find(@Query() findOperationsDto: FindOperationsDto) {
+    const operations = await this._operationsService.find(findOperationsDto);
+    if (findOperationsDto.id) {
+      return operations[0];
+    }
+    return operations;
   }
 
   @ApiOperation({ summary: 'Обновить операцию дохода/расхода' })

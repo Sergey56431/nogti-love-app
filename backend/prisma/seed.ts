@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, TypeOperation } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -43,6 +43,7 @@ async function main() {
   const categoryOperations = await prisma.categoryOperations.create({
     data: {
       name: 'Зарплата',
+      type: TypeOperation.income,
       userId: user1.id,
     },
   });
@@ -50,7 +51,6 @@ async function main() {
   await prisma.income_Expanses.create({
     data: {
       categoryId: categoryOperations.id,
-      type: 'income',
       value: 50000,
       userId: user1.id,
     },

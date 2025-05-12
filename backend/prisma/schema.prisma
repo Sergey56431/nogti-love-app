@@ -88,7 +88,6 @@ model Directs {
 model Income_Expanses {
   id                   String               @id @default(uuid())
   categoryId           String
-  type                 TypeOperation
   value                Float
   createDate           DateTime?            @default(now())
   updateDate           DateTime?
@@ -100,6 +99,7 @@ model Income_Expanses {
 model CategoryOperations {
   id                String              @id @default(uuid())
   name              String
+  type              TypeOperation
   userId            String
   income_Expanses   Income_Expanses[]
   user              User                @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)

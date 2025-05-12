@@ -236,23 +236,148 @@ export class BookSlotsAlgorithm {
       }
       maxAvailableTime = Math.max(maxAvailableTime, currentAvailableTime);
 
-      if (maxAvailableTime < minServiceDuration + breakMinutes) {
-        await this._updateState(calendarDay.id, DayState.full);
+      if (minServiceDuration === 0 || minServiceDuration === Infinity) {
+        // Проверка на случай отсутствия услуг
+        await this._updateCalendarDayState(calendarDay.id, DayState.full);
+      } else if (maxAvailableTime < minServiceDuration) {
+        await this._updateCalendarDayState(calendarDay.id, DayState.full);
       } else {
-        await this._updateState(calendarDay.id, DayState.have);
+        await this._updateCalendarDayState(calendarDay.id, DayState.have);
       }
     } else {
-      await this._updateState(calendarDay.id, DayState.full);
+      await this._updateCalendarDayState(calendarDay.id, DayState.full);
     }
 
     return { ...createDirectDto, directId: direct.id };
   }
 
-  private async _updateState(calendarId: string, state: DayState) {
-    return await this._prismaService.calendar.update({
-      where: { id: calendarId },
-      data: { state: state },
+  public async freeSlotsAndRecalculateCalendar(
+    directId: string,
+  ): Promise<void> {
+    const direct = await this._prismaService.directs.findUnique({
+      where: { id: directId },
+      include: {
+        services: {
+          select: {
+            service: {
+              select: {
+                id: true,
+                time: true,
+              },
+            },
+          },
+        },
+      },
     });
+
+    if (!direct) {
+      throw new HttpException(
+        `Запись ${directId} не найдена для освобождения слотов.`,
+        404,
+      );
+    }
+
+    const { userId, calendarId, time: directTimeStr } = direct;
+
+    const userSettings = await this._timeSlotUtilits.getUserSettings(userId);
+    const granularityMinutes = await this._timeSlotUtilits.convertTimeToMinutes(
+      userSettings.timeGranularity,
+    );
+
+    let totalServiceDurationMinutes = 0;
+    if (direct.services && direct.services.length > 0) {
+      for (const ds of direct.services) {
+        if (ds.service && ds.service.time) {
+          totalServiceDurationMinutes +=
+            await this._timeSlotUtilits.convertTimeToMinutes(ds.service.time);
+        }
+      }
+    }
+
+    const directStartMinutes =
+      await this._timeSlotUtilits.convertTimeToMinutes(directTimeStr);
+    const directEndMinutes = directStartMinutes + totalServiceDurationMinutes;
+
+    let currentMinuteMarker = directStartMinutes;
+    while (currentMinuteMarker < directEndMinutes) {
+      const slotTimeStr =
+        await this._timeSlotUtilits.formatMinutesToTime(currentMinuteMarker);
+      const slotToFree = await this._freeSlotsService.findUniqueSlot(
+        calendarId,
+        slotTimeStr,
+      );
+
+      if (slotToFree && slotToFree.isBooked) {
+        await this._freeSlotsService.updateSlotBooking(slotToFree.id, false);
+      }
+      currentMinuteMarker += granularityMinutes;
+    }
+
+    const calendarDay = await this._prismaService.calendar.findUnique({
+      where: { id: calendarId },
+    });
+
+    if (!calendarDay || calendarDay.state === DayState.notHave) {
+      return;
+    }
+
+    const minServiceDuration =
+      await this._timeSlotUtilits.getMinimumServiceDuration(userId);
+    const hasFreeSlots = await this._timeSlotUtilits.hasFreeSlots(calendarId);
+
+    if (hasFreeSlots) {
+      let maxAvailableTime = 0;
+      let currentAvailableTime = 0;
+
+      const [startTime, endTime] = userSettings.defaultWorkTime.split('-');
+      let startMinutes =
+        await this._timeSlotUtilits.convertTimeToMinutes(startTime);
+      const endMinutes =
+        await this._timeSlotUtilits.convertTimeToMinutes(endTime);
+
+      while (startMinutes < endMinutes) {
+        const timeString =
+          await this._timeSlotUtilits.formatMinutesToTime(startMinutes);
+        const currentSlot = await this._freeSlotsService.findUniqueSlot(
+          calendarId,
+          timeString,
+        );
+
+        if (currentSlot && !currentSlot.isBooked) {
+          currentAvailableTime += granularityMinutes;
+        } else {
+          maxAvailableTime = Math.max(maxAvailableTime, currentAvailableTime);
+          currentAvailableTime = 0;
+        }
+        startMinutes += granularityMinutes;
+      }
+      maxAvailableTime = Math.max(maxAvailableTime, currentAvailableTime);
+
+      if (minServiceDuration === 0 || minServiceDuration === Infinity) {
+        await this._updateCalendarDayState(calendarId, DayState.full);
+      } else if (maxAvailableTime < minServiceDuration) {
+        await this._updateCalendarDayState(calendarId, DayState.full);
+      } else {
+        await this._updateCalendarDayState(calendarId, DayState.have);
+      }
+    } else {
+      await this._updateCalendarDayState(calendarId, DayState.full);
+    }
+  }
+
+  private async _updateCalendarDayState(calendarId: string, state: DayState) {
+    const calendarDay = await this._prismaService.calendar.findUnique({
+      where: { id: calendarId },
+    });
+    if (!calendarDay || calendarDay.state === DayState.notHave) {
+      return;
+    }
+    if (calendarDay.state !== state) {
+      return await this._prismaService.calendar.update({
+        where: { id: calendarId },
+        data: { state: state },
+      });
+    }
   }
 }
 
@@ -687,19 +812,53 @@ export class DirectsService implements IDirectsService {
 
   public async remove(id: string) {
     try {
-      return await this._prismaService.directs.delete({
+      try {
+        await this._bookSlotsAlgorithm.freeSlotsAndRecalculateCalendar(id);
+        this.logger.log(
+          `Слоты для записи ${id} освобождены и календарь пересчитан через BookSlotsAlgorithm.`,
+        );
+      } catch (error) {
+        if (error instanceof HttpException && error.getStatus() === 404) {
+          this.logger.warn(
+            `Запись ${id} не найдена BookSlotsAlgorithm при попытке освободить слоты.`,
+          );
+          throw new HttpException(`Запись не найдена`, 404);
+        }
+        this.logger.error(
+          `Ошибка при освобождении слотов для записи ${id}: ${error.message}`,
+          error.stack,
+        );
+        throw error;
+      }
+
+      await this._prismaService.directsServices.deleteMany({
+        where: { directId: id },
+      });
+
+      const deletedDirect = await this._prismaService.directs.delete({
         where: { id },
       });
+
+      this.logger.log(`Запись ${id} успешно удалена из БД.`);
+      return deletedDirect;
     } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
       if (
         error instanceof PrismaClientKnownRequestError &&
-        error.code == 'P2025'
+        error.code === 'P2025'
       ) {
-        this.logger.warn(`Запись для удаления не найдена ${id}`);
+        this.logger.warn(
+          `Запись для удаления не найдена ${id} (P2025 в DirectsService.remove)`,
+        );
         throw new HttpException(`Запись не найдена`, 404);
       }
-      console.error(error);
-      this.logger.error(`Ошибка при удалении записи ${id}`, error);
+      this.logger.error(
+        `Ошибка при удалении записи ${id} в DirectsService: ${error.message}`,
+        error.stack,
+      );
       throw new HttpException('Ошибка сервера при удалении данных', 500);
     }
   }

@@ -7,7 +7,7 @@ import {
 import { PrismaService } from '../prisma';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { ICategoryOperationsService } from './interfaces';
-import {CustomLogger} from "../logger";
+import { CustomLogger } from '../logger';
 
 @Injectable()
 export class CategoryOperationsService implements ICategoryOperationsService {
@@ -46,6 +46,7 @@ export class CategoryOperationsService implements ICategoryOperationsService {
         await this._prismaService.categoryOperations.create({
           data: {
             name: data.name,
+            type: data.type,
             userId: data.userId,
           },
         });

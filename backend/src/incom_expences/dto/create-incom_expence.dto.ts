@@ -22,14 +22,6 @@ export class CreateOperationsDto {
     example: '12500',
   })
   value: number;
-
-  @ApiProperty({
-    description: 'Тип операции',
-    nullable: false,
-    example: 'expense',
-    enum: TypeOperation,
-  })
-  type: TypeOperation;
 }
 
 export type UpdateOperationsDto = Partial<CreateOperationsDto>;
