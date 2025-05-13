@@ -3,7 +3,14 @@
 
     <p-floatlabel class="min-w-full" variant="on">
       <p-select class="w-full" inputId="name" formControlName="name" (onChange)="_choiceClient.set($event.value)"
-                [options]="_clients()" optionLabel="name"/>
+                [options]="_clients()" optionLabel="name">
+        <ng-template let-client pTemplate="item">
+          <div class="flex flex-col gap-1">
+            <span>{{ client.name }} <em>({{ client.description }})</em></span>
+
+          </div>
+        </ng-template>
+      </p-select>
       <label for="name">Клиент</label>
     </p-floatlabel>
 

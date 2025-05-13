@@ -127,7 +127,11 @@ export class BookSlotsAlgorithm {
 
     const newAppointmentStart =
       await this._timeSlotUtilits.convertTimeToMinutes(time);
-    const newAppointmentEnd = newAppointmentStart + totalServiceDuration;
+    const breakTime = await this._timeSlotUtilits.convertTimeToMinutes(
+      userSettings.defaultBreakTime,
+    );
+    const newAppointmentEnd =
+      newAppointmentStart + totalServiceDuration + breakTime;
 
     //проверяе на пересечения со всеми существующими записями
     for (const appointment of appointments) {
