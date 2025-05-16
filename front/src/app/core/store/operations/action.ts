@@ -1,16 +1,21 @@
-import { OperationsInterface } from '@shared/types/operations';
+import { CreateOperationInterface, OperationsInterface } from '@shared/types/operations';
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Transactions {
   export class GetOperations {
     static readonly type: string = '[Operations] Get Operations';
-    constructor(public readonly query: string[], public readonly userId: string) {
+    constructor(public readonly userId: string, public readonly query?: { period?: string, type?: string} ) {
     }
+  }
+
+  export class GetOperation {
+    static readonly type: string = '[Operations] Get Operation';
+    constructor(public readonly id: string) {}
   }
 
   export class CreateOperation {
     public static readonly type: string = '[Operations] Create Operation';
-    constructor(public readonly payload: OperationsInterface, public readonly userId: string) {}
+    constructor(public readonly payload: CreateOperationInterface) {}
   }
 
   export class UpdateOperation {

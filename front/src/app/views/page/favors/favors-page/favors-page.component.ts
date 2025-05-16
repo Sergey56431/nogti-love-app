@@ -115,7 +115,7 @@ export class FavorsPageComponent implements OnInit {
     });
   }
 
-  // Вызов модального окна для добавления категорий
+  // Вызов модального окна для редактирования услуг/ категорий
   protected _editPosition(favor: Services, edit: string): void {
     this._ref = this._dialogService.open(FavorsDialogComponent, {
       header: 'Редактировать услуги / категории',

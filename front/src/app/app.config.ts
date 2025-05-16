@@ -4,7 +4,7 @@ import {
   isDevMode,
   LOCALE_ID,
 } from '@angular/core';
-import { provideRouter, withDebugTracing } from '@angular/router';
+import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {
@@ -28,7 +28,7 @@ export const appConfig: ApplicationConfig = {
     MessageService,
     ConfirmDialog,
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes, withDebugTracing()),
+    provideRouter(routes),
     provideStore(),
     provideAnimationsAsync(),
     providePrimeNG({
