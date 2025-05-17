@@ -1,4 +1,4 @@
-import { CreateOperationInterface, OperationsInterface } from '@shared/types/operations';
+import { CreateOperationInterface } from '@shared/types/operations';
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Transactions {
@@ -20,7 +20,7 @@ export namespace Transactions {
 
   export class UpdateOperation {
     public static readonly type: string = '[Operations] Update Operation';
-    constructor(public readonly payload: Partial<OperationsInterface>, public readonly operationId: string) {}
+    constructor(public readonly payload: Partial<CreateOperationInterface>, public readonly operationId: string) {}
   }
 
   export class DeleteOperation {

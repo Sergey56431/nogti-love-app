@@ -42,7 +42,7 @@
           </tr>
         </ng-template>
         <ng-template #body let-item>
-          <tr [ngStyle]="{color: item.categoryOperations.type === 'income' ? 'green' : 'red'}">
+          <tr [ngStyle]="{color: item.categoryOperations?.type === 'income' ? 'green' : 'red'}">
             <td>{{ item.categoryOperations.type === 'income' ? 'Доход' : 'Расход' }}</td>
             <td>{{ item.categoryOperations.name }}</td>
             <td>{{ item.value | currency: 'RUB': 'symbol'  }}</td>

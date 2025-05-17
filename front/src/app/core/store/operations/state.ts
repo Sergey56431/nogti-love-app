@@ -6,6 +6,7 @@ import { Transactions } from './action';
 import { DefaultResponseType } from '@shared/types';
 
 interface OperationsStateModel {
+  query: {type?: string, period?: string} | undefined;
   operationsList: OperationsInterface[];
   operation?: OperationsInterface
 }
@@ -13,6 +14,7 @@ interface OperationsStateModel {
 @State<OperationsStateModel>({
   name: 'operations',
   defaults: {
+    query: undefined,
     operationsList: [],
     operation: undefined,
   },
@@ -35,14 +37,15 @@ export class OperationsState {
   @Action(Transactions.GetOperations)
   private _getAllUserOperations(ctx: StateContext<OperationsStateModel>, action: Transactions.GetOperations) {
     const state = ctx.getState();
-    if (state.operationsList != null && state.operationsList.length > 0) {
+    if (state.operationsList != null && state.operationsList.length > 0 && state.query === action.query) {
       return state.operationsList;
     }
     this._operationsService.fetchOperationsByUser(action.userId, action.query)
       .subscribe((operations) => {
         if ((operations as DefaultResponseType).error == null) {
-          ctx.setState({
+          ctx.patchState({
             operationsList: operations as OperationsInterface[],
+            query: action.query
           });
         }
       });
@@ -75,7 +78,7 @@ export class OperationsState {
     const state = ctx.getState().operationsList;
     this._operationsService.createOperation(action.payload).subscribe((response) => {
       if ((response as DefaultResponseType).message == null) {
-        ctx.setState({
+        ctx.patchState({
           operationsList: [...state, response as OperationsInterface],
         });
       }
@@ -88,6 +91,7 @@ export class OperationsState {
     const state = ctx.getState().operationsList;
     this._operationsService.updateOperation(action.payload, action.operationId).subscribe((response) => {
       if ((response as DefaultResponseType).error == null) {
+        console.log(response);
         const updatedOperationsList = state.map(operation =>
           operation.id === action.operationId ? response as OperationsInterface : operation
         );
@@ -104,7 +108,7 @@ export class OperationsState {
     const state = ctx.getState().operationsList;
     this._operationsService.deleteOperation(action.id).subscribe((response) => {
       if (!response || (response as DefaultResponseType).message != null) {
-        ctx.setState({
+        ctx.patchState({
           operationsList: state.filter(operation => operation.id !== action.id),
         });
       }

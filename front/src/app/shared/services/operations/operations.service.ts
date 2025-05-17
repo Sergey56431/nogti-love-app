@@ -40,7 +40,7 @@ export class OperationsService {
     return this._http.post<OperationsInterface>(environment.api + 'operation', operation);
   }
 
-  public updateOperation(operation: Partial<OperationsInterface>, id: string): Observable<OperationsInterface | DefaultResponseType> {
+  public updateOperation(operation: Partial<CreateOperationInterface>, id: string): Observable<OperationsInterface | DefaultResponseType> {
     return this._http.put<OperationsInterface | DefaultResponseType>(environment.api + 'operation', operation, {
       params: {
         id: id,
