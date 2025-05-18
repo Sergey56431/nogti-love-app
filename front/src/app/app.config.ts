@@ -4,7 +4,7 @@ import {
   isDevMode,
   LOCALE_ID,
 } from '@angular/core';
-import { provideRouter, withDebugTracing } from '@angular/router';
+import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {
@@ -21,6 +21,7 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Localization, MyPreset } from '@shared/utils';
+import { OperationCategoriesState, OperationsState, SettingsState } from '@core/store';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -28,8 +29,8 @@ export const appConfig: ApplicationConfig = {
     MessageService,
     ConfirmDialog,
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes, withDebugTracing()),
-    provideStore(),
+    provideRouter(routes),
+    provideStore([SettingsState, OperationCategoriesState, OperationsState ]),
     provideAnimationsAsync(),
     providePrimeNG({
       translation: Localization,

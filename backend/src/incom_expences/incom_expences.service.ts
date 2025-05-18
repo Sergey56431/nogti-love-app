@@ -1,9 +1,14 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { CreateOperationsDto, UpdateOperationsDto } from './dto';
+import {
+  CreateOperationsDto,
+  FindOperationsDto,
+  UpdateOperationsDto,
+} from './dto';
 import { PrismaService } from '../prisma';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { IOperationsService } from './interfaces';
-import {CustomLogger} from "../logger";
+import { CustomLogger } from '../logger';
+import { Income_Expanses, Prisma } from '@prisma/client';
 
 @Injectable()
 export class OperationsService implements IOperationsService {
@@ -12,12 +17,12 @@ export class OperationsService implements IOperationsService {
 
   async create(createIncomExpenceDto: CreateOperationsDto) {
     const { userId, categoryId, ...data } = createIncomExpenceDto;
-    const requiredFields = ['type', 'value'];
+    const requiredFields = ['value'];
     const errors = requiredFields
       .filter((field) => !data[field])
       .map((field) =>
         new HttpException(
-          `Нет ${field === 'value' ? 'значения операции' : field === 'type' ? 'типа операции' : 'categoryId'}`,
+          `Нет ${field === 'value' ? 'значения операции' : 'categoryId'}`,
           400,
         ).getResponse(),
       );
@@ -36,6 +41,14 @@ export class OperationsService implements IOperationsService {
             },
             categoryOperations: {
               connect: { id: categoryId },
+            },
+          },
+          include: {
+            categoryOperations: {
+              select: {
+                name: true,
+                type: true,
+              },
             },
           },
         },
@@ -61,12 +74,75 @@ export class OperationsService implements IOperationsService {
     }
   }
 
-  async findByUser(userId: string) {
+  async find(filters: FindOperationsDto): Promise<Income_Expanses[]> {
+    const {
+      id,
+      userId,
+      categoryId,
+      valueMin,
+      valueMax,
+      dateFrom,
+      dateTo,
+      type,
+    } = filters;
+    const where: Prisma.Income_ExpansesWhereInput = {};
+
+    if (id) {
+      where.id = id;
+    }
+    if (userId) {
+      where.userId = userId;
+    }
+    if (categoryId) {
+      where.categoryId = categoryId;
+    }
+    if (valueMin !== undefined || valueMax !== undefined) {
+      where.value = {};
+      if (valueMin !== undefined) {
+        where.value.gte = parseFloat(valueMin.toString());
+      }
+      if (valueMax !== undefined) {
+        where.value.lte = parseFloat(valueMax.toString());
+      }
+    }
+    if (dateFrom || dateTo) {
+      where.createDate = {};
+      if (dateFrom) {
+        where.createDate.gte = new Date(dateFrom);
+      }
+      if (dateTo) {
+        const endDate = new Date(dateTo);
+        endDate.setUTCHours(23, 59, 59, 999);
+        where.createDate.lte = endDate;
+      }
+    }
+    if (type) {
+      where.categoryOperations = {
+        type: type,
+      };
+    }
+
     try {
       const operations = await this._prismaService.income_Expanses.findMany({
-        where: { userId },
+        where,
+        include: {
+          categoryOperations: {
+            select: {
+              name: true,
+              type: true,
+            },
+          },
+        },
       });
-      this._logger.log(`Операции пользователя с ID ${userId} успешно найдены`);
+
+      if (id && operations.length === 0) {
+        this._logger.warn(`Операция с ID ${id} не найдена`);
+        throw new HttpException('Операция не найдена', 404);
+      }
+
+      this._logger.log(
+        `Операции найдены по фильтрам: ${JSON.stringify(filters)}. Найдено: ${operations.length}`,
+      );
       return operations;
     } catch (error) {
       if (error instanceof HttpException) {
@@ -74,69 +150,54 @@ export class OperationsService implements IOperationsService {
       }
       console.log(error);
       this._logger.error(
-        `Ошибка при поиске операций по пользователю ${userId}`,
+        `Ошибка при поиске операций по фильтрам ${JSON.stringify(filters)}`,
         error.stack,
       );
-      throw new HttpException(
-        'Ошибка при поиске операций по пользователю',
-        500,
-      );
+      throw new HttpException('Ошибка при поиске операций', 500);
     }
   }
 
-  async findAll() {
+  async update(id: string, updateOperationDto: UpdateOperationsDto) {
     try {
-      const operations = await this._prismaService.income_Expanses.findMany();
-      this._logger.log(`Все операции успешно получены`);
-      return operations;
-    } catch (error) {
-      console.log(error);
-      this._logger.error('Ошибка при поиске всех операций', error.stack);
-      throw new HttpException('Ошибка при поиске всех операций', 500);
-    }
-  }
+      const dataToUpdate: Prisma.Income_ExpansesUpdateInput = {};
 
-  async findOne(id: string) {
-    try {
-      const result = await this._prismaService.income_Expanses.findFirst({
-        where: {
-          id,
-        },
-      });
-      if (!result) {
-        this._logger.warn(`Операция с ID ${id} не найдена`);
-        throw new HttpException('Операция не найдена', 404);
+      if (updateOperationDto.value !== undefined) {
+        dataToUpdate.value = updateOperationDto.value;
       }
-      this._logger.log(`Операция с ID ${id} успешно найдена`);
-      return result;
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
+      if (updateOperationDto.categoryId) {
+        dataToUpdate.categoryOperations = {
+          connect: { id: updateOperationDto.categoryId },
+        };
       }
-      console.log(error);
-      this._logger.error(`Ошибка при поиске операции с ID ${id}`, error.stack);
-      throw new HttpException('Ошибка при поиске операции', 500);
-    }
-  }
 
-  async update(id: string, updateIncomExpenceDto: UpdateOperationsDto) {
-    try {
-      const data: UpdateOperationsDto = {};
+      if (updateOperationDto.userId) {
+        dataToUpdate.user = {
+          connect: { id: updateOperationDto.userId },
+        };
+      }
 
-      if (updateIncomExpenceDto.categoryId) {
-        data.categoryId = updateIncomExpenceDto.categoryId;
+      if (Object.keys(dataToUpdate).length === 0) {
+        this._logger.warn(`Нет данных для обновления операции с ID ${id}`);
+
+        const currentOperation =
+          await this._prismaService.income_Expanses.findUnique({
+            where: { id },
+          });
+        if (!currentOperation) {
+          throw new HttpException('Операция не найдена для обновления', 404);
+        }
+        return currentOperation;
       }
-      if (updateIncomExpenceDto.value) {
-        data.value = updateIncomExpenceDto.value;
-      }
-      if (updateIncomExpenceDto.type) {
-        data.type = updateIncomExpenceDto.type;
-      }
+
+      dataToUpdate.updateDate = new Date();
 
       const result = await this._prismaService.income_Expanses.update({
         where: { id },
-        data,
+        data: dataToUpdate,
       });
+      this._logger.log(
+        `Операция с ID ${id} успешно обновлена: ${JSON.stringify(result)}`,
+      );
       return result;
     } catch (error) {
       if (error instanceof HttpException) {
@@ -144,16 +205,20 @@ export class OperationsService implements IOperationsService {
       }
       if (
         error instanceof PrismaClientKnownRequestError &&
-        error.code === 'P2025'
+        (error.code === 'P2025' || error.code === 'P2016')
       ) {
         this._logger.warn(
-          `Операция с ID ${id} не найдена при обновлении, \n ${updateIncomExpenceDto}`,
+          `Операция с ID ${id} или связанная категория не найдена при обновлении, ${JSON.stringify(updateOperationDto)}`,
+          error.message,
         );
-        throw new HttpException('Операция не найдена', 404);
+        throw new HttpException(
+          'Операция или связанная категория не найдена',
+          404,
+        );
       }
       console.error(error);
       this._logger.error(
-        `Ошибка при обновлении операции с ID ${id}, \n ${updateIncomExpenceDto}`,
+        `Ошибка при обновлении операции с ID ${id}, ${JSON.stringify(updateOperationDto)}`,
         error.stack,
       );
       throw new HttpException('Ошибка при обновлении операции', 500);
@@ -174,7 +239,10 @@ export class OperationsService implements IOperationsService {
         throw new HttpException('Операция не найдена', 404);
       }
       console.log(error);
-      this._logger.error(`Ошибка при удалении операции с ID ${id}`, error.stack);
+      this._logger.error(
+        `Ошибка при удалении операции с ID ${id}`,
+        error.stack,
+      );
       throw new HttpException('Ошибка при удалении операции', 500);
     }
   }
