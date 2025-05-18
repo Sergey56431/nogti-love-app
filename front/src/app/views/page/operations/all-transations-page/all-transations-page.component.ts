@@ -16,7 +16,7 @@ export class AllTransationsPageComponent {
   protected _categories = [
     {
       img: 'category',
-      route: '/category',
+      route: '/operation-categories',
       name: 'Категории',
     },
     {

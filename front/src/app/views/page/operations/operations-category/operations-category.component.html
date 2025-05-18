@@ -1,1 +1,21 @@
-<p>operations-category works!</p>
+<div class="page-content">
+
+  <h1 class="Page-title">Категории операций</h1>
+
+  <div class="flex items-center gap-2 mt-5">
+    <p-button icon="pi pi-plus" [raised]="true" [rounded]="true" severity="secondary"
+              (click)="_addCategory()"></p-button>
+    @for (item of _categoriesList(); track item) {
+      <span class="flex items-center cursor-pointer gap-2 rounded-full p-2 border-1 border-solid"
+            [ngStyle]="{'border-color': item?.type === 'income' ? 'green' : 'red',
+            'color': item?.type === 'income' ? 'green' : 'red'}" >{{ item?.name }}
+        <i class="pi pi-pencil" (click)="_editCategory(item.id)"></i>
+        <i class="pi pi-times" (click)="_deleteCategory(item)"></i>
+  </span>
+    }
+  </div>
+
+  <p-confirm-dialog/>
+</div>
+
+

@@ -1,4 +1,5 @@
 export * from './chart';
+export * from './category-operation-form';
 export * from './date-picker';
 export * from './direct-visit';
 export * from './client-card';

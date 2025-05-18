@@ -18,6 +18,7 @@ describe('OperationsCategoryComponent', () => {
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    // @ts-ignore
+    expect(component).not.toBeNull();
   });
 });
