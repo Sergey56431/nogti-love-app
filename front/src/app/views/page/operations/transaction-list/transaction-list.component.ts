@@ -15,6 +15,7 @@ import { ConfirmDialog } from 'primeng/confirmdialog';
 import { SnackStatusesUtil } from '@shared/utils';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { OperationsFormComponent } from '@shared/components';
+import { Select } from 'primeng/select';
 
 enum PeriodValue {
   ALL = 'all',
@@ -44,6 +45,7 @@ enum OperationType {
     NgStyle,
     Breadcrumb,
     ConfirmDialog,
+    Select,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './transaction-list.component.html',
