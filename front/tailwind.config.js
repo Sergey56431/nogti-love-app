@@ -7,5 +7,5 @@ module.exports = {
       'body': ['Montserrat'],
     },
   },
-  plugins: []
+  plugins:[]
 }
