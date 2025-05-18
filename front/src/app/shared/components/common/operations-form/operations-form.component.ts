@@ -112,6 +112,7 @@ export class OperationsFormComponent implements OnInit {
   }
 
   protected _createOperation(): void {
+    delete this._operationForm.value.type;
     this._actions.createOperation(this._operationForm.value as CreateOperationInterface);
     this._close();
   }
