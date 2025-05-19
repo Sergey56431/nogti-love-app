@@ -1,8 +1,8 @@
 <div class="page-content">
 
-  <h1 class="Page-title">Категории операций</h1>
+  <h1 class="page-title">Категории операций</h1>
 
-  <div class="flex items-center gap-2 mt-5">
+  <div class="flex items-center flex-wrap gap-2 mt-5">
     <p-button icon="pi pi-plus" [raised]="true" [rounded]="true" severity="secondary"
               (click)="_addCategory()"></p-button>
     @for (item of _categoriesList(); track item) {
