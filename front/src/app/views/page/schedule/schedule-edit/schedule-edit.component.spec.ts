@@ -18,6 +18,7 @@ describe('ScheduleEditComponent', () => {
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    component['_date'].set('04.2025');
+    expect(component['_date']()).not.toBe('');
   });
 });

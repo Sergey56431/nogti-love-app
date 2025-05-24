@@ -10,10 +10,6 @@ export interface UserInfoType {
   role?: string,
 }
 
-// export interface AdminInfoType extends UserInfoType {
-//
-// }
-
 export interface ClientInfoType extends UserInfoType {
   image?: string,
   id?: string;

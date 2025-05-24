@@ -38,7 +38,7 @@ export class ClientsController {
   }
 
   @Put()
-  async update(@Query('id') id: string, updateClientsDto: UpdateClientsDto) {
+  async update(@Query('id') id: string, @Body() updateClientsDto: UpdateClientsDto) {
     return await this._clientsService.updateClient(id, updateClientsDto);
   }
 

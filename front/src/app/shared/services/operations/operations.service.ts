@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { OperationsInterface } from '@shared/types/operations';
+import { CreateOperationInterface, OperationsInterface } from '@shared/types/operations';
 import { DefaultResponseType } from '@shared/types';
 import { environment } from '../../../../environments/environment';
 
@@ -13,13 +13,15 @@ export class OperationsService {
   }
 
   public fetchAllOperations(): Observable<OperationsInterface[] | DefaultResponseType> {
-    return this._http.get<OperationsInterface[] | DefaultResponseType>(environment.api + 'operations');
+    return this._http.get<OperationsInterface[] | DefaultResponseType>(environment.api + 'operation');
   }
 
-  public fetchOperationsByUser(userId: string): Observable<OperationsInterface | DefaultResponseType> {
-    return this._http.get<OperationsInterface | DefaultResponseType>(
-      environment.api + 'operations/', {
+  //сделать динамические query параметры
+  public fetchOperationsByUser(userId: string, query?: {type?: string, period?: string}): Observable<OperationsInterface[] | DefaultResponseType> {
+    return this._http.get<OperationsInterface[] | DefaultResponseType>(
+      environment.api + 'operation', {
         params: {
+          ...query,
           userId: userId,
         },
       },
@@ -27,33 +29,27 @@ export class OperationsService {
   }
 
   public fetchOneOperation(id: string): Observable<OperationsInterface | DefaultResponseType> {
-    return this._http.get<OperationsInterface | DefaultResponseType>(environment.api + 'operations/', {
+    return this._http.get<OperationsInterface | DefaultResponseType>(environment.api + 'operation/', {
       params: {
         id: id,
       },
     });
   }
 
-  public createOperation(operation: OperationsInterface, userId: string): Observable<OperationsInterface | DefaultResponseType> {
-    return this._http.post<OperationsInterface>(environment.api + 'operations', {
-      params: {
-        userId: userId,
-      },
-      body: operation,
-    });
+  public createOperation(operation: CreateOperationInterface): Observable<OperationsInterface | DefaultResponseType> {
+    return this._http.post<OperationsInterface>(environment.api + 'operation', operation);
   }
 
-  public updateOperation(operation: OperationsInterface, id: string): Observable<OperationsInterface | DefaultResponseType> {
-    return this._http.put<OperationsInterface | DefaultResponseType>(environment.api + 'operations/', {
+  public updateOperation(operation: Partial<CreateOperationInterface>, id: string): Observable<OperationsInterface | DefaultResponseType> {
+    return this._http.put<OperationsInterface | DefaultResponseType>(environment.api + 'operation', operation, {
       params: {
         id: id,
       },
-      body: operation,
     });
   }
 
   public deleteOperation(id: string): Observable<OperationsInterface | DefaultResponseType> {
-    return this._http.delete<OperationsInterface | DefaultResponseType>(environment.api + 'operations/', {
+    return this._http.delete<OperationsInterface | DefaultResponseType>(environment.api + 'operation', {
       params: {
         id: id,
       },

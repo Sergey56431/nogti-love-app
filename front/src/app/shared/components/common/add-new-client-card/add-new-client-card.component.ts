@@ -42,9 +42,10 @@ export class AddNewClientCardComponent {
   protected _newClientForm = this._fb.group({
     name: new FormControl('', [Validators.required]),
     phoneNumber: new FormControl('', [Validators.required]),
-    lastName: new FormControl('', [Validators.required]),
+    lastName: new FormControl(''),
     password: new FormControl('', [Validators.required]),
     score: new FormControl(0),
+    description: new FormControl(''),
   });
 
   protected _createClient() {
@@ -55,6 +56,7 @@ export class AddNewClientCardComponent {
       lastName: this._newClientForm.value.lastName ?? '',
       password: this._newClientForm.value.password ?? '',
       score: Number(this._newClientForm.value.score),
+      description: this._newClientForm.value.description ?? '',
       masterId: master?.userId,
     };
     console.error(body);

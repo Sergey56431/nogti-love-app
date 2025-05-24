@@ -1,0 +1,51 @@
+<form class="flex flex-col gap-4" [formGroup]="_operationForm">
+
+  <p-floatlabel class="w-full" variant="on">
+    <p-select [options]="_operationType"
+              (onChange)="_selectedTypeOperation.set($event.value)"
+              placeholder="Для фильтрации"
+              optionValue="type" class="w-full"
+              inputId="type" id="type"
+              fluid
+              formControlName="type"
+              optionLabel="name"
+              styleClass="w-full" />
+    <label for="type">Тип операции</label>
+  </p-floatlabel>
+
+  <p-floatlabel class="w-full " variant="on">
+    <p-select [options]="_operationCategory()"
+              placeholder="Выбирите категорию"
+              optionValue="id"
+              class="w-full"
+              inputId="category"
+              id="category"
+              fluid
+              formControlName="categoryId"
+              optionLabel="name"
+              styleClass="w-full" />
+    <label for="category">Категория операции</label>
+  </p-floatlabel>
+
+  <p-floatlabel variant="on">
+    <p-input-number inputId="value"
+                    fluid
+                    id="value"
+                    formControlName="value"
+                    mode="currency"
+                    currency="RUB"
+                    locale="ru-RU" />
+    <label for="value"></label>
+  </p-floatlabel>
+
+  <div class="flex justify-end gap-2">
+    @if (!_isEdit()) {
+      <p-button label="Добавить" [disabled]="_operationForm.invalid" (onClick)="_createOperation()" icon="pi pi-plus" />
+    } @else {
+      <p-button label="Редактировать" (onClick)="_editOperation()" icon="pi pi-pencil" />
+    }
+
+    <p-button label="Отмена" (onClick)="_close()" icon="pi pi-times" severity="warn" />
+  </div>
+</form>
+

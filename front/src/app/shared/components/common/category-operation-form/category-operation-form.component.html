@@ -1,0 +1,28 @@
+<form class="flex flex-col  gap-3" [formGroup]="_categoryOperationForm">
+  <p-floatlabel class="w-full" variant="on">
+    <p-select [options]="_operationType"
+              optionValue="type" class="w-full"
+              inputId="type" id="type"
+              fluid
+              formControlName="type"
+              optionLabel="name"
+              styleClass="w-full" />
+    <label for="type">Тип категории</label>
+  </p-floatlabel>
+
+  <p-floatlabel variant="on">
+    <input pInputText id="name" fluid formControlName="name" autocomplete="off" />
+    <label for="name">Наименование</label>
+  </p-floatlabel>
+
+  <div class="flex items-center gap-2">
+    @if (!_isEdit()) {
+      <p-button label="Добавить" [disabled]="_categoryOperationForm.invalid" (onClick)="_createCategory()" icon="pi pi-plus" />
+    } @else {
+      <p-button label="Редактировать" (onClick)="_editCategory()" icon="pi pi-pencil" />
+    }
+
+    <p-button label="Отмена" (onClick)="_close()" icon="pi pi-times" severity="warn" />
+  </div>
+
+</form>

@@ -6,8 +6,7 @@ import { Slider } from 'primeng/slider';
 import { Status } from '@shared/utils';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { ClientCardComponent } from '@shared/components';
-import { createDispatchMap, Store } from '@ngxs/store';
+import { createDispatchMap, select, Store } from '@ngxs/store';
 import { CalendarActions, CalendarState } from '@core/store';
 import { CalendarResponse } from '@shared/types';
 
@@ -32,7 +31,7 @@ export class SchedulePageComponent {
   protected _title = 'Расписание';
 
   protected _directs: CalendarResponse[] = [];
-  protected _intervalCalendarData = this._store?.select(CalendarState.getCalendar);
+  protected _intervalCalendarData = select(CalendarState.getCalendar);
   protected _services = [
     { id: 1, name: 'Маникюр' },
     { id: 2, name: 'Педикюр' },
@@ -73,15 +72,13 @@ export class SchedulePageComponent {
             .join('-');
           this._choicePeriod()?.push(date);
         }
-        this._actions?.selectPeriodCalendar(this._choicePeriod());
-      });
 
-
-      this._intervalCalendarData?.subscribe((data) => {
-        if (data && data.length === 0) {
-          this._directs = data;
+        if (this._choicePeriod()?.length > 1)  {
+          this._actions?.selectPeriodCalendar(this._choicePeriod());
+          console.log(this._choicePeriod());
         }
       });
+
     }
   }
 

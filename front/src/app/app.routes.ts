@@ -17,7 +17,7 @@ export const routes: Routes = [
       },
       {
         path: 'settings',
-        loadComponent:() => import('./views').then(c => c.SettingsPageComponent),
+        loadComponent: () => import('./views').then(c => c.SettingsPageComponent),
       },
       {
         path: 'clients',
@@ -64,17 +64,12 @@ export const routes: Routes = [
         title: 'Операции',
       },
       {
-        path: 'all-transactions',
-        loadComponent: () => import('./views').then((c) => c.AllTransationsPageComponent),
+        path: 'operations-list',
+        loadComponent: () => import('./views').then((c) => c.TransactionListComponent),
         title: 'Список операций',
       },
       {
-        path: 'category-operations/:category',
-        loadComponent: () => import('./views').then((c) => c.AllTransationsPageComponent),
-        title: 'Список операций',
-      },
-      {
-        path: 'category-operations',
+        path: 'operation-categories',
         loadComponent: () => import('./views').then((c) => c.OperationsCategoryComponent),
         title: 'Категории операций',
       },

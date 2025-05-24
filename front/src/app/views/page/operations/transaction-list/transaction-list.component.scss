@@ -1,0 +1,6 @@
+@import "../../../../../assets/styles/mixins";
+
+.table-container {
+  max-width: 860px;
+  @include card()
+}

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
-import { createDispatchMap, Store } from '@ngxs/store';
+import { createDispatchMap, select } from '@ngxs/store';
 import { SettingsActions, SettingsState } from '@core/store';
 import { UserInfoType } from '@shared/types';
 import { AuthService } from '@core/auth';
@@ -27,9 +27,8 @@ export class SettingsPageComponent implements OnInit {
   });
   protected _newSettings = signal<Partial<SettingsType>>({} as Partial<SettingsType>);
 
-  private readonly _store = inject(Store);
   private readonly _authService = inject(AuthService);
-  protected readonly _settings = this._store.selectSignal(SettingsState.getSettings);
+  protected readonly _settings = select(SettingsState.getSettings);
 
   private _actions = createDispatchMap({
     getSettings: SettingsActions.GetSettings,
@@ -45,18 +44,15 @@ export class SettingsPageComponent implements OnInit {
     Object.assign(this._newSettings(), {
       [props]: setting,
     });
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    if (this._settings()?.[props] === this._newSettings()?.[props]) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      delete this._newSettings()?.[props];
+    if (this._settings()?.[props as keyof SettingsType] === this._newSettings()?.[props as keyof SettingsType]) {
+      delete this._newSettings()?.[props as keyof SettingsType];
     }
-    if (this._newSettings() !== null) {
+    if (Object.keys(this._newSettings()).length > 0) {
       this._canSend.set(true);
     } else {
       this._canSend.set(false);
     }
+    console.log(this._newSettings());
   }
 
   protected _saveSettings(): void {
