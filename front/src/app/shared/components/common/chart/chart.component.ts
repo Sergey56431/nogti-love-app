@@ -1,7 +1,8 @@
-import { ChangeDetectorRef, Component, effect, Input, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, effect, Input, OnInit, signal } from '@angular/core';
 import { UIChart } from 'primeng/chart';
 import { Menu } from 'primeng/menu';
 import { Button } from 'primeng/button';
+import { PeriodUtils } from '@shared/utils';
 
 @Component({
   selector: 'app-chart',
@@ -13,6 +14,14 @@ import { Button } from 'primeng/button';
 export class ChartComponent implements OnInit {
   protected _income = signal<number>(0);
   protected _expanse = signal<number>(0);
+
+  protected _date = computed(() => {
+    console.log(this._year(), this._month());
+    return new Date(this._year(), this._month(), 1).toLocaleString('ru-RU', { month: 'long', year: 'numeric' });
+  });
+
+  protected _month = signal<number>(new Date().getMonth());
+  private _year = signal<number>(new Date().getFullYear());
 
   @Input() set income(income: number) {
     if (income) {
@@ -47,6 +56,7 @@ export class ChartComponent implements OnInit {
 
   public ngOnInit() {
     this._initChart();
+    this._selectPeriod();
   }
 
   private _initChart() {
@@ -71,6 +81,27 @@ export class ChartComponent implements OnInit {
       responsive: false,
     };
     this._cdr.markForCheck();
+  }
+
+  protected _updateDate(value: number) {
+    if (value) {
+      this._month.update(v => v + value);
+    }
+    if (this._month() > 12) {
+      this._month.set(1);
+      this._year.update(v => v + 1);
+    }
+    if (this._month() < 1) {
+      this._month.set(12);
+      this._year.update(v => v - 1);
+    }
+    this._selectPeriod();
+  }
+
+  protected _selectPeriod() {
+    const date = PeriodUtils.convertMonths(this._month(), this._year());
+    // реализовать запрос через стор для получения операций по месяцу
+    console.log(date);
   }
 
 }

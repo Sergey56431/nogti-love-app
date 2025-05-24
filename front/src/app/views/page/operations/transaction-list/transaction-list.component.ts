@@ -12,7 +12,7 @@ import { CurrencyPipe, DatePipe, NgStyle } from '@angular/common';
 import { Tooltip } from 'primeng/tooltip';
 import { Breadcrumb } from 'primeng/breadcrumb';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { SnackStatusesUtil } from '@shared/utils';
+import { PeriodUtils, SnackStatusesUtil } from '@shared/utils';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { OperationsFormComponent } from '@shared/components';
 import { Select } from 'primeng/select';
@@ -204,6 +204,8 @@ export class TransactionListComponent implements OnInit {
     if ((params?.['period'] ?? this._queryParams.period) === PeriodValue.ALL) {
       delete selectedQuery.period;
     } else {
+      const period = PeriodUtils.convertPeriod(params?.['period']);
+      console.log(period);
       selectedQuery.period = params?.['period'] ?? this._queryParams.period;
     }
 

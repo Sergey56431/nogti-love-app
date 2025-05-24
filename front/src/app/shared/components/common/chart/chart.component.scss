@@ -1,5 +1,9 @@
 .chart-content {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
   max-height: 452px;
+  width: 350px;
   padding: 30px;
   border-radius: 20px;
   box-sizing: border-box;
