@@ -40,10 +40,10 @@ export class MainComponent implements OnInit {
     effect(() => {
       this._operationsList()?.forEach(item => {
         if (item.categoryOperations.type === 'income') {
-          this._income.update(prev => prev + item.value);
+          this._income.set(item.value);
         }
         if (item.categoryOperations.type === 'expense') {
-          this._expanse.update(prev => prev + item.value);
+          this._expanse.set(item.value);
         }
       });
       if (this._operationsList().length === 0) {
