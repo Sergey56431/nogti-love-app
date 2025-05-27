@@ -91,7 +91,6 @@ export class OperationsState {
     const state = ctx.getState().operationsList;
     this._operationsService.updateOperation(action.payload, action.operationId).subscribe((response) => {
       if ((response as DefaultResponseType).error == null) {
-        console.log(response);
         const updatedOperationsList = state.map(operation =>
           operation.id === action.operationId ? response as OperationsInterface : operation
         );

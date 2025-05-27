@@ -27,7 +27,6 @@ export class ChartComponent implements OnInit {
   protected _month = signal<number>(new Date().getMonth());
   private _year = signal<number>(new Date().getFullYear());
   protected _date = computed(() => {
-    console.log(this._year(), this._month());
     return new Date(this._year(), this._month(), 1).toLocaleString('ru-RU', { month: 'long', year: 'numeric' });
   });
 
