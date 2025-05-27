@@ -76,7 +76,6 @@ export class CategoryOperationFormComponent implements OnInit {
   }
 
   private _setCategoryFormValue () {
-    console.log(this._selectedCategory());
     this._categoryOperationForm.patchValue({
       type: this._category().type,
       name: this._category().name,

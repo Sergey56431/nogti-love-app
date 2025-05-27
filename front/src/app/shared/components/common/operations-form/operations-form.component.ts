@@ -98,7 +98,6 @@ export class OperationsFormComponent implements OnInit {
   }
 
   private _setFormValues() {
-    console.log(this._operation());
     this._operationForm.patchValue({
       categoryId: this._operation()?.id,
       type: this._operation()?.categoryOperations.type,

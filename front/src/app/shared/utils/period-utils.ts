@@ -8,7 +8,7 @@ export class PeriodUtils {
     try {
       return [`${year}-01-01`, `${year}-12-31`];
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return [];
     }
   }

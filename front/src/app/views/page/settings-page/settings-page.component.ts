@@ -52,7 +52,6 @@ export class SettingsPageComponent implements OnInit {
     } else {
       this._canSend.set(false);
     }
-    console.log(this._newSettings());
   }
 
   protected _saveSettings(): void {
