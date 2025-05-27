@@ -4,4 +4,5 @@ export * from './users-route';
 export * from './month-choice';
 export * from './day-state';
 export * from './progress-statuses';
+export * from './operation-type';
 export * from './roles';

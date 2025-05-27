@@ -1,4 +1,13 @@
-import { ChangeDetectorRef, Component, computed, effect, Input, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  computed,
+  effect,
+  EventEmitter, input,
+  OnInit,
+  Output,
+  signal,
+} from '@angular/core';
 import { UIChart } from 'primeng/chart';
 import { Menu } from 'primeng/menu';
 import { Button } from 'primeng/button';
@@ -12,31 +21,20 @@ import { PeriodUtils } from '@shared/utils';
   styleUrl: './chart.component.scss',
 })
 export class ChartComponent implements OnInit {
-  protected _income = signal<number>(0);
-  protected _expanse = signal<number>(0);
+  public _income = input<number>(0);
+  public _expanse = input<number>(0);
 
+  protected _month = signal<number>(new Date().getMonth());
+  private _year = signal<number>(new Date().getFullYear());
   protected _date = computed(() => {
     console.log(this._year(), this._month());
     return new Date(this._year(), this._month(), 1).toLocaleString('ru-RU', { month: 'long', year: 'numeric' });
   });
 
-  protected _month = signal<number>(new Date().getMonth());
-  private _year = signal<number>(new Date().getFullYear());
 
-  @Input() set income(income: number) {
-    if (income) {
-      this._income.set(income);
-    }
-  }
-
-  @Input() set expense(expense: number) {
-    if (expense) {
-      this._expanse.set(expense);
-    }
-  }
+  @Output() public selectedDate = new EventEmitter<string[]>();
 
   protected data: unknown;
-
   protected options: unknown;
 
   protected _options = [
@@ -99,9 +97,6 @@ export class ChartComponent implements OnInit {
   }
 
   protected _selectPeriod() {
-    const date = PeriodUtils.convertMonths(this._month(), this._year());
-    // реализовать запрос через стор для получения операций по месяцу
-    console.log(date);
+    this.selectedDate.emit(PeriodUtils.convertMonths(this._month(), this._year()));
   }
-
 }

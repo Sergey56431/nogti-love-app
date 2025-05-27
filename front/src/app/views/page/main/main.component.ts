@@ -4,6 +4,7 @@ import { ScheduleMainComponent } from '@shared/components/schedule-main/schedule
 import { createDispatchMap, select } from '@ngxs/store';
 import { OperationsState, Transactions } from '@core/store';
 import { AuthService } from '@core/auth';
+import { UserInfoType } from '@shared/types';
 
 @Component({
   selector: 'app-main',
@@ -20,6 +21,8 @@ export class MainComponent implements OnInit {
   protected title = 'Главная';
   protected _income = signal<number>(0);
   protected _expanse = signal<number>(0);
+  private _userInfo?: UserInfoType;
+
 
   private _operationsList = computed(() => {
     return this._operations();
@@ -43,10 +46,21 @@ export class MainComponent implements OnInit {
           this._expanse.update(prev => prev + item.value);
         }
       });
+      if (this._operationsList().length === 0) {
+        console.log(this._operationsList());
+        this._income.set(0);
+        this._expanse.set(0);
+      }
     }, { allowSignalWrites: true });
   }
 
   public ngOnInit() {
-      this._actions.getOperations(this._authService.getUserInfo().userId ?? '');
+    this._userInfo = this._authService.getUserInfo();
+    this._fetchOperation();
   }
+
+  protected _fetchOperation(period?: string[]) {
+    const query = period ? {dateFrom: period[0], dateTo: period[1]} : null;
+    this._actions.getOperations(this._userInfo?.userId ?? '', query ?? {});
+  };
 }

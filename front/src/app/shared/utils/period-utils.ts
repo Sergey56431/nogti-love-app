@@ -1,32 +1,32 @@
 export class PeriodUtils {
-  static convertMonths(month: number, year: number): string {
+  static convertMonths(month: number, year: number): string[] {
     const date = new Date(year, month + 1, 0).getDate();
-    return `${year}-${(month + 1).toString().padStart(2, '0')}-01 - ${year}-${(month + 1).toString().padStart(2, '0')}-${date}`;
+    return [`${year}-${(month + 1).toString().padStart(2, '0')}-01 `, ` ${year}-${(month + 1).toString().padStart(2, '0')}-${date}`];
   }
 
-  static convertYears(year: number): string {
+  static convertYears(year: number): string[] {
     try {
-      return `${year}-01-01 - ${year}-12-31`;
+      return [`${year}-01-01`, `${year}-12-31`];
     } catch (error) {
       console.log(error);
-      return '';
+      return [];
     }
   }
 
-  static convertDays(date: Date): string {
+  static convertDays(date: Date): string[] {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Месяцы начинаются с 0
     const year = date.getFullYear();
 
-    return `${day}-${month}-${year} - ${day}-${month}-${year}`;
+    return [`${year}-${month}-${day}`, ` ${year}-${month}-${day}`];
   }
 
-  static convertWeek(): string {
+  static convertWeek(): string[] {
     const formatDate = (date: Date) => {
       const day = String(date.getDate()).padStart(2, '0');
       const month = String(date.getMonth() + 1).padStart(2, '0'); // Месяцы начинаются с 0
       const year = date.getFullYear();
-      return `${day}-${month}-${year}`;
+      return `${year}-${month}-${day}`;
     };
 
 
@@ -39,34 +39,24 @@ export class PeriodUtils {
     const endOfWeek = new Date(today);
     endOfWeek.setDate(today.getDate() + (7 - dayOfWeek));
 
-    return `${formatDate(startOfWeek)} - ${formatDate(endOfWeek)}`;
-
+    return [`${formatDate(startOfWeek)}`, `${formatDate(endOfWeek)}`];
   }
 
-  static convertPeriod(period: string, interval?: string) {
-    let selectTime = null;
-    if (interval) {
-      return selectTime;
-    }
+  static convertPeriod(period: string) {
 
     switch (period) {
       case 'month':
-        selectTime = this.convertMonths(new Date().getMonth(), new Date().getFullYear());
-        break;
+         return this.convertMonths(new Date().getMonth(), new Date().getFullYear());
       case 'year':
-        selectTime = this.convertYears(new Date().getFullYear());
-        break;
+        return this.convertYears(new Date().getFullYear());
       case 'today':
-        selectTime = this.convertDays(new Date());
-        break;
+        return this.convertDays(new Date());
       case 'week':
-        selectTime = this.convertWeek();
-        break;
+        return this.convertWeek();
+      case 'all':
+        return [];
       default:
-        selectTime = '';
-        break;
+        return [];
     }
-
-    return selectTime;
   }
 }
