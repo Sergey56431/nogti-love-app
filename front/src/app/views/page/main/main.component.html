@@ -1,7 +1,7 @@
 <section class="page-content">
   <h1 class="page-title mb-10">{{title}}</h1>
   <div class="main-content">
-    <app-chart [expense]="_expanse()" [income]="_income()"></app-chart>
+    <app-chart [_expanse]="_expanse()" [_income]="_income()" (selectedDate)="_fetchOperation($event)" ></app-chart>
     <app-schedule-main></app-schedule-main>
   </div>
 </section>

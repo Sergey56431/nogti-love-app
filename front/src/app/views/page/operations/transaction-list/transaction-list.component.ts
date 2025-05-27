@@ -12,10 +12,11 @@ import { CurrencyPipe, DatePipe, NgStyle } from '@angular/common';
 import { Tooltip } from 'primeng/tooltip';
 import { Breadcrumb } from 'primeng/breadcrumb';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { SnackStatusesUtil } from '@shared/utils';
+import { OperationType, PeriodUtils, SnackStatusesUtil } from '@shared/utils';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { OperationsFormComponent } from '@shared/components';
 import { Select } from 'primeng/select';
+import { QueryParams } from '@shared/types';
 
 enum PeriodValue {
   ALL = 'all',
@@ -23,12 +24,6 @@ enum PeriodValue {
   MONTH = 'month',
   YEAR = 'year',
   TODAY = 'today'
-}
-
-enum OperationType {
-  EXPENSE = 'expense',
-  INCOME = 'income',
-  ALL = 'all',
 }
 
 @Component({
@@ -192,19 +187,16 @@ export class TransactionListComponent implements OnInit {
   }
 
   protected _getOperations(params?: Params) {
-    const selectedQuery = {
-      ...this._queryParams,
-    };
+    let period = [];
+    const selectedQuery: QueryParams = {};
 
-    if ((params?.['type'] ?? this._queryParams.type) === OperationType.ALL) {
-      delete selectedQuery.type;
-    } else {
+    if ((params?.['type'] ?? this._queryParams.type) !== OperationType.ALL) {
       selectedQuery.type = params?.['type'] ?? this._queryParams.type;
     }
-    if ((params?.['period'] ?? this._queryParams.period) === PeriodValue.ALL) {
-      delete selectedQuery.period;
-    } else {
-      selectedQuery.period = params?.['period'] ?? this._queryParams.period;
+    if ((params?.['period'] ?? this._queryParams.period) !== PeriodValue.ALL) {
+      period = PeriodUtils.convertPeriod(params?.['period']);
+      selectedQuery.dateFrom = period[0];
+      selectedQuery.dateTo = period[1];
     }
 
     if (Object.keys(selectedQuery).length === 0) {
