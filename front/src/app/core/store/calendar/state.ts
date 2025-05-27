@@ -6,7 +6,7 @@ import { CalendarActions } from '@core/store';
 
 interface CalendarStateModel {
   period: string[]
-  calendar?: CalendarResponse[];
+  calendar: CalendarResponse[];
 }
 
 @State<CalendarStateModel>({
@@ -30,10 +30,8 @@ export class CalendarState {
   @Action(CalendarActions.FetchInterval)
   private _fetchInterval(ctx: StateContext<CalendarStateModel>, action: CalendarActions.FetchInterval) {
     const state = ctx.getState();
-    if (state?.period[0] === action.interval[0] || state?.period[1] === action.interval[1]) {
-      console.log(state?.period[0] === action.interval[0]);
-      console.log(state?.period[1] === action.interval[1]);
-
+    if (state?.period[0] === action.interval[0] && state?.period[1] === action.interval[1]) {
+      console.log('returning', state?.calendar);
       return state?.calendar;
     }
 

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { DatePicker } from 'primeng/datepicker';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Checkbox } from 'primeng/checkbox';
@@ -6,9 +6,10 @@ import { Slider } from 'primeng/slider';
 import { Status } from '@shared/utils';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { createDispatchMap, select, Store } from '@ngxs/store';
+import { createDispatchMap, select } from '@ngxs/store';
 import { CalendarActions, CalendarState } from '@core/store';
-import { CalendarResponse } from '@shared/types';
+import { DatePipe } from '@angular/common';
+import { FiltersComponent } from '@shared/components';
 
 @Component({
   selector: 'app-schedule-page',
@@ -21,29 +22,22 @@ import { CalendarResponse } from '@shared/types';
     FormsModule,
     RouterLink,
     ButtonModule,
+    DatePipe,
+    FiltersComponent,
   ],
   templateUrl: './schedule-page.component.html',
   styleUrl: './schedule-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SchedulePageComponent {
-  private _store = inject(Store);
   protected _title = 'Расписание';
 
-  protected _directs: CalendarResponse[] = [];
   protected _intervalCalendarData = select(CalendarState.getCalendar);
-  protected _services = [
-    { id: 1, name: 'Маникюр' },
-    { id: 2, name: 'Педикюр' },
-  ];
+  protected _calendarData = computed(() => {
+    return  this._intervalCalendarData();
+  });
 
-  protected _masters = [
-    { id: 3, name: 'Валерия' },
-    { id: 4, name: 'Юлия' },
-    { id: 5, name: 'Лилия' },
-  ];
   private _statusDirects = [Status.New, Status.Success, Status.Canceled, Status.Pending];
-  protected _rangeTime = [15, 75];
   protected _choicePeriod = signal<string[]>([]);
 
   protected _showFilters = signal<boolean>(false);
@@ -75,14 +69,10 @@ export class SchedulePageComponent {
 
         if (this._choicePeriod()?.length > 1)  {
           this._actions?.selectPeriodCalendar(this._choicePeriod());
-          console.log(this._choicePeriod());
+          console.log(this._calendarData());
         }
       });
 
     }
-  }
-
-  protected _choiceServices(value: string) {
-    console.error(value);
   }
 }
