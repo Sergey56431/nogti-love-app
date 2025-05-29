@@ -5,6 +5,17 @@ import { CreateClientsDto, UpdateClientsDto } from './dto';
 import * as bcrypt from 'bcrypt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
+// Функция для исключения полей из объекта
+function exclude<User, Key extends keyof User>(
+  user: User,
+  keys: Key[],
+): Omit<User, Key> {
+  for (const key of keys) {
+    delete user[key];
+  }
+  return user;
+}
+
 @Injectable()
 export class ClientsService implements IClientsService {
   private readonly _logger = new Logger(ClientsService.name);

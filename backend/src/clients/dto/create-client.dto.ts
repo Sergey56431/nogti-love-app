@@ -1,3 +1,5 @@
+import { IsOptional, IsUUID } from 'class-validator';
+
 export class CreateClientsDto {
   name: string;
   lastName: string;
@@ -10,6 +12,9 @@ export class CreateClientsDto {
   roleId?: string;
   score?: number;
   password: string;
+  @IsUUID()
+  @IsOptional()
+  referrerId?: string;
 }
 
 export type UpdateClientsDto = Partial<CreateClientsDto>;

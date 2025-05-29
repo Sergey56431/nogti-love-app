@@ -106,6 +106,17 @@ export class OperationsService implements IOperationsService {
       }
     }
     if (dateFrom || dateTo) {
+      /*if (where.updateDate) {
+        where.updateDate = {};
+        if (dateFrom) {
+          where.updateDate.gte = new Date(dateFrom);
+        }
+        if (dateTo) {
+          const endDate = new Date(dateTo);
+          endDate.setUTCHours(23, 59, 59, 999);
+          where.updateDate.lte = endDate;
+        }
+      }*/
       where.createDate = {};
       if (dateFrom) {
         where.createDate.gte = new Date(dateFrom);
@@ -194,6 +205,14 @@ export class OperationsService implements IOperationsService {
       const result = await this._prismaService.income_Expanses.update({
         where: { id },
         data: dataToUpdate,
+        include: {
+          categoryOperations: {
+            select: {
+              name: true,
+              type: true,
+            },
+          },
+        },
       });
       this._logger.log(
         `Операция с ID ${id} успешно обновлена: ${JSON.stringify(result)}`,
