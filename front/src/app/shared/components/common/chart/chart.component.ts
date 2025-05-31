@@ -14,11 +14,10 @@ import { Button } from 'primeng/button';
 import { PeriodUtils } from '@shared/utils';
 
 @Component({
-  selector: 'app-chart',
-  standalone: true,
-  imports: [Menu, Button, UIChart],
-  templateUrl: './chart.component.html',
-  styleUrl: './chart.component.scss',
+    selector: 'app-chart',
+    imports: [Menu, Button, UIChart],
+    templateUrl: './chart.component.html',
+    styleUrl: './chart.component.scss'
 })
 export class ChartComponent implements OnInit {
   public _income = input<number>(0);

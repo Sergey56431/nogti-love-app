@@ -14,20 +14,19 @@ import { InputNumber } from 'primeng/inputnumber';
 import { AuthService } from '@core/auth';
 
 @Component({
-  selector: 'app-add-new-client-card',
-  standalone: true,
-  imports: [
-    FloatLabel,
-    InputText,
-    Password,
-    InputMask,
-    Button,
-    ReactiveFormsModule,
-    InputNumber,
-  ],
-  templateUrl: './add-new-client-card.component.html',
-  styleUrl: './add-new-client-card.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-add-new-client-card',
+    imports: [
+        FloatLabel,
+        InputText,
+        Password,
+        InputMask,
+        Button,
+        ReactiveFormsModule,
+        InputNumber,
+    ],
+    templateUrl: './add-new-client-card.component.html',
+    styleUrl: './add-new-client-card.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AddNewClientCardComponent {
 

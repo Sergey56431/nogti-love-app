@@ -10,12 +10,11 @@ import { ClientInfoType, UserInfoType } from '@shared/types';
 import { ClientsService } from '@shared/services';
 
 @Component({
-  selector: 'app-client-card',
-  standalone: true,
-  imports: [InputText, Textarea, Button, Rating, FormsModule],
-  templateUrl: './client-card.component.html',
-  styleUrl: './client-card.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-client-card',
+    imports: [InputText, Textarea, Button, Rating, FormsModule],
+    templateUrl: './client-card.component.html',
+    styleUrl: './client-card.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClientCardComponent implements OnInit {
   protected _directInfo = signal<DirectsClientType | undefined>(undefined);

@@ -17,12 +17,11 @@ import { ItemChangerDirective } from '@shared/directives';
 import { DirectsClientType } from '@shared/types/directs-client.type';
 
 @Component({
-  selector: 'app-date-picker',
-  standalone: true,
-  imports: [Button, ItemChangerDirective],
-  templateUrl: './date-picker.component.html',
-  styleUrl: './date-picker.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-date-picker',
+    imports: [Button, ItemChangerDirective],
+    templateUrl: './date-picker.component.html',
+    styleUrl: './date-picker.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatePickerComponent implements OnInit {
   protected _render = signal<boolean>(false);

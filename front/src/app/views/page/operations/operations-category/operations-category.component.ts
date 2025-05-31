@@ -11,17 +11,16 @@ import { OperationCategoryInterface } from '@shared/types/operations';
 import { ConfirmationService } from 'primeng/api';
 
 @Component({
-  selector: 'app-operations-category',
-  standalone: true,
-  imports: [
-    Button,
-    NgStyle,
-    ConfirmDialog,
-  ],
-  providers: [ConfirmationService],
-  templateUrl: './operations-category.component.html',
-  styleUrl: './operations-category.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-operations-category',
+    imports: [
+        Button,
+        NgStyle,
+        ConfirmDialog,
+    ],
+    providers: [ConfirmationService],
+    templateUrl: './operations-category.component.html',
+    styleUrl: './operations-category.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OperationsCategoryComponent implements OnInit {
   private _ref: DynamicDialogRef | undefined;

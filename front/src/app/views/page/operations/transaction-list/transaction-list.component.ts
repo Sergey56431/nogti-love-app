@@ -27,25 +27,24 @@ enum PeriodValue {
 }
 
 @Component({
-  selector: 'app-transaction-list',
-  standalone: true,
-  imports: [
-    SelectButton,
-    FormsModule,
-    TableModule,
-    Button,
-    DatePipe,
-    CurrencyPipe,
-    Tooltip,
-    NgStyle,
-    Breadcrumb,
-    ConfirmDialog,
-    Select,
-  ],
-  providers: [ConfirmationService, MessageService],
-  templateUrl: './transaction-list.component.html',
-  styleUrl: './transaction-list.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-transaction-list',
+    imports: [
+        SelectButton,
+        FormsModule,
+        TableModule,
+        Button,
+        DatePipe,
+        CurrencyPipe,
+        Tooltip,
+        NgStyle,
+        Breadcrumb,
+        ConfirmDialog,
+        Select,
+    ],
+    providers: [ConfirmationService, MessageService],
+    templateUrl: './transaction-list.component.html',
+    styleUrl: './transaction-list.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TransactionListComponent implements OnInit {
   private _ref: DynamicDialogRef | undefined;

@@ -29,20 +29,19 @@ import { ProgressStatuses, SnackStatusesUtil } from '@shared/utils';
 import { orderBy } from 'lodash';
 
 @Component({
-  selector: 'app-direct-visit',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    FloatLabel,
-    InputText,
-    InputMask,
-    Select,
-    Textarea,
-    ButtonModule,
-    MultiSelect,
-  ],
-  templateUrl: './direct-visit.component.html',
-  styleUrl: './direct-visit.component.scss',
+    selector: 'app-direct-visit',
+    imports: [
+        ReactiveFormsModule,
+        FloatLabel,
+        InputText,
+        InputMask,
+        Select,
+        Textarea,
+        ButtonModule,
+        MultiSelect,
+    ],
+    templateUrl: './direct-visit.component.html',
+    styleUrl: './direct-visit.component.scss'
 })
 export class DirectVisitComponent implements OnInit {
 

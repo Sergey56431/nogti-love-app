@@ -30,12 +30,11 @@ enum DialogVariants {
 }
 
 @Component({
-  selector: 'app-favors-dialog',
-  standalone: true,
-  imports: [ReactiveFormsModule, Button, Tooltip, Select, FloatLabel, InputMask, InputNumber, InputText, NgTemplateOutlet, SelectButton, FormsModule],
-  templateUrl: './favors-dialog.component.html',
-  styleUrl: './favors-dialog.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-favors-dialog',
+    imports: [ReactiveFormsModule, Button, Tooltip, Select, FloatLabel, InputMask, InputNumber, InputText, NgTemplateOutlet, SelectButton, FormsModule],
+    templateUrl: './favors-dialog.component.html',
+    styleUrl: './favors-dialog.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class FavorsDialogComponent implements OnInit {
