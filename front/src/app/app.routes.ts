@@ -41,7 +41,7 @@ export const routes: Routes = [
       },
 
       {
-        path: 'schedule-edit',
+        path: 'schedule/schedule-edit',
         loadComponent: () =>
           import('./views').then((c) => c.ScheduleEditComponent),
       },
@@ -64,17 +64,17 @@ export const routes: Routes = [
         title: 'Операции',
       },
       {
-        path: 'operations-list',
+        path: 'operations/operations-list',
         loadComponent: () => import('./views').then((c) => c.TransactionListComponent),
         title: 'Список операций',
       },
       {
-        path: 'operation-categories',
+        path: 'operations/operation-categories',
         loadComponent: () => import('./views').then((c) => c.OperationsCategoryComponent),
         title: 'Категории операций',
       },
       {
-        path: 'transactions-details/:id',
+        path: 'operations/transactions-details/:id',
         loadComponent: () => import('./views').then((c) => c.TransactionsDetailsComponent),
         title: 'Детали операции',
       },

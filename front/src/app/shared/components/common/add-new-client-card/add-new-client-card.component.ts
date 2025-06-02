@@ -40,14 +40,19 @@ export class AddNewClientCardComponent {
 
   protected _newClientForm = this._fb.group({
     name: new FormControl('', [Validators.required]),
-    phoneNumber: new FormControl('', [Validators.required]),
+    phoneNumber: new FormControl('', [Validators.required, Validators.pattern('^7-\\d{3}-\\d{3}-\\d{2}-\\d{2}$')]),
     lastName: new FormControl(''),
     password: new FormControl('', [Validators.required]),
     score: new FormControl(0),
     description: new FormControl(''),
   });
 
+  protected get _phoneNumber() {
+    return this._newClientForm.get('phoneNumber');
+  }
+
   protected _createClient() {
+
     const master = this._authService.getUserInfo();
     const body: ClientInfoType = {
       name: this._newClientForm.value.name ?? '',
@@ -58,7 +63,6 @@ export class AddNewClientCardComponent {
       description: this._newClientForm.value.description ?? '',
       masterId: master?.userId,
     };
-    console.error(body);
     if (body){
       this._sendNewClient(body);
     }
