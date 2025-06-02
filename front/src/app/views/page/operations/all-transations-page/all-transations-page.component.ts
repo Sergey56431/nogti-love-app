@@ -15,12 +15,12 @@ export class AllTransationsPageComponent {
   protected _categories = [
     {
       img: 'category',
-      route: '/operation-categories',
+      route: '/operations/operation-categories',
       name: 'Категории',
     },
     {
       img: 'operation-list',
-      route: '/operations-list',
+      route: '/operations/operations-list',
       name: 'Список операций',
     },
     {

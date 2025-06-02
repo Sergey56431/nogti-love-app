@@ -14,6 +14,9 @@
   <p-floatlabel class="min-w-full" variant="on">
     <p-inputmask class="phone-input" id="phoneNumber" formControlName="phoneNumber" mask="9-999-999-99-99" />
     <label for="phoneNumber">Номер телефона</label>
+    @if(_phoneNumber?.errors?.['pattern']) {
+      <div class="text-red-600 text-xs">Формат телефона: 7-999-999-99-99</div>
+    }
   </p-floatlabel>
   <p-floatlabel variant="on">
     <p-password fluid id="password" formControlName="password" autocomplete="off" />

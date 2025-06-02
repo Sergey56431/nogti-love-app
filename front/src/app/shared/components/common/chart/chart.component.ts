@@ -36,7 +36,7 @@ export class ChartComponent implements OnInit {
   protected options: unknown;
 
   protected _options = [
-    { routerLink: '/operations-list', label: 'Детально' },
+    { routerLink: '/operations/operations-list', label: 'Детально' },
   ];
 
   constructor(private readonly _cdr: ChangeDetectorRef) {

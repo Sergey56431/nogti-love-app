@@ -31,7 +31,7 @@ export class ScheduleMainComponent {
   private _status: ToastMessageOptions = {} as ToastMessageOptions;
   protected _choiceDay = signal<CalendarResponse | null>(null);
   protected _options = [
-    { routerLink: '/schedule-edit', label: 'Редактировать расписание' },
+    { routerLink: '/schedule/schedule-edit', label: 'Редактировать расписание' },
     { routerLink: '/schedule', label: 'Список всех записей' },
     {
       label: 'Обновить расписание',
