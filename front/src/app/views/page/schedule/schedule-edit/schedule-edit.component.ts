@@ -17,21 +17,20 @@ import { SettingsActions, SettingsState } from '@core/store';
 import { Select } from 'primeng/select';
 
 @Component({
-  selector: 'app-schedule-edit',
-  standalone: true,
-  imports: [
-    Breadcrumb,
-    DatePickerComponent,
-    ToggleSwitch,
-    FormsModule,
-    TableModule,
-    Button,
-    InputNumber,
-    Select,
-  ],
-  templateUrl: './schedule-edit.component.html',
-  styleUrl: './schedule-edit.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-schedule-edit',
+    imports: [
+        Breadcrumb,
+        DatePickerComponent,
+        ToggleSwitch,
+        FormsModule,
+        TableModule,
+        Button,
+        InputNumber,
+        Select,
+    ],
+    templateUrl: './schedule-edit.component.html',
+    styleUrl: './schedule-edit.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ScheduleEditComponent implements OnInit {
   protected _title = 'Расписание';

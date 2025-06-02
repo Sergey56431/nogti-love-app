@@ -19,18 +19,17 @@ import { Tooltip } from 'primeng/tooltip';
 import { SnackStatusesUtil } from '@shared/utils';
 
 @Component({
-  selector: 'app-header',
-  standalone: true,
-  imports: [
-    RouterLink,
-    Menu,
-    BadgeDirective,
-    Button,
-    Tooltip,
-  ],
-  templateUrl: './header.component.html',
-  styleUrl: './header.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-header',
+    imports: [
+        RouterLink,
+        Menu,
+        BadgeDirective,
+        Button,
+        Tooltip,
+    ],
+    templateUrl: './header.component.html',
+    styleUrl: './header.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeaderComponent implements OnInit {
   protected _pushCount = 3;

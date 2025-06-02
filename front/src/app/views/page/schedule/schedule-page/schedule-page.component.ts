@@ -9,21 +9,20 @@ import { ButtonModule } from 'primeng/button';
 import { ClientCardComponent } from '@shared/components';
 
 @Component({
-  selector: 'app-schedule-page',
-  standalone: true,
-  imports: [
-    DatePicker,
-    ReactiveFormsModule,
-    Checkbox,
-    Slider,
-    FormsModule,
-    RouterLink,
-    ButtonModule,
-    ClientCardComponent,
-  ],
-  templateUrl: './schedule-page.component.html',
-  styleUrl: './schedule-page.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-schedule-page',
+    imports: [
+        DatePicker,
+        ReactiveFormsModule,
+        Checkbox,
+        Slider,
+        FormsModule,
+        RouterLink,
+        ButtonModule,
+        ClientCardComponent,
+    ],
+    templateUrl: './schedule-page.component.html',
+    styleUrl: './schedule-page.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SchedulePageComponent {
   protected _title = 'Расписание';

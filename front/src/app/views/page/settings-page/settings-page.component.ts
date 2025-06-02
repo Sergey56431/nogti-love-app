@@ -8,15 +8,14 @@ import { SettingsType } from '@shared/types/settings.type';
 import { Button } from 'primeng/button';
 
 @Component({
-  selector: 'app-settings-page',
-  standalone: true,
-  imports: [
-    InputText,
-    Button,
-  ],
-  templateUrl: './settings-page.component.html',
-  styleUrl: './settings-page.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-settings-page',
+    imports: [
+        InputText,
+        Button,
+    ],
+    templateUrl: './settings-page.component.html',
+    styleUrl: './settings-page.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SettingsPageComponent implements OnInit {
   protected readonly _title = 'Настройки';

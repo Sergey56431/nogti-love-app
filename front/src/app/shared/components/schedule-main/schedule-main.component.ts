@@ -17,13 +17,12 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { CalendarResponse } from '@shared/types';
 
 @Component({
-  selector: 'app-schedule-main',
-  standalone: true,
-  imports: [Button, Menu, DatePickerComponent, Tooltip, ConfirmDialogModule],
-  providers: [ConfirmationService, MessageService],
-  templateUrl: './schedule-main.component.html',
-  styleUrl: './schedule-main.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-schedule-main',
+    imports: [Button, Menu, DatePickerComponent, Tooltip, ConfirmDialogModule],
+    providers: [ConfirmationService, MessageService],
+    templateUrl: './schedule-main.component.html',
+    styleUrl: './schedule-main.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ScheduleMainComponent {
   @ViewChild(DatePickerComponent) calendar?: DatePickerComponent;

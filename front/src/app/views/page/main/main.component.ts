@@ -7,15 +7,14 @@ import { AuthService } from '@core/auth';
 import { UserInfoType } from '@shared/types';
 
 @Component({
-  selector: 'app-main',
-  standalone: true,
-  imports: [
-    ChartComponent,
-    ScheduleMainComponent,
-  ],
-  templateUrl: './main.component.html',
-  styleUrl: './main.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-main',
+    imports: [
+        ChartComponent,
+        ScheduleMainComponent,
+    ],
+    templateUrl: './main.component.html',
+    styleUrl: './main.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MainComponent implements OnInit {
   protected title = 'Главная';
