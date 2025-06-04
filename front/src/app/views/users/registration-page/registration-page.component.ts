@@ -8,14 +8,13 @@ import { MessageService, ToastMessageOptions } from 'primeng/api';
 import { SnackStatusesUtil } from '@shared/utils';
 
 @Component({
-  selector: 'app-registration-page',
-  standalone: true,
-  imports: [
-    FormsModule,
-    ReactiveFormsModule,
-    RouterLink,
-  ],
-  templateUrl: './registration-page.component.html',
+    selector: 'app-registration-page',
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        RouterLink,
+    ],
+    templateUrl: './registration-page.component.html'
 })
 export class RegistrationPageComponent {
   private _status: ToastMessageOptions = {} as ToastMessageOptions;

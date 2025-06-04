@@ -3,12 +3,11 @@ import { NgStyle } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-all-transations-page',
-  standalone: true,
-  imports: [NgStyle, RouterLink],
-  templateUrl: './all-transations-page.component.html',
-  styleUrl: './all-transations-page.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-all-transations-page',
+    imports: [NgStyle, RouterLink],
+    templateUrl: './all-transations-page.component.html',
+    styleUrl: './all-transations-page.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AllTransationsPageComponent {
   protected _title = 'Все операции';
@@ -16,12 +15,12 @@ export class AllTransationsPageComponent {
   protected _categories = [
     {
       img: 'category',
-      route: '/operation-categories',
+      route: '/operations/operation-categories',
       name: 'Категории',
     },
     {
       img: 'operation-list',
-      route: '/operations-list',
+      route: '/operations/operations-list',
       name: 'Список операций',
     },
     {

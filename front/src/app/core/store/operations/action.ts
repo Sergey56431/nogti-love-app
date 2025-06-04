@@ -1,10 +1,11 @@
 import { CreateOperationInterface } from '@shared/types/operations';
+import { QueryParams } from '@shared/types';
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Transactions {
   export class GetOperations {
     static readonly type: string = '[Operations] Get Operations';
-    constructor(public readonly userId: string, public readonly query?: { period?: string, type?: string} ) {
+    constructor(public readonly userId: string, public readonly query?: QueryParams ) {
     }
   }
 

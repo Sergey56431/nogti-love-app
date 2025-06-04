@@ -133,57 +133,27 @@ model DirectsServices {
   @@index([directId, serviceId])
 }
 
+
 model Client {
-    id              String              @id @default(uuid())
-    name            String
-    lastName        String?
-    phoneNumber     String              @unique
-    rate            Float?
-    birthday        DateTime?
-    description     String?
-    password        String
-    refreshToken    String?
-    roleId          String              @default("CLIENT")
-    masterId        String?
-    tier1Referrals  ReferalTier1[]      @relation(name: "ReferralTier1Referral")
-    tier2Referrals  ReferalTier2[]      @relation(name: "ReferralTier2Referral")
-    tier3Referrals  ReferalTier3[]      @relation(name: "ReferralTier3Referral")
-    referrerTier1   ReferalTier1[]      @relation(name: "ReferralTier1Referrer")
-    referrerTier2   ReferalTier2[]      @relation(name: "ReferralTier2Referrer")
-    referrerTier3   ReferalTier3[]      @relation(name: "ReferralTier3Referrer")
-    user            User?               @relation(fields: [masterId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    score           Int?
+  id              String              @id @default(uuid())
+  name            String
+  lastName        String?
+  phoneNumber     String              @unique
+  rate            Float?
+  birthday        DateTime?
+  description     String?
+  password        String
+  refreshToken    String?
+  roleId          String              @default("CLIENT")
+  masterId        String?
+  user            User?               @relation(fields: [masterId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  score           Int?
+
+  referrerId      String?
+  referrer        Client?             @relation("ClientReferrals", fields: [referrerId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  referredClients Client[]            @relation("ClientReferrals")
 }
 
-model ReferalTier1 {
-    referrerId      String
-    referalId       String
-    referrer        Client          @relation(name: "ReferralTier1Referrer", fields: [referrerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    referral        Client          @relation(name: "ReferralTier1Referral", fields: [referalId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    @@id([referrerId, referalId])
-    @@index([referrerId])
-    @@index([referalId])
-}
-
-model ReferalTier2 {
-    referrerId      String
-    referalId       String
-    referrer        Client          @relation(name: "ReferralTier2Referrer", fields: [referrerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    referral        Client          @relation(name: "ReferralTier2Referral", fields: [referalId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    @@id([referrerId, referalId])
-    @@index([referrerId])
-    @@index([referalId])
-}
-
-model ReferalTier3 {
-    referrerId      String
-    referalId       String
-    referrer        Client          @relation(name: "ReferralTier3Referrer", fields: [referrerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    referral        Client          @relation(name: "ReferralTier3Referral", fields: [referalId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    @@id([referrerId, referalId])
-    @@index([referrerId])
-    @@index([referalId])
-}
 
 enum TypeOperation {
   income

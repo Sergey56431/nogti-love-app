@@ -6,15 +6,22 @@
   padding: 0;
 }
 
+.p-togglebutton-content {
+  padding: 4px 8px!important;
+  border-radius: 4px!important;
+}
+
 .p-togglebutton {
+  padding: 6px!important;
+
   &.p-togglebutton-checked {
-    &::before {
+    .p-togglebutton-content {
       box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.68)!important;
       background-color: $busy-color!important;
     }
   }
   &:hover {
-    &::before {
+    .p-togglebutton-content {
       box-shadow: 0 0 4px rgba(0, 0, 0, 0.68)!important;
       background-color: $blue-color!important;
     }
@@ -25,7 +32,6 @@
 }
 
 body, html {
-  height: 100vh;
   font-family: 'Montserrat', sans-serif;
 }
 

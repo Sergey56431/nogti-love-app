@@ -11,18 +11,17 @@ import { Button } from 'primeng/button';
 import { OperationCategoryInterface } from '@shared/types/operations';
 
 @Component({
-  selector: 'app-category-operation-form',
-  standalone: true,
-  imports: [
-    FloatLabel,
-    ReactiveFormsModule,
-    Select,
-    InputText,
-    Button,
-  ],
-  templateUrl: './category-operation-form.component.html',
-  styleUrl: './category-operation-form.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-category-operation-form',
+    imports: [
+        FloatLabel,
+        ReactiveFormsModule,
+        Select,
+        InputText,
+        Button,
+    ],
+    templateUrl: './category-operation-form.component.html',
+    styleUrl: './category-operation-form.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CategoryOperationFormComponent implements OnInit {
   private readonly _ref = inject(DynamicDialogRef);
@@ -76,7 +75,6 @@ export class CategoryOperationFormComponent implements OnInit {
   }
 
   private _setCategoryFormValue () {
-    console.log(this._selectedCategory());
     this._categoryOperationForm.patchValue({
       type: this._category().type,
       name: this._category().name,

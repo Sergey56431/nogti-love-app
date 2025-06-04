@@ -5,17 +5,16 @@ import { PrimeIcons } from 'primeng/api';
 import { Tooltip } from 'primeng/tooltip';
 
 @Component({
-  selector: 'app-sidebar',
-  standalone: true,
-  imports: [
-    RouterLink,
-    RouterLink,
-    RouterLinkActive,
-    Tooltip,
-  ],
-  templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-sidebar',
+    imports: [
+        RouterLink,
+        RouterLink,
+        RouterLinkActive,
+        Tooltip,
+    ],
+    templateUrl: './sidebar.component.html',
+    styleUrl: './sidebar.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SidebarComponent {
   protected _menuOpen = signal(true);

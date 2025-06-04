@@ -19,21 +19,20 @@ import { SettingsType } from '@shared/types/settings.type';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-schedule-edit',
-  standalone: true,
-  imports: [
-    Breadcrumb,
-    DatePickerComponent,
-    ToggleSwitch,
-    FormsModule,
-    TableModule,
-    Button,
-    InputNumber,
-    Select,
-  ],
-  templateUrl: './schedule-edit.component.html',
-  styleUrl: './schedule-edit.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-schedule-edit',
+    imports: [
+        Breadcrumb,
+        DatePickerComponent,
+        ToggleSwitch,
+        FormsModule,
+        TableModule,
+        Button,
+        InputNumber,
+        Select,
+    ],
+    templateUrl: './schedule-edit.component.html',
+    styleUrl: './schedule-edit.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ScheduleEditComponent implements OnInit {
   private _subscription?: Subscription;

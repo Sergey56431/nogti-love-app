@@ -11,18 +11,17 @@ import { Button } from 'primeng/button';
 import { CreateOperationInterface } from '@shared/types/operations';
 
 @Component({
-  selector: 'app-operations-form',
-  standalone: true,
-  imports: [
-    FloatLabel,
-    ReactiveFormsModule,
-    Select,
-    InputNumber,
-    Button,
-  ],
-  templateUrl: './operations-form.component.html',
-  styleUrl: './operations-form.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-operations-form',
+    imports: [
+        FloatLabel,
+        ReactiveFormsModule,
+        Select,
+        InputNumber,
+        Button,
+    ],
+    templateUrl: './operations-form.component.html',
+    styleUrl: './operations-form.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OperationsFormComponent implements OnInit {
   protected _isEdit = signal<boolean>(false);
@@ -98,7 +97,6 @@ export class OperationsFormComponent implements OnInit {
   }
 
   private _setFormValues() {
-    console.log(this._operation());
     this._operationForm.patchValue({
       categoryId: this._operation()?.id,
       type: this._operation()?.categoryOperations.type,
