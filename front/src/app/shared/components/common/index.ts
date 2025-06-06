@@ -3,6 +3,7 @@ export * from './category-operation-form';
 export * from './date-picker';
 export * from './direct-visit';
 export * from './client-card';
+export * from './direct-item';
 export * from './favors-dialog';
 export * from './filters';
 export * from './add-new-client-card';

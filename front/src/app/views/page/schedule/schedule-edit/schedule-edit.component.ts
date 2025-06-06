@@ -65,6 +65,7 @@ export class ScheduleEditComponent implements OnInit {
     label: 'Расписание',
     routerLink: ['/schedule'],
     icon: '',
+    style: {background: 'transparent!important'}
   };
 
   protected _breadcrumb: Signal<MenuItem[] | undefined> = computed(() => {
@@ -72,7 +73,7 @@ export class ScheduleEditComponent implements OnInit {
       {
         label: 'Выставление расписания',
         routerLink: ['/schedule'],
-        style: { color: 'primary' },
+        style: { color: 'primary!important'},
       },
     ];
   });

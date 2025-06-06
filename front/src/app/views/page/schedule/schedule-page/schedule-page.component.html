@@ -3,18 +3,19 @@
   <div class="schedule-page-content">
     <div class="schedule-options flex w-72 flex-col items-center pr-10 gap-2.5 xl:items-start">
       <div class="flex flex-col items-center gap-1 xl:flex-row">
-        <p-button class="w-64" type="button" icon="pi pi-plus" severity="success"
+        <p-button class="w-64" type="button" icon="pi pi-plus" severity="primary"
                   routerLink="/schedule/schedule-edit" label="Выставить расписание"/>
       </div>
 
       <p-date-picker [fluid]="true"
                      selectionMode="range"
                      #period
+                     placeholder="Выберите интервал"
                      [readonlyInput]="true"
                      (onSelect)="_selectPeriod(period.value)" />
       <button class="btn schedule-filter-btn"
               [class.active]="_showFilters()"
-              (click)="showFiltersWindow()">Фильтры
+              (click)="_showFiltersWindow()">Фильтры
       </button>
 
       @if (_showFilters()) {
@@ -22,21 +23,16 @@
       }
     </div>
 
-    <div class="max-h-96 overflow-auto">
-      <div class="directs-list">
+    <!--<div class="max-h-[650px] w-full overflow-auto ">
+      <div class="directs-list flex flex-col gap-3">
         @for (direct of _calendarData(); track direct) {
           <h2>{{ direct.date | date : 'longDate': '':'ru' }}</h2>
           @for (item of direct.directs; track item) {
             @if (direct.directs!.length > 0) {
-              <div class="flex items-center gap-4">
-                <div>{{ item.time }}</div>
-                <div>{{ item.clientName }}</div>
-                <div>{{ item.phone }}</div>
-              </div>
-            } @if (direct.directs!.length === 0) {
-              <div class="empty-direct">Нет записей на день</div>
+              <app-direct-item [direct]="item"/>
             }
-
+          } @empty {
+            <div class="empty-direct">Нет записей на день</div>
           }
         }
       </div>
@@ -44,7 +40,7 @@
 
     <div>
       <h2>Клиент</h2>
-    </div>
+    </div>-->
   </div>
 </div>
 

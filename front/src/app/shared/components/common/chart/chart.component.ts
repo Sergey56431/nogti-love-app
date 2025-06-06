@@ -61,8 +61,8 @@ export class ChartComponent implements OnInit {
       datasets: [
         {
           data: [this._income(), this._expanse()],
-          backgroundColor: ['#dfc49c', '#0E55DD'],
-          hoverBackgroundColor: ['#f3cd8e', '#003381'],
+          backgroundColor: ['#8B3792', '#F0EABA'],
+          hoverBackgroundColor: ['#5A215F', '#CCC89EFF'],
         },
       ],
     };

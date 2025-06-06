@@ -58,13 +58,15 @@ button {
 }
 
 .page {
+  height: 100%;
+  background-image: url("../images/pageBg.png");
   margin-top: 55px;
-  margin-left: 250px;
+  padding-left: 250px;
   transition: .2s ease-in-out;
 }
 
 .page:has(.sidebar.close) {
-  margin-left: 120px;
+  padding-left: 120px;
 }
 
 .text-danger {
@@ -72,6 +74,13 @@ button {
   font-size: 12px;
   margin-top: -10px;
   margin-bottom: 10px;
+}
+
+.deleteItem {
+  .p-menu-item-link,
+  .p-menu-item-icon {
+    color: #bf0707!important;
+  }
 }
 
 .page-content {
@@ -110,6 +119,15 @@ p-inputmask {
 .minute-select{
   .p-select-dropdown {
     display: none;
+  }
+}
+
+.p-breadcrumb {
+  background: transparent!important;
+
+    li, a, span, .p-breadcrumb-item-icon  {
+      font-size: 14px;
+      color: $black!important;
   }
 }
 

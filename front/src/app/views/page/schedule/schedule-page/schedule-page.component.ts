@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, OnInit, signal } from '@angular/core';
 import { DatePicker } from 'primeng/datepicker';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Checkbox } from 'primeng/checkbox';
@@ -8,31 +8,31 @@ import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { createDispatchMap, select } from '@ngxs/store';
 import { CalendarActions, CalendarState } from '@core/store';
+import { DirectItem, FiltersComponent } from '@shared/components';
 import { DatePipe } from '@angular/common';
-import { FiltersComponent } from '@shared/components';
 
 @Component({
-    selector: 'app-schedule-page',
-    imports: [
-        DatePicker,
-        ReactiveFormsModule,
-        Checkbox,
-        Slider,
-        FormsModule,
-        RouterLink,
-        ButtonModule,
-        ClientCardComponent,
-    ],
-    templateUrl: './schedule-page.component.html',
-    styleUrl: './schedule-page.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'app-schedule-page',
+  imports: [
+    DatePicker,
+    ReactiveFormsModule,
+    FormsModule,
+    RouterLink,
+    ButtonModule,
+    FiltersComponent,
+    DatePipe,
+    DirectItem,
+  ],
+  templateUrl: './schedule-page.component.html',
+  styleUrl: './schedule-page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SchedulePageComponent {
+export class SchedulePageComponent implements OnInit {
   protected _title = 'Расписание';
 
   protected _intervalCalendarData = select(CalendarState.getCalendar);
   protected _calendarData = computed(() => {
-    return  this._intervalCalendarData();
+    return this._intervalCalendarData();
   });
 
   private _statusDirects = [Status.New, Status.Success, Status.Canceled, Status.Pending];
@@ -40,16 +40,27 @@ export class SchedulePageComponent {
 
   protected _showFilters = signal<boolean>(false);
 
-  showFiltersWindow() {
+  protected _showFiltersWindow() {
     this._showFilters.set(!this._showFilters());
   }
 
   private _actions = createDispatchMap({
-    selectPeriodCalendar: CalendarActions.FetchInterval
+    selectPeriodCalendar: CalendarActions.FetchInterval,
   });
 
   protected get status() {
     return this._statusDirects;
+  }
+
+  public ngOnInit(): void {
+    this._initSchedule();
+  }
+
+  private _initSchedule(){
+    const startDate = new Date();
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 30);
+    this._selectPeriod([startDate, endDate]);
   }
 
   protected _selectPeriod(period: Date[]) {
@@ -65,7 +76,7 @@ export class SchedulePageComponent {
           this._choicePeriod()?.push(date);
         }
 
-        if (this._choicePeriod()?.length > 1)  {
+        if (this._choicePeriod()?.length > 1) {
           this._actions?.selectPeriodCalendar(this._choicePeriod());
           console.log(this._calendarData());
         }
