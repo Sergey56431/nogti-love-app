@@ -60,7 +60,7 @@ button {
 .page {
   height: 100%;
   background-image: url("../images/pageBg.png");
-  margin-top: 55px;
+  padding-top: 55px;
   padding-left: 250px;
   transition: .2s ease-in-out;
 }
@@ -132,7 +132,13 @@ p-inputmask {
 }
 
 @media screen and (max-width: 500px) {
+  .page-content {
+    background-image: url("../images/pageBg.png");
+  }
+
   .page {
+    min-height: 100%;
+    height: unset;
     justify-content: center;
 
     .page-title {
@@ -140,7 +146,7 @@ p-inputmask {
     }
 
     &:has(.sidebar.close) {
-      margin-left: 0;
+      padding-left: 0;
       padding-bottom: 80px;
     }
   }
