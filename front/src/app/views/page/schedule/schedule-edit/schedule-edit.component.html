@@ -1,7 +1,7 @@
 <div class="page-content">
   <h1 class="page-title mb-2.5"> {{ _title }}</h1>
-  <div class="breadcrumb">
-    <p-breadcrumb class="max-w-full" [model]="_breadcrumb()" [home]="_home"></p-breadcrumb>
+  <div class="breadcrumb mb-4">
+    <p-breadcrumb class="max-w-full"  [model]="_breadcrumb()" [home]="_home"></p-breadcrumb>
   </div>
 
   <div class="flex flex-col items-center gap-4 lg:flex-row lg:items-start">
@@ -72,7 +72,7 @@
             <p-button severity="primary" (onClick)="_choiceDay()"
                       label="Сохранить" icon="pi pi-check" class="w-full" />
           } @else {
-            <p-button severity="success" (onClick)="_resetDays()" label="Сформировать расписание" fluid />
+            <p-button severity="primary" (onClick)="_resetDays()" label="Сформировать расписание" fluid />
           }
         </div>
       </div>
@@ -108,6 +108,5 @@
       }
     </div>
   </div>
-
 </div>
 

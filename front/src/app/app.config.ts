@@ -21,7 +21,7 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Localization, MyPreset } from '@shared/utils';
-import { OperationCategoriesState, OperationsState, SettingsState } from '@core/store';
+import { CalendarState, OperationCategoriesState, OperationsState, SettingsState } from '@core/store';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -30,7 +30,11 @@ export const appConfig: ApplicationConfig = {
     ConfirmDialog,
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideStore([SettingsState, OperationCategoriesState, OperationsState ]),
+    provideStore([
+      SettingsState,
+      OperationCategoriesState,
+      OperationsState,
+      CalendarState]),
     provideAnimationsAsync(),
     providePrimeNG({
       translation: Localization,

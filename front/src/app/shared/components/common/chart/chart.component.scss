@@ -1,14 +1,14 @@
+@import "../../../../../assets/styles/variables";
+@import "../../../../../assets/styles/mixins";
+
 .chart-content {
   display: flex;
   align-items: center;
   flex-direction: column;
   max-height: 452px;
   width: 350px;
-  padding: 30px;
-  border-radius: 20px;
-  box-sizing: border-box;
-  box-shadow: 0 0 20px 4px #3d3d3d33;
   text-align: center;
+  @include card();
 
   .chart-head {
    margin-bottom: 10px;

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, signal, Signal, ViewChild
 import { Button } from 'primeng/button';
 import { Menu } from 'primeng/menu';
 import {
-  ClientCardComponent,
+  ClientCardComponent, DirectItem,
   DatePickerComponent,
   DirectVisitComponent,
 } from '@shared/components';
@@ -17,12 +17,12 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { CalendarResponse } from '@shared/types';
 
 @Component({
-    selector: 'app-schedule-main',
-    imports: [Button, Menu, DatePickerComponent, Tooltip, ConfirmDialogModule],
-    providers: [ConfirmationService, MessageService],
-    templateUrl: './schedule-main.component.html',
-    styleUrl: './schedule-main.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'app-schedule-main',
+  imports: [Button, Menu, DatePickerComponent, Tooltip, ConfirmDialogModule, DirectItem],
+  providers: [ConfirmationService, MessageService],
+  templateUrl: './schedule-main.component.html',
+  styleUrl: './schedule-main.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScheduleMainComponent {
   @ViewChild(DatePickerComponent) calendar?: DatePickerComponent;

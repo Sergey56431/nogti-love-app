@@ -3,84 +3,44 @@
   <div class="schedule-page-content">
     <div class="schedule-options flex w-72 flex-col items-center pr-10 gap-2.5 xl:items-start">
       <div class="flex flex-col items-center gap-1 xl:flex-row">
-        <p-button class="w-64" type="button" icon="pi pi-plus" severity="success"
+        <p-button class="w-64" type="button" icon="pi pi-plus" severity="primary"
                   routerLink="/schedule/schedule-edit" label="Выставить расписание"/>
       </div>
 
       <p-date-picker [fluid]="true"
                      selectionMode="range"
                      #period
+                     placeholder="Выберите интервал"
                      [readonlyInput]="true"
-                     (onSelect)="test(period.value)" />
+                     (onSelect)="_selectPeriod(period.value)" />
       <button class="btn schedule-filter-btn"
               [class.active]="_showFilters()"
-              (click)="showFiltersWindow()">Фильтры</button>
+              (click)="_showFiltersWindow()">Фильтры
+      </button>
 
       @if (_showFilters()) {
-        <div class="schedule-filters-check w-full">
-          <div class="filter-block">
-            <h2 class="filter-name">Услуги</h2>
-            <div class="filter-name-checkboxes flex flex-col items-start gap-2.5">
-              @for (service of _services; track service) {
-                <div class="flex items-center">
-                  <p-checkbox (onChange)="_choiceServices(serviceVal.value)"
-                              #serviceVal
-                              [inputId]="service.id.toString()"
-                              [name]="service.name"
-                              [value]="service.name" />
-                  <label for="{{service.id}}" class="ml-2">{{ service.name }}</label>
-                </div>
-              }
-            </div>
-          </div>
-          <div class="filter-block">
-            <h2 class="filter-name">Время</h2>
-            <p-slider [(ngModel)]="_rangeTime" [range]="true" [step]="15" [min]="0" [max]="120" />
-            <div class="flex items-center justify-around mt-2">
-              <span>{{ _rangeTime[0] }}</span>
-              <span>{{ _rangeTime[1] }}</span>
-            </div>
-
-          </div>
-          <div class="filter-block">
-            <h2 class="filter-name">Мастер</h2>
-            <div class="flex flex-col items-start gap-2 5">
-              @for (master of _masters; track master) {
-                <div class="flex items-center">
-                  <p-checkbox (onChange)="_choiceServices(masterVal.value)"
-                              #masterVal
-                              [inputId]="master.id.toString()"
-                              [name]="master.name"
-                              [value]="master.name" />
-                  <label for="{{master.id}}" class="ml-2">{{ master.name }}</label>
-                </div>
-              }
-            </div>
-          </div>
-          <div class="filter-block">
-            <h2 class="filter-name">Статус</h2>
-            <!--            <div class="flex flex-col items-start gap-2 5">-->
-            <!--              @for (stat of status; track stat; let i= $index) {-->
-            <!--                <div class="flex items-center">-->
-            <!--                  <p-checkbox (onChange)="_choiceServices(masterVal.value)"-->
-            <!--                              #masterVal-->
-            <!--                              [inputId]="i + ''"-->
-            <!--                              [name]="stat"-->
-            <!--                              [value]="stat" />-->
-            <!--                  <label for="{{i}}" class="ml-2">{{ stat }}</label>-->
-            <!--                </div>-->
-            <!--              }-->
-            <!--            </div>-->
-          </div>
-        </div>
+        <app-filters></app-filters>
       }
-
-
-
     </div>
-      @if (!_showFilters()) {
-<!--        Реализовать здесь карточку клиента (Старая не работает)-->
-      }
+
+    <!--<div class="max-h-[650px] w-full overflow-auto ">
+      <div class="directs-list flex flex-col gap-3">
+        @for (direct of _calendarData(); track direct) {
+          <h2>{{ direct.date | date : 'longDate': '':'ru' }}</h2>
+          @for (item of direct.directs; track item) {
+            @if (direct.directs!.length > 0) {
+              <app-direct-item [direct]="item"/>
+            }
+          } @empty {
+            <div class="empty-direct">Нет записей на день</div>
+          }
+        }
+      </div>
+    </div>
+
+    <div>
+      <h2>Клиент</h2>
+    </div>-->
   </div>
 </div>
 

@@ -54,7 +54,8 @@ export class DatePickerComponent implements OnInit {
     private readonly _calendarService: CalendarService,
     private readonly _directService: DirectsService,
     private readonly _authService: AuthService,
-  ) {}
+  ) {
+  }
 
   // Инициализация компонента (стартовый месяц и запроса получение всех дней рабочих дней юзера)
   ngOnInit() {
@@ -75,7 +76,7 @@ export class DatePickerComponent implements OnInit {
 
   // Запрос всего календаря для пользователя
   private _fetchUserFullCalendar(): void {
-    const user = this._authService.getUserInfo() ;
+    const user = this._authService.getUserInfo();
     if (user && user.userId) {
       this._calendarService
         .fetchCalendarByUser(user.userId)
@@ -122,7 +123,7 @@ export class DatePickerComponent implements OnInit {
     this.day = `${day.toString().padStart(2, '0')} ${this.month}`;
     this.emitDate.emit(this.choiceDate());
     const date = new Date(`${this._yearCount()}-${this._mountCount().toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`)
-      .toLocaleDateString('ru-RU', {year: 'numeric', month: '2-digit', day: '2-digit'})
+      .toLocaleDateString('ru-RU', { year: 'numeric', month: '2-digit', day: '2-digit' })
       .split('.')
       .reverse()
       .join('-');
@@ -166,7 +167,8 @@ export class DatePickerComponent implements OnInit {
           Object.assign(i, {
             id: item.id,
             freeSlots: item.freeSlots,
-            state: item.state });
+            state: item.state,
+          });
         }
       });
     }
