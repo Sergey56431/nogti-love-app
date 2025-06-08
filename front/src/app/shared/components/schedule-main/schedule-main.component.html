@@ -18,7 +18,7 @@
         <ul class="timetable-items h-56">
 
           @for (direct of _directsList(); track direct) {
-            <app-direct-item [direct]="direct" (click)="_moreInfo(direct)"/>
+            <app-direct-item [modal]="false" (delete)="_deleteDirect(direct)" [direct]="direct" (showInfo)="_moreInfo($event)" />
           }
 
           @if (_directsList().length > 4) {
@@ -67,4 +67,7 @@
     <span>Свободные окна</span>
   </div>
   <p-confirm-dialog />
+  <p-dialog header="Карточка клиента" [(visible)]="_show" modal closeOnEscape closable>
+    <app-client-card [modal]="true" [directInfo]="_direct()" (close)="_closeDialog($event)"></app-client-card>
+  </p-dialog>
 </div>

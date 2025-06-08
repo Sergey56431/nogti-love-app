@@ -23,24 +23,30 @@
       }
     </div>
 
-    <!--<div class="max-h-[650px] w-full overflow-auto ">
+  <div class="max-h-[650px] w-full overflow-auto ">
       <div class="directs-list flex flex-col gap-3">
         @for (direct of _calendarData(); track direct) {
           <h2>{{ direct.date | date : 'longDate': '':'ru' }}</h2>
-          @for (item of direct.directs; track item) {
-            @if (direct.directs!.length > 0) {
-              <app-direct-item [direct]="item"/>
+          <ul>
+            @for (item of direct.directs; track item) {
+              @if (direct.directs!.length > 0) {
+                <app-direct-item [direct]="item" (showInfo)="_selectDirect.set($event)"/>
+              }
+            } @empty {
+              <div class="empty-direct">Нет записей на день</div>
             }
-          } @empty {
-            <div class="empty-direct">Нет записей на день</div>
-          }
+
+          </ul>
         }
       </div>
     </div>
 
-    <div>
-      <h2>Клиент</h2>
-    </div>-->
+    @if(_selectDirect() != null){
+      <div>
+        <h2>Клиент {{_selectDirect()?.clientName}}</h2>
+          <app-client-card [modal]="false" [directInfo]="_selectDirect()"></app-client-card>
+      </div>
+    }
   </div>
 </div>
 

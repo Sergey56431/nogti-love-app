@@ -36,7 +36,7 @@
         <li class="client-info-item flex">
           <span class="client-info-item-title">Рейтинг клиента:</span>
           <p-rating [readonly]="!_editMode()" (ngModelChange)="this._clientRating.set($event * 20)"
-                    [ngModel]="_client()?.rate ?? 0 / 20" />
+                    [ngModel]="(_client()?.rate ?? 0 ) / 20 " />
         </li>
         <li class="client-info-item flex flex-col gap-2 lg:flex-row lg:items-center">
           <span class="client-info-item-title">Пометки о клиенте:</span>

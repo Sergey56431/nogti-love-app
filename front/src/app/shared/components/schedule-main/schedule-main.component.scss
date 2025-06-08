@@ -51,31 +51,9 @@
       }
 
       .timetable-items {
-        position: relative;
         list-style: none;
         padding-bottom: 40px;
         border-bottom: 1px solid #cccccc;
-
-        .loadElseDirect {
-          cursor: pointer;
-          position: absolute;
-          bottom: 5px;
-          left: calc(50% - 25px);
-          @include transition;
-
-          svg {
-            border-radius: 3px;
-          }
-
-          &:hover {
-            svg {
-              path {
-                fill: $blue-color;
-                box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
-              }
-            }
-          }
-        }
 
         .no-directs-title {
           font-family: 'Montserrat-SemiBold', sans-serif;
