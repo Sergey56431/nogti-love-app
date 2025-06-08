@@ -1,15 +1,21 @@
 import { ChangeDetectionStrategy, Component, computed, OnInit, signal } from '@angular/core';
 import { DatePicker } from 'primeng/datepicker';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Checkbox } from 'primeng/checkbox';
-import { Slider } from 'primeng/slider';
 import { Status } from '@shared/utils';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { createDispatchMap, select } from '@ngxs/store';
 import { CalendarActions, CalendarState } from '@core/store';
-import { DirectItem, FiltersComponent } from '@shared/components';
+import { ClientCardComponent, DirectItem, FiltersComponent } from '@shared/components';
 import { DatePipe } from '@angular/common';
+import { DirectsClientType } from '@shared/types';
+import {
+  DialogService,
+  DynamicDialogComponent,
+  DynamicDialogConfig,
+  DynamicDialogInjector, DynamicDialogModule,
+  DynamicDialogRef,
+} from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'app-schedule-page',
@@ -20,9 +26,11 @@ import { DatePipe } from '@angular/common';
     RouterLink,
     ButtonModule,
     FiltersComponent,
-    DatePipe,
     DirectItem,
+    DatePipe,
+    ClientCardComponent,
   ],
+  providers: [DynamicDialogModule],
   templateUrl: './schedule-page.component.html',
   styleUrl: './schedule-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,6 +43,8 @@ export class SchedulePageComponent implements OnInit {
     return this._intervalCalendarData();
   });
 
+  protected _selectDirect = signal<DirectsClientType | undefined>(undefined);
+
   private _statusDirects = [Status.New, Status.Success, Status.Canceled, Status.Pending];
   protected _choicePeriod = signal<string[]>([]);
 
@@ -43,6 +53,8 @@ export class SchedulePageComponent implements OnInit {
   protected _showFiltersWindow() {
     this._showFilters.set(!this._showFilters());
   }
+
+  private _ref: DynamicDialogRef | undefined;
 
   private _actions = createDispatchMap({
     selectPeriodCalendar: CalendarActions.FetchInterval,
@@ -78,10 +90,8 @@ export class SchedulePageComponent implements OnInit {
 
         if (this._choicePeriod()?.length > 1) {
           this._actions?.selectPeriodCalendar(this._choicePeriod());
-          console.log(this._calendarData());
         }
       });
-
     }
   }
 }

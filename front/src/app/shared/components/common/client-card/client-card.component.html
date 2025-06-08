@@ -1,4 +1,4 @@
-<div class="p-5 rounded-3xl bg-zinc-300 max-w-96 w-full">
+<div class="p-5 rounded-3xl max-w-96 w-full" [ngClass]="modal() ? 'modal-card' : 'common-card'">
   <header class="flex items-start gap-4 mb-4">
     <div class="">
       <img class="w-32 rounded-full" src="./assets/images/profile.png" alt="">
@@ -10,26 +10,26 @@
       </li>
       <li class="client-info flex items-center gap-1.5">
         <span>Время:</span>
-        <span>{{_directInfo()?.time}}</span>
+        <span>{{directInfo()?.time}}</span>
       </li>
       <li class="client-info flex items-center gap-1.5">
         <span>Телефон:</span>
-        <span>{{_directInfo()?.phone}}</span>
+        <span>{{directInfo()?.phone}}</span>
       </li>
       <li class="client-info flex items-center gap-1.5">
         <span>Рейтинг:</span>
-        <p-rating [readonly]="true" [ngModel]="_userInfo()?.rate ?? 0 / 20 "></p-rating>
+        <p-rating [readonly]="true" [ngModel]="(_userInfo()?.rate ?? 0 ) / 20 "></p-rating>
       </li>
     </ul>
   </header>
   <div class="flex flex-col gap-4">
     <div class="client-info flex items-center gap-1.5">
       <span>Имя Клиента:</span>
-      <span>{{_directInfo()?.clientName}}</span>
+      <span>{{directInfo()?.clientName}}</span>
     </div>
     <div class="client-info flex flex-col gap-1.5">
       <span>Ваши пометки:</span>
-      <input type="text" pInputText [value]="'тестовый текст'" />
+      <input type="text" pInputText readonly [value]="directInfo()?.comment" />
     </div>
     <div class="client-info">
       <span>Дата последнего визита:</span>
@@ -37,11 +37,14 @@
     </div>
     <div class="client-info flex flex-col gap-1.5">
       <span>Комментарий клиента</span>
-      <textarea [autoResize]="true" disabled rows="5" cols="30" pTextarea [value]="_directInfo()?.comment"></textarea>
+      <textarea [autoResize]="true" readonly rows="5" cols="30" pTextarea></textarea>
     </div>
-    <div class="flex justify-end gap-2">
-      <p-button severity="primary" label="Соханить" [raised]="true"/>
-      <p-button severity="warn" label="Закрыть" (onClick)="_close()" [raised]="true" />
-    </div>
+
+    @if (modal()){
+      <div class="flex justify-end gap-2">
+        <p-button severity="primary" label="Соханить" [raised]="true"/>
+        <p-button severity="warn" label="Закрыть" (onClick)="_close()" [raised]="true" />
+      </div>
+    }
   </div>
 </div>

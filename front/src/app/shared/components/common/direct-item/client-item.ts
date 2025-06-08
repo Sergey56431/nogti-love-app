@@ -16,14 +16,19 @@ import { MenuItem } from 'primeng/api';
 })
 export class DirectItem {
 
+  modal = input<boolean>(false);
   direct = input<DirectsClientType | undefined>(undefined);
+  showInfo = output<DirectsClientType>();
+  delete = output();
 
   protected _menuItems: MenuItem[] = [
     {
       label: 'Подробнее',
       icon: 'pi pi-eye',
       command: () => {
-       //
+        if (!this.modal()) {
+          this.showInfo.emit(this.direct()!);
+        }
       }
     },
     {
@@ -38,7 +43,7 @@ export class DirectItem {
       icon: 'pi pi-times',
       styleClass: 'deleteItem',
       command: () => {
-       //
+        this.delete.emit();
       }
     },
   ];

@@ -17,7 +17,7 @@ import { provideStore } from '@ngxs/store';
 import { provideServiceWorker } from '@angular/service-worker';
 import { AuthInterceptor } from '@core/auth';
 import { providePrimeNG } from 'primeng/config';
-import { DialogService } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Localization, MyPreset } from '@shared/utils';

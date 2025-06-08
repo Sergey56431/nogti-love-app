@@ -9,16 +9,16 @@ import {
 import { DirectsClientType } from '@shared/types/directs-client.type';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { DirectsService } from '@shared/services';
-import { Tooltip } from 'primeng/tooltip';
 import { orderBy } from 'lodash';
 import { ConfirmationService, MessageService, ToastMessageOptions } from 'primeng/api';
 import { SnackStatusesUtil } from '@shared/utils';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { CalendarResponse } from '@shared/types';
+import { Dialog } from 'primeng/dialog';
 
 @Component({
   selector: 'app-schedule-main',
-  imports: [Button, Menu, DatePickerComponent, Tooltip, ConfirmDialogModule, DirectItem],
+  imports: [Button, Menu, DatePickerComponent, ConfirmDialogModule, DirectItem, Dialog, ClientCardComponent],
   providers: [ConfirmationService, MessageService],
   templateUrl: './schedule-main.component.html',
   styleUrl: './schedule-main.component.scss',
@@ -26,6 +26,8 @@ import { CalendarResponse } from '@shared/types';
 })
 export class ScheduleMainComponent {
   @ViewChild(DatePickerComponent) calendar?: DatePickerComponent;
+
+  protected _show = false;
 
   private _ref: DynamicDialogRef | undefined;
   private _status: ToastMessageOptions = {} as ToastMessageOptions;
@@ -41,6 +43,7 @@ export class ScheduleMainComponent {
     },
   ];
 
+  protected _direct = signal<DirectsClientType| undefined>(undefined);
   protected _directsList: Signal<DirectsClientType[]> = computed(() => {
     return orderBy(this.calendar?.directs(), x => x.time, ['asc']) ?? [];
   });
@@ -119,18 +122,11 @@ export class ScheduleMainComponent {
   }
 
   protected _moreInfo(direct: DirectsClientType) {
-    this._dialogOpen.open(ClientCardComponent, {
-      closeOnEscape: true,
-      style: {
-        backgroundColor: 'transparent',
-        boxShadow: 'none',
-        border: 'none',
-      },
-      modal: true,
-      draggable: false,
-      contentStyle: {},
-      closable: true,
-      data: direct,
-    });
+    this._show = true;
+    this._direct.set(direct);
+  }
+
+  protected _closeDialog(close: boolean){
+    this._show = close;
   }
 }
