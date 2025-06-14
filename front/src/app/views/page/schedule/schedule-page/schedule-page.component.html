@@ -3,8 +3,8 @@
   <div class="schedule-page-content">
     <div class="schedule-options flex w-72 flex-col items-center pr-10 gap-2.5 xl:items-start">
       <div class="flex flex-col items-center gap-1 xl:flex-row">
-        <p-button class="w-64" type="button" icon="pi pi-plus" severity="primary"
-                  routerLink="/schedule/schedule-edit" label="Выставить расписание"/>
+        <p-button class="w-64" type="button" icon="pi pi-plus" fluid severity="primary"
+                  routerLink="/schedule/schedule-edit" label="Выставить расписание" />
       </div>
 
       <p-date-picker [fluid]="true"
@@ -23,28 +23,37 @@
       }
     </div>
 
-  <div class="max-h-[650px] w-full overflow-auto ">
-      <div class="directs-list flex flex-col gap-3">
-        @for (direct of _calendarData(); track direct) {
-          <h2>{{ direct.date | date : 'longDate': '':'ru' }}</h2>
-          <ul>
-            @for (item of direct.directs; track item) {
-              @if (direct.directs!.length > 0) {
-                <app-direct-item [direct]="item" (showInfo)="_selectDirect.set($event)"/>
-              }
-            } @empty {
-              <div class="empty-direct">Нет записей на день</div>
-            }
-
-          </ul>
-        }
-      </div>
+    <div class="md:hidden flex justify-center my-3">
+      <p-button severity="secondary" [label]="_showSchedule() ? 'Скрыть расписание' : 'Показать расписание'"
+                icon="pi pi-eye" (click)="_showSchedule.set(!_showSchedule())" />
     </div>
 
-    @if(_selectDirect() != null){
+    <div class="md:max-h-[650px] max-h-[420px] w-full flex flex-col gap-4 overflow-auto custom-scrollbar">
+
+
+      @if (_showSchedule()) {
+        <div class="directs-list">
+          @for (direct of _calendarData(); track direct) {
+            <h2 class="mb-3">{{ direct.date | date : 'longDate': '':'ru' }}</h2>
+            <ul class="mb-4">
+              @for (item of direct.directs; track item) {
+                @if (direct.directs!.length > 0) {
+                  <app-direct-item [direct]="item" (showInfo)="_selectDirect.set($event)" />
+                }
+              } @empty {
+                <li class="empty-direct list-none">Нет записей на день</li>
+              }
+
+            </ul>
+          }
+        </div>
+      }
+    </div>
+
+    @if (_selectDirect() != null) {
       <div>
-        <h2>Клиент {{_selectDirect()?.clientName}}</h2>
-          <app-client-card [modal]="false" [directInfo]="_selectDirect()"></app-client-card>
+        <h2>Клиент {{ _selectDirect()?.clientName }}</h2>
+        <app-client-card [modal]="false" [directInfo]="_selectDirect()"></app-client-card>
       </div>
     }
   </div>
