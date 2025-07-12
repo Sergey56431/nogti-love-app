@@ -1,8 +1,7 @@
 import {
   ApplicationConfig,
-  provideZoneChangeDetection,
   isDevMode,
-  LOCALE_ID,
+  LOCALE_ID, provideZonelessChangeDetection,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
@@ -17,7 +16,7 @@ import { provideStore } from '@ngxs/store';
 import { provideServiceWorker } from '@angular/service-worker';
 import { AuthInterceptor } from '@core/auth';
 import { providePrimeNG } from 'primeng/config';
-import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
+import { DialogService } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Localization, MyPreset } from '@shared/utils';
@@ -28,7 +27,7 @@ export const appConfig: ApplicationConfig = {
     DialogService,
     MessageService,
     ConfirmDialog,
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideZonelessChangeDetection(),
     provideRouter(routes),
     provideStore([
       SettingsState,

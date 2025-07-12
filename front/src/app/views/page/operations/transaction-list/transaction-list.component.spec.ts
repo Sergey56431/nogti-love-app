@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TransactionListComponent } from '@views/page';
-import { AppStoreModule } from '@core/store';
+import { TransactionListComponent } from './transaction-list.component';
 import { HttpClient, HttpHandler } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
@@ -25,7 +24,7 @@ describe('Список Операций', () => {
         },
         AuthService // Убедитесь, что вы предоставляете AuthService
       ],
-      imports: [AppStoreModule] // Импортируйте необходимые модули
+      // imports: [AppStoreModule] // Удалено, так как модуль не существует
     })
       .compileComponents();
 
@@ -35,10 +34,10 @@ describe('Список Операций', () => {
   });
 
   it('Компонент должен создаться', () => {
-    expect(component).toBeTruthy();
+    expect(!!component).toBe(true);
   });
 
   it('Компонент должен отображать список операций', () => {
-    expect(component['_operationsList']).not.toBe(undefined);
+    expect((component as any)._operationsList).not.toBeUndefined();
   });
 });

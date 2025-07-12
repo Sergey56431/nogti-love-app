@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "e2e": "npx cypress open"
   },
   "private": true,
   "dependencies": {
@@ -27,8 +28,10 @@
     "@primeng/themes": "^18.0.2",
     "cacache": "^19.0.1",
     "chart.js": "^4.3.0",
+    "jasmine": "^5.8.0",
     "ng2-charts": "^6.0.1",
     "ngx-cookie-service": "^18.0.0",
+    "ngxs": "^2.0.0-rc.20",
     "primeicons": "^7.0.0",
     "primelocale": "^1.6.0",
     "primeng": "^19.0.0",
@@ -44,6 +47,7 @@
     "@angular/localize": "^20.0.0",
     "@types/jasmine": "~5.1.0",
     "@types/lodash": "^4.17.15",
+    "@types/tailwindcss": "^3.0.11",
     "angular-eslint": "18.1.0",
     "autoprefixer": "^10.4.21",
     "components": "^0.1.0",
@@ -57,7 +61,7 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "lodash": "^4.17.21",
     "patternomaly": "^1.3.2",
-    "postcss": "^8.5.3",
+    "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.8.3",
     "typescript-eslint": "8.0.0-alpha.38"
