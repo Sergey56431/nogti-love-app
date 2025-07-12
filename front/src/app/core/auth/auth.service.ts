@@ -80,4 +80,25 @@ export class AuthService {
   public getTokens(): string {
     return this.cookieService.get(this._accessTokenKey);
   }
+
+  public sendResetCode(phoneNumber: string): Observable<DefaultResponseType> {
+    return this.http.post<DefaultResponseType>(environment.api + 'auth/send-reset-code', {
+      phoneNumber
+    });
+  }
+
+  public verifyResetCode(phoneNumber: string, code: string): Observable<DefaultResponseType> {
+    return this.http.post<DefaultResponseType>(environment.api + 'auth/verify-reset-code', {
+      phoneNumber,
+      code
+    });
+  }
+
+  public resetPassword(phoneNumber: string, code: string, newPassword: string): Observable<DefaultResponseType> {
+    return this.http.post<DefaultResponseType>(environment.api + 'auth/reset-password', {
+      phoneNumber,
+      code,
+      newPassword
+    });
+  }
 }
