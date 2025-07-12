@@ -13,6 +13,7 @@ import {
 } from '@angular/common/http';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { provideStore } from '@ngxs/store';
+import { LOCAL_STORAGE_ENGINE, withNgxsStoragePlugin } from '@ngxs/storage-plugin';
 import { provideServiceWorker } from '@angular/service-worker';
 import { AuthInterceptor } from '@core/auth';
 import { providePrimeNG } from 'primeng/config';
@@ -33,7 +34,16 @@ export const appConfig: ApplicationConfig = {
       SettingsState,
       OperationCategoriesState,
       OperationsState,
-      CalendarState]),
+      CalendarState], 
+      withNgxsStoragePlugin({
+        keys: [
+          {
+            key: 'userInfo',
+            engine: LOCAL_STORAGE_ENGINE
+          }
+        ]
+      }),
+    ),
     provideAnimationsAsync(),
     providePrimeNG({
       translation: Localization,
