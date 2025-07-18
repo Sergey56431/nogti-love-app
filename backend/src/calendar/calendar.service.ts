@@ -441,6 +441,9 @@ export class CalendarService implements ICalendarService {
             where: {
               isBooked: false,
             },
+            orderBy: {
+              time: 'asc',
+            },
             select: { time: true },
           },
         },
@@ -488,6 +491,9 @@ export class CalendarService implements ICalendarService {
             where: {
               isBooked: false,
             },
+            orderBy: {
+              time: 'asc',
+            },
             select: { time: true },
           },
         },
@@ -516,6 +522,9 @@ export class CalendarService implements ICalendarService {
           freeSlots: {
             where: {
               isBooked: false,
+            },
+            orderBy: {
+              time: 'asc',
             },
             select: { time: true },
           },
@@ -563,6 +572,9 @@ export class CalendarService implements ICalendarService {
           freeSlots: {
             where: {
               isBooked: false,
+            },
+            orderBy: {
+              time: 'asc',
             },
             select: { time: true },
           },
