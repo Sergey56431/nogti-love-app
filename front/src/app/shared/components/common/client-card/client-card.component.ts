@@ -52,6 +52,11 @@ export class ClientCardComponent implements OnInit{
       });
       this._createUserFavorsList(direct);
     }
+    console.log(this._directInfo());
+    this._createUserFavorsList();
+    this._clientService.fetchAdminClient(this._directInfo()?.clientId ?? '').subscribe(client => {
+      this._userInfo.set(client as ClientInfoType);
+    });
   }
 
 
