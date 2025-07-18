@@ -41,7 +41,7 @@ export class RemovePasswordPageComponent {
   }, { validators: this._passwordMatchValidator });
 
   protected _steps = [
-    { label: 'Ввод номера телефона' },
+    { label: 'Ввод номера телефона', icon: 'pi pi-home' },
     { label: 'Подтверждение кода' },
     { label: 'Новый пароль' }
   ];
