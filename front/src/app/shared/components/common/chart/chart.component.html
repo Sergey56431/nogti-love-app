@@ -1,21 +1,24 @@
 <div class="chart-content">
   <h2 class="chart-title chart-head">Мои операции</h2>
-  <canvas baseChart
-          [type]="'doughnut'"
-          [datasets]="pieChartDatasets"
-          [labels]="pieChartLabels.labels"
-          [options]="pieChartOptions"
-          [legend]="pieChartLegend"
-          [width]="275">
-  </canvas>
-  <div class="chart-title-and-option">
-    <h2 class="chart-title">Даходы / Расходы</h2>
-    <p-menu #menu [model]="_options" [popup]="true" />
-    <p-button [rounded]="true"
-              [text]="true"
-              (click)="menu.toggle($event)"
-              severity="contrast"
-              icon="pi pi-ellipsis-v"/>
+<!--  Добавить компонент для выбора месяца-->
+  <div class="flex items-center justify-between w-full">
+    <p-button icon="pi pi-chevron-left" size="small" severity="secondary" [text]="true" rounded (onClick)="_updateDate(-1)"></p-button>
+    <p>{{_date()}}</p>
+    <p-button icon="pi pi-chevron-right" size="small" severity="secondary" [text]="true" rounded (onClick)="_updateDate(+1)"></p-button>
   </div>
 
+  @if (_income() || _expanse()) {
+    <p-chart type="doughnut" [data]="data" [options]="options" width="250px"/>
+    <div class="chart-title-and-option pb-4">
+      <h2 class="chart-title">Даходы / Расходы</h2>
+      <p-menu #menu [model]="_options" [popup]="true" />
+      <p-button [rounded]="true"
+                [text]="true"
+                (click)="menu.toggle($event)"
+                severity="contrast"
+                icon="pi pi-ellipsis-v"/>
+    </div>
+  } @else {
+    <h3 class="pt-2">Нет данных об операциях</h3>
+  }
 </div>

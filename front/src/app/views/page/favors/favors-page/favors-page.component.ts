@@ -17,12 +17,11 @@ import { FavorsDialogComponent } from '@shared/components';
 import { AuthService } from '@core/auth';
 
 @Component({
-  selector: 'app-favors-page',
-  standalone: true,
-  imports: [Button, TableModule, Tooltip],
-  templateUrl: './favors-page.component.html',
-  styleUrl: './favors-page.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-favors-page',
+    imports: [Button, TableModule, Tooltip],
+    templateUrl: './favors-page.component.html',
+    styleUrl: './favors-page.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FavorsPageComponent implements OnInit {
   public _isOverflow = signal<boolean>(false);
@@ -115,7 +114,7 @@ export class FavorsPageComponent implements OnInit {
     });
   }
 
-  // Вызов модального окна для добавления категорий
+  // Вызов модального окна для редактирования услуг/ категорий
   protected _editPosition(favor: Services, edit: string): void {
     this._ref = this._dialogService.open(FavorsDialogComponent, {
       header: 'Редактировать услуги / категории',

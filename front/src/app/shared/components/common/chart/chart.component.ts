@@ -1,50 +1,100 @@
-import { Component } from '@angular/core';
-import { BaseChartDirective } from 'ng2-charts';
-import { ChartOptions } from 'chart.js';
+import {
+  ChangeDetectorRef,
+  Component,
+  computed,
+  effect,
+  EventEmitter, input,
+  OnInit,
+  Output,
+  signal,
+} from '@angular/core';
+import { UIChart } from 'primeng/chart';
 import { Menu } from 'primeng/menu';
 import { Button } from 'primeng/button';
+import { PeriodUtils } from '@shared/utils';
 
 @Component({
-  selector: 'app-chart',
-  standalone: true,
-  imports: [BaseChartDirective, Menu, Button],
-  templateUrl: './chart.component.html',
-  styleUrl: './chart.component.scss',
+    selector: 'app-chart',
+    imports: [Menu, Button, UIChart],
+    templateUrl: './chart.component.html',
+    styleUrl: './chart.component.scss'
 })
-export class ChartComponent {
+export class ChartComponent implements OnInit {
+  public _income = input<number>(0);
+  public _expanse = input<number>(0);
+
+  protected _month = signal<number>(new Date().getMonth());
+  private _year = signal<number>(new Date().getFullYear());
+  protected _date = computed(() => {
+    return new Date(this._year(), this._month(), 1).toLocaleString('ru-RU', { month: 'long', year: 'numeric' });
+  });
+
+
+  @Output() public selectedDate = new EventEmitter<string[]>();
+
+  protected data: unknown;
+  protected options: unknown;
+
   protected _options = [
-    { routerLink: '/all-transactions/income', label: 'Доходы' },
-    { routerLink: '/all-transactions/expenses', label: 'Расходы' },
-    { routerLink: '/operations', label: 'Детально' },
+    { routerLink: '/operations/operations-list', label: 'Детально' },
   ];
 
-  protected pieChartOptions: ChartOptions<'doughnut'> = {
-    plugins: {
-      colors: {
-        enabled: true,
+  constructor(private readonly _cdr: ChangeDetectorRef) {
+    effect(() => {
+      if (this._income()) {
+        this._initChart();
+      }
+      if (this._expanse()) {
+        this._initChart();
+      }
+    }, { allowSignalWrites: true });
+  }
+
+  public ngOnInit() {
+    this._initChart();
+    this._selectPeriod();
+  }
+
+  private _initChart() {
+    this.data = {
+      labels: ['Даходы', 'Расходы'],
+      datasets: [
+        {
+          data: [this._income(), this._expanse()],
+          backgroundColor: ['#8B3792', '#F0EABA'],
+          hoverBackgroundColor: ['#5A215F', '#CCC89EFF'],
+        },
+      ],
+    };
+
+    this.options = {
+      cutout: '60%',
+      plugins: {
+        colors: {
+          enabled: true,
+        },
       },
-    },
-    responsive: false,
-  };
-  protected pieChartLabels = {
-    labels: ['Даходы', 'Расходы'],
-  };
-  protected pieChartDatasets = [
-    {
-      data: [235, 765],
-      backgroundColor: ['#dfc49c', '#0E55DD'],
-      hoverBackgroundColor: ['#f3cd8e', '#003381'],
-    },
-  ];
-  protected pieChartLegend = true;
-  protected pieChartPlugins = {
-    dataLabels: {
-      anchor: 'end',
-      align: 'end',
-    },
-  };
+      responsive: false,
+    };
+    this._cdr.markForCheck();
+  }
 
-  private _getAmounts(): void {
-    console.log('getAmounts');
+  protected _updateDate(value: number) {
+    if (value) {
+      this._month.update(v => v + value);
+    }
+    if (this._month() > 12) {
+      this._month.set(1);
+      this._year.update(v => v + 1);
+    }
+    if (this._month() < 1) {
+      this._month.set(12);
+      this._year.update(v => v - 1);
+    }
+    this._selectPeriod();
+  }
+
+  protected _selectPeriod() {
+    this.selectedDate.emit(PeriodUtils.convertMonths(this._month(), this._year()));
   }
 }

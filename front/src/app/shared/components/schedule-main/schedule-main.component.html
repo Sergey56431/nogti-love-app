@@ -18,18 +18,7 @@
         <ul class="timetable-items h-56">
 
           @for (direct of _directsList(); track direct) {
-            <li class="timetable-item flex gap-2 items-center">
-              <div class="timetable-item-direct" tooltipPosition="bottom" (click)="_moreInfo(direct)" [pTooltip]="direct.comment">
-                <div class="item-time-direct">{{ direct.time }}</div>
-                <div class="item-profile-name">{{ direct.clientName }}</div>
-                <div class="item-profile-phone">{{ direct.phone }}</div>
-              </div>
-              <div>
-                <p-button icon="pi pi-times" [rounded]="true" [text]="true" severity="danger"
-                          pTooltip="Удалить запись" (onClick)="_deleteDirect(direct)" />
-              </div>
-
-            </li>
+            <app-direct-item [modal]="false" (delete)="_deleteDirect(direct)" [direct]="direct" (showInfo)="_moreInfo($event)" />
           }
 
           @if (_directsList().length > 4) {
@@ -78,4 +67,7 @@
     <span>Свободные окна</span>
   </div>
   <p-confirm-dialog />
+  <p-dialog header="Карточка клиента" [(visible)]="_show" modal closeOnEscape closable>
+    <app-client-card [modal]="true" [directInfo]="_direct()" (close)="_closeDialog($event)"></app-client-card>
+  </p-dialog>
 </div>

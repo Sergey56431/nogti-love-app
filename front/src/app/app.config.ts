@@ -1,10 +1,9 @@
 import {
   ApplicationConfig,
-  provideZoneChangeDetection,
   isDevMode,
-  LOCALE_ID,
+  LOCALE_ID, provideZonelessChangeDetection,
 } from '@angular/core';
-import { provideRouter, withDebugTracing } from '@angular/router';
+import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {
@@ -14,6 +13,7 @@ import {
 } from '@angular/common/http';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { provideStore } from '@ngxs/store';
+import { LOCAL_STORAGE_ENGINE, withNgxsStoragePlugin } from '@ngxs/storage-plugin';
 import { provideServiceWorker } from '@angular/service-worker';
 import { AuthInterceptor } from '@core/auth';
 import { providePrimeNG } from 'primeng/config';
@@ -21,15 +21,29 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Localization, MyPreset } from '@shared/utils';
+import { CalendarState, OperationCategoriesState, OperationsState, SettingsState } from '@core/store';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     DialogService,
     MessageService,
     ConfirmDialog,
-    provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes, withDebugTracing()),
-    provideStore(),
+    provideZonelessChangeDetection(),
+    provideRouter(routes),
+    provideStore([
+      SettingsState,
+      OperationCategoriesState,
+      OperationsState,
+      CalendarState], 
+      withNgxsStoragePlugin({
+        keys: [
+          {
+            key: 'userInfo',
+            engine: LOCAL_STORAGE_ENGINE
+          }
+        ]
+      }),
+    ),
     provideAnimationsAsync(),
     providePrimeNG({
       translation: Localization,
@@ -49,6 +63,8 @@ export const appConfig: ApplicationConfig = {
     provideServiceWorker('ngsw-worker.js', {
       enabled: isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',
-    }),
+    }), provideStore(
+[],
+),
   ],
 };

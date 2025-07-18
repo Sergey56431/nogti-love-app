@@ -13,24 +13,21 @@ import { createDispatchMap } from '@ngxs/store';
 import { UsersActions } from '@core/store';
 import { MessageService, PrimeIcons } from 'primeng/api';
 import { Menu } from 'primeng/menu';
-import { BadgeDirective } from 'primeng/badge';
 import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
 import { SnackStatusesUtil } from '@shared/utils';
 
 @Component({
-  selector: 'app-header',
-  standalone: true,
-  imports: [
-    RouterLink,
-    Menu,
-    BadgeDirective,
-    Button,
-    Tooltip,
-  ],
-  templateUrl: './header.component.html',
-  styleUrl: './header.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-header',
+    imports: [
+        RouterLink,
+        Menu,
+        Button,
+        Tooltip,
+    ],
+    templateUrl: './header.component.html',
+    styleUrl: './header.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeaderComponent implements OnInit {
   protected _pushCount = 3;

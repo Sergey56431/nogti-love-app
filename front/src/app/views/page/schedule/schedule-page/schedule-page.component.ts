@@ -1,73 +1,96 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DatePicker } from 'primeng/datepicker';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Checkbox } from 'primeng/checkbox';
-import { Slider } from 'primeng/slider';
 import { Status } from '@shared/utils';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { ClientCardComponent } from '@shared/components';
+import { createDispatchMap, select } from '@ngxs/store';
+import { CalendarActions, CalendarState } from '@core/store';
+import { ClientCardComponent, DirectItem, FiltersComponent } from '@shared/components';
+import { DatePipe } from '@angular/common';
+import { DirectsClientType, UserInfoType } from '@shared/types';
+import { DynamicDialogModule } from 'primeng/dynamicdialog';
+import { AuthService } from '@core/auth';
 
 @Component({
   selector: 'app-schedule-page',
-  standalone: true,
   imports: [
     DatePicker,
     ReactiveFormsModule,
-    Checkbox,
-    Slider,
     FormsModule,
     RouterLink,
     ButtonModule,
+    FiltersComponent,
+    DirectItem,
+    DatePipe,
     ClientCardComponent,
   ],
+  providers: [DynamicDialogModule],
   templateUrl: './schedule-page.component.html',
   styleUrl: './schedule-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SchedulePageComponent {
+export class SchedulePageComponent implements OnInit {
   protected _title = 'Расписание';
 
-  protected _services = [
-    { id: 1, name: 'Маникюр' },
-    { id: 2, name: 'Педикюр' },
-  ];
-  protected _masters = [
-    { id: 3, name: 'Валерия' },
-    { id: 4, name: 'Юлия' },
-    { id: 5, name: 'Лилия' },
-  ];
+  private readonly _authService = inject(AuthService);
+
+  private _master: UserInfoType | null = null;
+
+  protected _intervalCalendarData = select(CalendarState.getCalendar);
+  protected _calendarData = computed(() => {
+    return this._intervalCalendarData();
+  });
+
+  protected _selectDirect = signal<DirectsClientType | undefined>(undefined);
 
   private _statusDirects = [Status.New, Status.Success, Status.Canceled, Status.Pending];
-  protected _rangeTime = [15, 75];
-  protected _choicePeriod = signal<Date[] | undefined>(undefined);
-  protected _showFilters = signal<boolean>(false);
+  protected _choicePeriod = signal<string[]>([]);
 
-  showFiltersWindow() {
+  protected _showFilters = signal<boolean>(false);
+  protected _showSchedule = signal<boolean>(true);
+
+  protected _showFiltersWindow() {
     this._showFilters.set(!this._showFilters());
   }
+
+  private _actions = createDispatchMap({
+    selectPeriodCalendar: CalendarActions.FetchInterval,
+  });
 
   protected get status() {
     return this._statusDirects;
   }
 
-  test(period: Date[]) {
-    if (period.length === 2) {
+  public ngOnInit(): void {
+    this._master = this._authService.getUserInfo();
+    this._initSchedule();
+  }
+
+  private _initSchedule(){
+    const startDate = new Date();
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 30);
+    this._selectPeriod([startDate, endDate]);
+  }
+
+  protected _selectPeriod(period: Date[]) {
+    this._choicePeriod.set([]);
+    if (period.length === 2 && period[1] != null) {
       period.forEach((periodElem) => {
         if (periodElem != null) {
-          console.log(
-            periodElem.toLocaleString('ru-RU', {
-              year: 'numeric',
-              month: 'long',
-              day: '2-digit',
-            }),
-          );
+
+          const date = periodElem.toLocaleString('ru-RU', { year: 'numeric', month: '2-digit', day: '2-digit' })
+            .split('.')
+            .reverse()
+            .join('-');
+          this._choicePeriod()?.push(date);
+        }
+
+        if (this._choicePeriod()?.length > 1) {
+          this._actions?.selectPeriodCalendar(this._choicePeriod(), this._master?.userId ?? '');
         }
       });
     }
-  }
-
-  protected _choiceServices(value: string) {
-    console.error(value);
   }
 }

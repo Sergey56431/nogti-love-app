@@ -37,6 +37,16 @@ export class CalendarService {
     });
   }
 
+  public fetchIntervalCalendar(date: string[], masterId: string): Observable<CalendarResponse[] | DefaultResponseType> {
+    return this.http.get<CalendarResponse[] | DefaultResponseType>(environment.api + 'calendar', {
+      params: {
+        startDate: date[0],
+        endDate: date[1],
+        masterId: masterId
+      }
+    });
+  }
+
   public createDate(data: CreateCalendarType):Observable<CalendarResponse | DefaultResponseType> {
     return this.http.post<CalendarResponse | DefaultResponseType>(environment.api + 'calendar', data);
   }

@@ -1,13 +1,15 @@
-@import "../../../../../assets/styles/fonts";
-@import "../../../../../assets/styles/variables";
+@import '../../../../../assets/styles/fonts';
+@import '../../../../../assets/styles/variables';
+@import '../../../../../assets/styles/mixins';
 
 .schedule-content {
-  border-radius: 20px;
+  @include card();
+  padding: 0!important;
   max-width: 365px;
-  box-shadow: $card-shadow;
+
   header {
     border-radius: 20px 20px 0 0;
-    background-color: $grey-color;
+    background-color: $bg-color;
     span {
       font-family: 'Montserrat-SemiBold', sans-serif;
       font-size: 20px;
@@ -21,9 +23,7 @@
 
 .card-editing-date {
   max-width: 550px;
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: $card-shadow;
   max-height: 500px;
   overflow: auto;
+  @include card();
 }

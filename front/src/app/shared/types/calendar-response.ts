@@ -3,7 +3,8 @@ import { DayState } from '@shared/utils';
 
 export interface CalendarResponse {
   day: number;
-  date: string;
+  date?: string;
+  dayOfWeek?: number;
   directs?: DirectsClientType[];
   freeSlots?: string[];
   id?: string;

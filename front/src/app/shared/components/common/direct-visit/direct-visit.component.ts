@@ -7,7 +7,6 @@ import {
 } from '@angular/forms';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputText } from 'primeng/inputtext';
-import { InputMask } from 'primeng/inputmask';
 import { Select } from 'primeng/select';
 import { Textarea } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
@@ -29,20 +28,18 @@ import { ProgressStatuses, SnackStatusesUtil } from '@shared/utils';
 import { orderBy } from 'lodash';
 
 @Component({
-  selector: 'app-direct-visit',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    FloatLabel,
-    InputText,
-    InputMask,
-    Select,
-    Textarea,
-    ButtonModule,
-    MultiSelect,
-  ],
-  templateUrl: './direct-visit.component.html',
-  styleUrl: './direct-visit.component.scss',
+    selector: 'app-direct-visit',
+    imports: [
+        ReactiveFormsModule,
+        FloatLabel,
+        InputText,
+        Select,
+        Textarea,
+        ButtonModule,
+        MultiSelect,
+    ],
+    templateUrl: './direct-visit.component.html',
+    styleUrl: './direct-visit.component.scss'
 })
 export class DirectVisitComponent implements OnInit {
 
@@ -110,7 +107,7 @@ export class DirectVisitComponent implements OnInit {
       id: this._choiceClient()?.userId ?? '',
       userId: this._userInfo()?.userId ?? '',
       clientName: this._choiceClient()?.name ?? '',
-      date: this._date?.date.split('.').reverse().join('-') ?? '',
+      date: this._date?.date?.split('.').reverse().join('-') ?? '',
       comment: this._newVisitor.controls.comment.value ?? '',
       phone: this._choiceClient()?.phoneNumber ?? '',
       time: this._timeSlotChoice()?.time ?? '',

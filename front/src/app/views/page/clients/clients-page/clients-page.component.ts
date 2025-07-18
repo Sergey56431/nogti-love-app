@@ -24,20 +24,19 @@ import { orderBy } from 'lodash';
 import { AuthService } from '@core/auth';
 
 @Component({
-  selector: 'app-clients-page',
-  standalone: true,
-  imports: [
-    TableModule,
-    Tooltip,
-    RouterLink,
-    ConfirmDialogModule,
-    ToastModule,
-    ButtonModule,
-  ],
-  providers: [ConfirmationService, MessageService],
-  templateUrl: './clients-page.component.html',
-  styleUrl: './clients-page.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-clients-page',
+    imports: [
+        TableModule,
+        Tooltip,
+        RouterLink,
+        ConfirmDialogModule,
+        ToastModule,
+        ButtonModule,
+    ],
+    providers: [ConfirmationService, MessageService],
+    templateUrl: './clients-page.component.html',
+    styleUrl: './clients-page.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClientsPageComponent implements OnInit {
   private _ref: DynamicDialogRef | undefined;

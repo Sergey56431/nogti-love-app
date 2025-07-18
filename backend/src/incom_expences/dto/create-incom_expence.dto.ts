@@ -1,4 +1,3 @@
-import { TypeOperation } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateOperationsDto {
