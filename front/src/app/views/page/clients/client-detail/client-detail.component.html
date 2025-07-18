@@ -1,5 +1,5 @@
 <div class="page-content">
-  <h1 class="page-title">{{ title }}</h1>
+  <h1 class="page-title -mb-2.5">{{ title }}</h1>
   <div class="breadcrumb">
     <p-breadcrumb class="max-w-full" [model]="_breadcrumb()" [home]="_home"></p-breadcrumb>
   </div>
@@ -36,9 +36,9 @@
         <li class="client-info-item flex">
           <span class="client-info-item-title">Рейтинг клиента:</span>
           <p-rating [readonly]="!_editMode()" (ngModelChange)="this._clientRating.set($event * 20)"
-                    [ngModel]="_client()?.rate ?? 0 / 20" />
+                    [ngModel]="(_client()?.rate ?? 0 ) / 20 " />
         </li>
-        <li class="client-info-item flex flex-col gap-2 lg:flex-row lg:items-center">
+        <li class="client-info-item flex flex-col gap-2 lg:flex-row lg:items-center w">
           <span class="client-info-item-title">Пометки о клиенте:</span>
           <textarea [value]="_client()?.description ?? ''"
                     #description

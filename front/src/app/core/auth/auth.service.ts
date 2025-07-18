@@ -33,7 +33,7 @@ export class AuthService {
   }
 
   public signup(body: SignupResponseType): Observable<SignupResponseType> {
-    return this.http.post<SignupResponseType>(environment.api + 'auth/signup', { ...body });
+    return this.http.post<SignupResponseType>('/api/auth/signup', { ...body });
   }
 
   public logout(userId: string): Observable<DefaultResponseType> {
@@ -79,5 +79,26 @@ export class AuthService {
 
   public getTokens(): string {
     return this.cookieService.get(this._accessTokenKey);
+  }
+
+  public sendResetCode(phoneNumber: string): Observable<DefaultResponseType> {
+    return this.http.post<DefaultResponseType>(environment.api + 'auth/send-reset-code', {
+      phoneNumber
+    });
+  }
+
+  public verifyResetCode(phoneNumber: string, code: string): Observable<DefaultResponseType> {
+    return this.http.post<DefaultResponseType>(environment.api + 'auth/verify-reset-code', {
+      phoneNumber,
+      code
+    });
+  }
+
+  public resetPassword(phoneNumber: string, code: string, newPassword: string): Observable<DefaultResponseType> {
+    return this.http.post<DefaultResponseType>(environment.api + 'auth/reset-password', {
+      phoneNumber,
+      code,
+      newPassword
+    });
   }
 }

@@ -8,5 +8,6 @@ export * from './directs-client.type';
 export * from './login-response.type';
 export * from './refresh-response.type';
 export * from './signup-response.type';
+export * from './period-query-params';
 export * from './services.type';
 export * from './user-info.type';

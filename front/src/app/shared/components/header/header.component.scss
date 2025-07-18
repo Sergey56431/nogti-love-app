@@ -9,7 +9,7 @@
   padding: 10px;
   align-items: center;
   justify-content: space-between;
-  background-color: $bg-color;
+  background-color: $white-color;
   border-radius: 0 0 20px 20px;
   margin-bottom: 8px;
   z-index: 10;
@@ -47,8 +47,13 @@
       text-decoration: none;
 
       .profile-icon {
+        border-radius: 50%;
+        background: $bg-color;
         height: 34px;
         width: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .profile-info {

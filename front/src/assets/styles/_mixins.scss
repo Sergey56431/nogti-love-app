@@ -7,6 +7,7 @@
 @mixin card {
   padding: 30px;
   border-radius: 20px;
+  background: $white-color;
   box-sizing: border-box;
   box-shadow: $card-shadow;
 }

@@ -7,7 +7,7 @@ import {
 import { Injectable } from '@angular/core';
 import { AuthService } from '@core/auth/auth.service';
 import { Router } from '@angular/router';
-import { catchError, Observable, switchMap, throwError } from 'rxjs';
+import { catchError, Observable, shareReplay, switchMap, throwError } from 'rxjs';
 import { DefaultResponseType, RefreshResponseType } from '@shared/types';
 
 @Injectable()
@@ -59,6 +59,7 @@ export class AuthInterceptor implements HttpInterceptor {
     this._userId = this._authService.getUserInfo().userId ?? '';
 
     return this._authService.refresh(this._userId ?? '').pipe(
+      shareReplay(1),
       switchMap((result: DefaultResponseType | RefreshResponseType) => {
         let error = '';
         if ((result as DefaultResponseType).error !== undefined) {

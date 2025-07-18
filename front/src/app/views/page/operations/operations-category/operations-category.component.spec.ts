@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { OperationsCategoryComponent } from './operations-category.component';
+import { OperationsCategoryComponent } from '@views/page';
 
 describe('OperationsCategoryComponent', () => {
   let component: OperationsCategoryComponent;
@@ -18,6 +18,6 @@ describe('OperationsCategoryComponent', () => {
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(component).not.toBeNull();
   });
 });

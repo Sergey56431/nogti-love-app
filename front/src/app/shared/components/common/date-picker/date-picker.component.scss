@@ -1,6 +1,6 @@
 @import '../../../../../assets/styles/fonts';
-@import "../../../../../assets/styles/variables";
-@import "../../../../../assets/styles/mixins";
+@import '../../../../../assets/styles/variables';
+@import '../../../../../assets/styles/mixins';
 
 .calendar {
   padding-right: 38px;
@@ -76,7 +76,7 @@
         + label {
           &::before {
             box-shadow: 0 0 4px inset rgba(0, 0, 0, 0.3);
-            background-color: $blue-color;
+            background-color: $blue-color!important;
           }
 
           .checkbox-count {
@@ -125,15 +125,27 @@
         .full-day + label::before {
           background-color: $busy-color;
         }
+
         .disabled + label::before {
-           background-color: $grey-color;
-         }
+          background-color: $grey-color;
+        }
+
+        .free-day + label {
+          .checkbox-count {
+            color: $white-color;
+          }
+
+          &::before {
+            background-color: $red-color;
+          }
+        }
       }
 
       &:checked {
         .full-day + label::before,
-        .disabled + label::before {
-          background-color: $blue-color;
+        .disabled + label::before,
+        .free-day + label::before {
+          background-color: $blue-color!important;
         }
       }
     }
@@ -153,69 +165,69 @@
         box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
       }
 
-        &.active {
-          background-color: $blue-color;
-          color: #fff;
-          box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
-        }
+      &.active {
+        background-color: $blue-color;
+        color: #fff;
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
       }
     }
   }
+}
 
-  .no-content {
-    font-size: 26px;
-    font-family: Montserrat-Bold, sans-serif;
-    margin: auto auto;
-  }
+.no-content {
+  font-size: 26px;
+  font-family: Montserrat-Bold, sans-serif;
+  margin: auto auto;
+}
 
-  @media screen and (max-width: 1100px) {
-    .date-picker {
-      max-width: 340px;
-      height: unset;
+@media screen and (max-width: 1100px) {
+  .date-picker {
+    max-width: 340px;
+    height: unset;
 
-      .date-picker-content {
-        flex-direction: column;
+    .date-picker-content {
+      flex-direction: column;
+      padding-bottom: 30px;
+
+      .calendar {
         padding-bottom: 30px;
+      }
 
-        .calendar {
-          padding-bottom: 30px;
-        }
+      .timetable {
+        padding-top: 30px;
+        border-top: 1px solid $grey-color;
+        max-width: 300px;
+        width: 100%;
+        text-align: center;
+        padding-left: 0;
 
-        .timetable {
-          padding-top: 30px;
-          border-top: 1px solid $grey-color;
-          max-width: 300px;
-          width: 100%;
-          text-align: center;
-          padding-left: 0;
+        .timetable-items {
+          .timetable-item {
+            .timetable-item-direct {
 
-          .timetable-items {
-            .timetable-item {
-              .timetable-item-direct {
+              .item-time-direct {
+                width: 55px;
+              }
 
-                .item-time-direct {
-                  width: 55px;
-                }
+              height: 30px;
 
-                height: 30px;
-
-                .item-profile-img {
-                  display: none;
-                }
+              .item-profile-img {
+                display: none;
               }
             }
           }
+        }
 
-          button {
-            width: 100%;
-          }
+        button {
+          width: 100%;
         }
       }
     }
-
-    .date-picker-annotation {
-      flex-direction: column;
-      align-items: baseline;
-      row-gap: 10px;
-    }
   }
+
+  .date-picker-annotation {
+    flex-direction: column;
+    align-items: baseline;
+    row-gap: 10px;
+  }
+}

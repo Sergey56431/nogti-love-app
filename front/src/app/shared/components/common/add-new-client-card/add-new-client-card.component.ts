@@ -14,20 +14,19 @@ import { InputNumber } from 'primeng/inputnumber';
 import { AuthService } from '@core/auth';
 
 @Component({
-  selector: 'app-add-new-client-card',
-  standalone: true,
-  imports: [
-    FloatLabel,
-    InputText,
-    Password,
-    InputMask,
-    Button,
-    ReactiveFormsModule,
-    InputNumber,
-  ],
-  templateUrl: './add-new-client-card.component.html',
-  styleUrl: './add-new-client-card.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-add-new-client-card',
+    imports: [
+        FloatLabel,
+        InputText,
+        Password,
+        InputMask,
+        Button,
+        ReactiveFormsModule,
+        InputNumber,
+    ],
+    templateUrl: './add-new-client-card.component.html',
+    styleUrl: './add-new-client-card.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AddNewClientCardComponent {
 
@@ -41,13 +40,19 @@ export class AddNewClientCardComponent {
 
   protected _newClientForm = this._fb.group({
     name: new FormControl('', [Validators.required]),
-    phoneNumber: new FormControl('', [Validators.required]),
-    lastName: new FormControl('', [Validators.required]),
+    phoneNumber: new FormControl('', [Validators.required, Validators.pattern('^7-\\d{3}-\\d{3}-\\d{2}-\\d{2}$')]),
+    lastName: new FormControl(''),
     password: new FormControl('', [Validators.required]),
     score: new FormControl(0),
+    description: new FormControl(''),
   });
 
+  protected get _phoneNumber() {
+    return this._newClientForm.get('phoneNumber');
+  }
+
   protected _createClient() {
+
     const master = this._authService.getUserInfo();
     const body: ClientInfoType = {
       name: this._newClientForm.value.name ?? '',
@@ -55,9 +60,9 @@ export class AddNewClientCardComponent {
       lastName: this._newClientForm.value.lastName ?? '',
       password: this._newClientForm.value.password ?? '',
       score: Number(this._newClientForm.value.score),
+      description: this._newClientForm.value.description ?? '',
       masterId: master?.userId,
     };
-    console.error(body);
     if (body){
       this._sendNewClient(body);
     }

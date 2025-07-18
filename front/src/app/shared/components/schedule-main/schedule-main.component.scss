@@ -1,19 +1,19 @@
 @import '../../../../assets/styles/fonts';
-@import "../../../../assets/styles/variables";
-@import "../../../../assets/styles/mixins";
+@import '../../../../assets/styles/variables';
+@import '../../../../assets/styles/mixins';
 
 .date-picker {
   border-radius: 20px;
   width: 790px;
   height: 432px;
-  box-shadow: 0 0 20px 4px #3d3d3d33;
+
 
   .date-picker-title {
     border-radius: 20px 20px 0 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #cccccc;
+    background-color: $bg-color;
     padding: 0 7px;
 
     h2 {
@@ -31,6 +31,8 @@
     display: flex;
     align-items: baseline;
     padding: 35px 35px 40px 35px;
+    border-radius: 0 0 20px 20px!important;
+    @include card();
 
     .no-content {
       font-size: 26px;
@@ -49,75 +51,13 @@
       }
 
       .timetable-items {
-        position: relative;
         list-style: none;
         padding-bottom: 40px;
         border-bottom: 1px solid #cccccc;
 
-        .loadElseDirect {
-          cursor: pointer;
-          position: absolute;
-          bottom: 5px;
-          left: calc(50% - 25px);
-          @include transition;
-
-          svg {
-            border-radius: 3px;
-          }
-
-          &:hover {
-            svg {
-              path {
-                fill: $blue-color;
-                box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
-              }
-            }
-          }
-        }
-
         .no-directs-title {
           font-family: 'Montserrat-SemiBold', sans-serif;
           font-size: 20px;
-        }
-
-        .timetable-item {
-
-          .timetable-item-direct {
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            padding: 15px 5px;
-            transition: .2s all ease-in-out;
-
-            &:hover {
-              background-color: $blue-color;
-              box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
-
-              .item-profile-phone, .item-profile-name, .item-time-direct {
-                color: $busy-color;
-              }
-            }
-
-            .item-time-direct {
-              margin-right: 18px;
-              font-size: 14px;
-              font-family: Montserrat-SemiBold, sans-serif !important;
-              width: 40px;
-              text-align: end;
-            }
-
-            .item-profile-name {
-              font-size: 14px;
-              width: 128px;
-              margin-right: 16px;
-            }
-
-            .item-profile-phone {
-              font-size: 14px;
-              font-family: Montserrat-SemiBold, sans-serif !important;
-            }
-          }
         }
       }
 

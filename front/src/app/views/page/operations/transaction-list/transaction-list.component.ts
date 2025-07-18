@@ -1,61 +1,79 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, Signal } from '@angular/core';
 import { SelectButton } from 'primeng/selectbutton';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { TableModule } from 'primeng/table';
 import { AuthService } from '@core/auth';
 import { createDispatchMap, select } from '@ngxs/store';
 import { OperationsState, Transactions } from '@core/store';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
+import { CurrencyPipe, DatePipe, NgStyle } from '@angular/common';
+import { Tooltip } from 'primeng/tooltip';
+import { Breadcrumb } from 'primeng/breadcrumb';
+import { ConfirmDialog } from 'primeng/confirmdialog';
+import { OperationType, PeriodUtils, SnackStatusesUtil } from '@shared/utils';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { OperationsFormComponent } from '@shared/components';
+import { Select } from 'primeng/select';
+import { QueryParams } from '@shared/types';
 
 enum PeriodValue {
-  ALL= 'all',
-  WEEK= 'week',
-  MONTH= 'month',
-  YEAR= 'year',
-  TODAY= 'today'
-}
-
-enum OperationType {
-  EXPENSE = 'expense',
-  INCOME = 'income',
   ALL = 'all',
+  WEEK = 'week',
+  MONTH = 'month',
+  YEAR = 'year',
+  TODAY = 'today'
 }
 
 @Component({
-  selector: 'app-transaction-list',
-  standalone: true,
-  imports: [
-    SelectButton,
-    FormsModule,
-    TableModule,
-    Button,
-  ],
-  templateUrl: './transaction-list.component.html',
-  styleUrl: './transaction-list.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-transaction-list',
+    imports: [
+        SelectButton,
+        FormsModule,
+        TableModule,
+        Button,
+        DatePipe,
+        CurrencyPipe,
+        Tooltip,
+        NgStyle,
+        Breadcrumb,
+        ConfirmDialog,
+        Select,
+    ],
+    providers: [ConfirmationService, MessageService],
+    templateUrl: './transaction-list.component.html',
+    styleUrl: './transaction-list.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TransactionListComponent implements OnInit {
+  private _ref: DynamicDialogRef | undefined;
+
   protected _title = 'Список операций';
-  protected _period = '';
-  protected _type = '';
   private _userId: string | undefined = '';
-  private readonly _queryParams: string[] = [];
+  protected _queryParams: { period?: PeriodValue, type?: OperationType } = {
+    period: PeriodValue.ALL,
+    type: OperationType.ALL,
+  };
   protected _operationsList = select(OperationsState.getOperations);
+
+  protected _home = { label: 'Операции', routerLink: ['/operations'], icon: '' };
+  protected _breadcrumb: Signal<MenuItem[] | undefined> = computed(() => {
+    return [{ label: this._title }];
+  });
 
   protected _typeFilters = [{
     label: 'Расходы',
     value: OperationType.EXPENSE,
   },
-  {
-    label: 'Доходы',
-    value: OperationType.INCOME,
-  },
-  {
-    label: 'Все',
-    value: OperationType.ALL,
-  }];
+    {
+      label: 'Доходы',
+      value: OperationType.INCOME,
+    },
+    {
+      label: 'Все',
+      value: OperationType.ALL,
+    }];
 
   protected _periodFilters = [
     {
@@ -79,36 +97,53 @@ export class TransactionListComponent implements OnInit {
       value: PeriodValue.ALL,
     }];
 
+  private _operationDialog = {
+    width: '500px',
+    modal: true,
+    contentStyle: {
+      paddingTop: '15px',
+    },
+    closeOnEscape: true,
+    closable: true,
+  };
+
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _authService = inject(AuthService);
   private readonly _router = inject(Router);
+  private readonly _dialogService = inject(DialogService);
   private readonly _confirmationService = inject(ConfirmationService);
+  private readonly _messageService = inject(MessageService);
 
   private readonly _actions = createDispatchMap({
     getOperations: Transactions.GetOperations,
-    deleteOperations: Transactions.DeleteOperation
+    deleteOperations: Transactions.DeleteOperation,
   });
 
   public ngOnInit(): void {
     this._userId = this._authService.getUserInfo().userId;
-    this._actions.getOperations(this._queryParams, this._userId ?? '');
     this._activatedRoute.queryParams.subscribe(params => {
-      this._period = params['period'];
-      this._type = params['type'];
+      this._getOperations(params);
     });
   }
 
   protected async _selectedTypeOrPeriod() {
-    await this._router.navigate([], {queryParams: {type: this._type, period: this._period}});
+    await this._router.navigate([], {
+      queryParams: {
+        type: this._queryParams.type,
+        period: this._queryParams.period,
+      },
+    });
   }
 
-  /*TODO:
-  * - Реализация логики должна быть с помощью ngxs
-  * - Написать тесты
-  */
-
-  protected _editOperations() {
-    // Здесь будет логика вызова окна для редактирования операции
+  protected _editOperations(operationId: string) {
+    this._ref = this._dialogService.open(OperationsFormComponent, {
+      ...this._operationDialog,
+      header: 'Редактирование операции',
+      data: {
+        id: operationId,
+        isEdit: true,
+      },
+    });
   }
 
   protected _deleteOperations(id: string) {
@@ -132,16 +167,41 @@ export class TransactionListComponent implements OnInit {
       },
       accept: () => {
         this._actions.deleteOperations(id);
+      },
+    });
+    this._messageService.add(SnackStatusesUtil.getStatuses(
+      'success',
+      'Операция успешно удалёна',
+    ));
+  }
+
+  protected _createOperations() {
+    this._ref = this._dialogService.open(OperationsFormComponent, {
+      ...this._operationDialog,
+      header: 'Создание операции',
+      data: {
+        isEdit: false,
       }
     });
   }
 
-  protected _createOperations() {
-    // Логика для создания операции
-  }
+  protected _getOperations(params?: Params) {
+    let period = [];
+    const selectedQuery: QueryParams = {};
 
-  protected _getOperations() {
-    // Логика для получения операций
-  }
+    if ((params?.['type'] ?? this._queryParams.type) !== OperationType.ALL) {
+      selectedQuery.type = params?.['type'] ?? this._queryParams.type;
+    }
+    if ((params?.['period'] ?? this._queryParams.period) !== PeriodValue.ALL) {
+      period = PeriodUtils.convertPeriod(params?.['period']);
+      selectedQuery.dateFrom = period[0];
+      selectedQuery.dateTo = period[1];
+    }
 
+    if (Object.keys(selectedQuery).length === 0) {
+      this._actions.getOperations(this._userId ?? '');
+    } else {
+      this._actions.getOperations(this._userId ?? '', selectedQuery);
+    }
+  }
 }

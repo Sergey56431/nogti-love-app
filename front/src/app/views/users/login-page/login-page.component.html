@@ -50,6 +50,9 @@
     <div class="loginRef">
       <span>Ещё нет аккаунта? </span><a routerLink="/registration">Зарегистрировать</a>
     </div>
+    <div class="loginRef">
+      <span>Забыли пароль? </span><a routerLink="/reset-password">Восстановить пароль</a>
+    </div>
 
     <button class="formBtn" [disabled]="_loginForm.invalid" (click)="_login()">Войти</button>
   </form>

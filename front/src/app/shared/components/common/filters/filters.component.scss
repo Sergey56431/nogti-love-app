@@ -1,0 +1,19 @@
+@import '../../../../../assets/styles/variables';
+@import '../../../../../assets/styles/mixins';
+
+.schedule-filters-check {
+  margin-top: 18px;
+  @include card();
+  background-color: $bg-color;
+
+  .filter-block {
+    margin-bottom: 15px;
+
+    .filter-name {
+      font-weight: 500;
+      font-size: 16px;
+      font-family: 'Montserrat-Medium', sans-serif;
+      margin-bottom: 15px;
+    }
+  }
+}

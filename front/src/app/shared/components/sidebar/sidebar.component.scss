@@ -10,7 +10,7 @@
   display: flex;
   flex-direction: column;
   border-radius: 0 20px 20px 0;
-  background-color: $bg-color;
+  background-color: $white-color;
   margin-right: 60px;
   z-index: 10;
   @include transition;
@@ -50,12 +50,8 @@
 
           &:hover:not(.active) {
             box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+            background: $bg-color;
 
-            background: white;
-
-            span, .mat-icon {
-              color: $blue-color;
-            }
           }
 
           span {

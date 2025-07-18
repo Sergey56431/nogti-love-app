@@ -21,21 +21,20 @@ import { Button } from 'primeng/button';
 import { SnackStatusesUtil } from '@shared/utils';
 
 @Component({
-  selector: 'app-client-detail',
-  standalone: true,
-  imports: [
-    Breadcrumb,
-    NgOptimizedImage,
-    Rating,
-    FormsModule,
-    Textarea,
-    ToggleButton,
-    InputNumber,
-    Button,
-  ],
-  templateUrl: './client-detail.component.html',
-  styleUrl: './client-detail.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-client-detail',
+    imports: [
+        Breadcrumb,
+        NgOptimizedImage,
+        Rating,
+        FormsModule,
+        Textarea,
+        ToggleButton,
+        InputNumber,
+        Button,
+    ],
+    templateUrl: './client-detail.component.html',
+    styleUrl: './client-detail.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClientDetailComponent implements OnInit {
   protected title = 'Клиенты';

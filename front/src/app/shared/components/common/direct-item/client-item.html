@@ -1,0 +1,8 @@
+<li class="timetable-item flex gap-2 items-center" (click)="menu.toggle($event)">
+  <div class="timetable-item-direct" tooltipPosition="bottom" [pTooltip]="direct()?.comment">
+    <div class="item-time-direct">{{ direct()?.time }}</div>
+    <div class="item-profile-name">{{ direct()?.clientName }}</div>
+    <div class="item-profile-phone">{{ direct()?.phone }}</div>
+  </div>
+</li>
+<p-menu #menu [model]="_menuItems" [popup]="true"></p-menu>

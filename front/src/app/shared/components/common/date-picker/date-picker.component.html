@@ -2,33 +2,45 @@
   <div class="calendar-header">
     <p-button [rounded]="true"
               [text]="true"
-              (click)="_choiceMonth('prev')"
+              (click)="changeMonth('prev')"
               [disabled]="!_isStartMonth()"
               severity="contrast"
               icon="pi pi-chevron-left" />
     <h3 class="calendar-title">{{ month }}</h3>
     <p-button [rounded]="true"
               [text]="true"
-              (click)="_choiceMonth('next')"
+              (click)="changeMonth('next')"
               severity="contrast"
               icon="pi pi-chevron-right" />
   </div>
   @if (_render()) {
     <div class="calendar-date-items" >
-      @for (item of _date(); track item) {
+      @for (item of _date(); track item; let i = $index) {
+        @if (item.day === 0) {
+          <input class="custom-checkbox" disabled>
+
+          <label for="{{item.day}}">
+            <div class="checkbox-count">
+              -
+            </div>
+          </label>
+        } @else {
+
         <input class="custom-checkbox"
-               (change)="_selectDay(item)"
+               (change)="selectDay(item)"
                [checked]="item.day === _isChecked()?.day"
                type="radio"
                ItemChanger
                [day]="item"
                id="{{item.day}}"
-               (click)="_choiceDay(item.day)">
+               (click)="selectDayByNumber(item.day)">
         <label for="{{item.day}}">
           <div class="checkbox-count">
             {{ item.day }}
           </div>
         </label>
+
+        }
       } @empty {
         <div class="date-error">Ошибка загрузки календаря</div>
       }
