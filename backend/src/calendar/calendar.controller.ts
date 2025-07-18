@@ -1,13 +1,13 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
+  Controller,
   Delete,
-  Put,
-  UseGuards,
-  Query,
+  Get,
   Inject,
+  Post,
+  Put,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateCalendarDto, UpdateCalendarDto } from './dto';
 import { TokenGuard } from '../auth';
