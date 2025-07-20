@@ -7,8 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "npx cypress open"
+    "lint": "ng lint"
   },
   "private": true,
   "dependencies": {
@@ -52,7 +51,6 @@
     "angular-eslint": "18.1.0",
     "autoprefixer": "^10.4.21",
     "components": "^0.1.0",
-    "cypress": "^14.3.2",
     "eslint": "^9.6.0",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",

@@ -3,7 +3,7 @@ import { PrismaService } from '../prisma';
 import { CreateSettingsDto, UpdateSettingsDto } from './dto';
 import { ISettingService } from './interfaces';
 import { Prisma } from '@prisma/client';
-import {CustomLogger} from "../logger";
+import { CustomLogger } from '../logger';
 
 @Injectable()
 export class SettingsService implements ISettingService {

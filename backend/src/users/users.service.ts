@@ -4,7 +4,7 @@ import { TUserUpdateDto, UserCreateDto } from './users-dto';
 import * as bcrypt from 'bcrypt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { IUsersService } from './interfaces';
-import {CustomLogger} from "../logger";
+import { CustomLogger } from '../logger';
 
 @Injectable()
 export class UsersService implements IUsersService {
@@ -106,7 +106,6 @@ export class UsersService implements IUsersService {
   }
 
   public async findFiltred(filter: any) {
-
     try {
       const result = await this._prismaService.user.findMany({
         where: { ...filter },
@@ -171,7 +170,9 @@ export class UsersService implements IUsersService {
       if (dto.birthday) {
         dto.birthday = new Date(dto.birthday);
         if (isNaN(dto.birthday.getTime())) {
-          this._logger.log(`Пользователь ввел некорректную дату ${dto.birthday}` );
+          this._logger.log(
+            `Пользователь ввел некорректную дату ${dto.birthday}`,
+          );
           throw new HttpException('Некорректная дата', 400);
         }
       }
@@ -201,7 +202,10 @@ export class UsersService implements IUsersService {
         );
       }
       console.log(error);
-      this._logger.error(`Ошибка при создании пользователя ${dto}`, error.stack);
+      this._logger.error(
+        `Ошибка при создании пользователя ${dto}`,
+        error.stack,
+      );
       throw new HttpException('Ошибка сервера при создании пользователя', 500);
     }
   }

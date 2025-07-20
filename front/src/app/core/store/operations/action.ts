@@ -5,8 +5,7 @@ import { QueryParams } from '@shared/types';
 export namespace Transactions {
   export class GetOperations {
     static readonly type: string = '[Operations] Get Operations';
-    constructor(public readonly userId: string, public readonly query?: QueryParams ) {
-    }
+    constructor(public readonly userId: string, public readonly query?: QueryParams ) {}
   }
 
   export class GetOperation {
