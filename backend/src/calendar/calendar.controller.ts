@@ -98,8 +98,8 @@ export class CalendarController {
       return this._calendarService.findOne(id);
     } else if (userId) {
       return this._calendarService.findByUser(userId);
-    } else if (startDate && endDate) {
-      return this._calendarService.findInterval(startDate, endDate);
+    } else if (startDate && endDate && userId) {
+      return this._calendarService.findInterval(startDate, endDate, userId);
     } else {
       return this._calendarService.findAll();
     }
