@@ -1,1 +1,1 @@
-export * from './create-categoryOperations.dto'
+export * from './create-categoryOperations.dto';

@@ -29,9 +29,10 @@ import { NgClass } from '@angular/common';
 })
 export class ClientCardComponent implements OnInit{
 
-  modal = input<boolean>(false);
-  directInfo = input<DirectsClientType | undefined>(undefined);
-  close = output<boolean>();
+  public modal = input<boolean>(false);
+  public directInfo = input<DirectsClientType | undefined>(undefined);
+  public close = output<boolean>();
+
   protected _usersFavorsList = signal<string>('');
   protected _userInfo = signal<UserInfoType | undefined>(undefined);
 
@@ -41,7 +42,6 @@ export class ClientCardComponent implements OnInit{
   public ngOnInit(): void {
     effect(() => {
       this.getUser(this.directInfo());
-      console.log(this.directInfo());
     }, {injector: this._injector});
   }
 
@@ -52,6 +52,10 @@ export class ClientCardComponent implements OnInit{
       });
       this._createUserFavorsList(direct);
     }
+    this._createUserFavorsList(this.directInfo());
+    this._clientService.fetchAdminClient(this.directInfo()?.clientId ?? '').subscribe(client => {
+      this._userInfo.set(client as ClientInfoType);
+    });
   }
 
 

@@ -8,7 +8,11 @@ export interface ICalendarService {
   findAll(): Promise<Calendar[]>;
   findByUser(userId: string): Promise<Calendar[]>;
   findOne(id: string): Promise<Calendar | null>;
-  findInterval(startDate: string, endDate: string): Promise<Calendar[]>;
+  findInterval(
+    startDate: string,
+    endDate: string,
+    userId: string,
+  ): Promise<Calendar[]>;
   update(id: string, updateCalendarDto: UpdateCalendarDto): Promise<Calendar>;
   remove(id: string): Promise<Calendar>;
 }

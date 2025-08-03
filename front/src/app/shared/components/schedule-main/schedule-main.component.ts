@@ -45,7 +45,7 @@ export class ScheduleMainComponent {
 
   protected _direct = signal<DirectsClientType| undefined>(undefined);
   protected _directsList: Signal<DirectsClientType[]> = computed(() => {
-    return orderBy(this.calendar?.directs(), x => x.time, ['asc']) ?? [];
+    return orderBy(this.calendar?.directs, x => x.time, ['asc']) ?? [];
   });
 
   constructor(private readonly _dialogOpen: DialogService,
@@ -55,7 +55,7 @@ export class ScheduleMainComponent {
   }
 
   protected _refreshDatePicker() {
-    this.calendar?._refreshDatePicker();
+    this.calendar?.refreshDatePicker();
   }
 
   protected _newDirect() {
@@ -69,12 +69,12 @@ export class ScheduleMainComponent {
       },
       closable: true,
       data: {
-        date: this.calendar?.selectedDate(),
+        date: this.calendar?.selectedDate,
         ...this._choiceDay(),
       },
     });
     this._ref.onClose.subscribe(() => {
-      this.calendar?.fetchDirectsToDay(this.calendar?.selectedDate());
+      this.calendar?.fetchDirectsToDay(this.calendar?.selectedDate);
     });
   }
 
@@ -110,7 +110,7 @@ export class ScheduleMainComponent {
               console.error(err);
             },
             complete: () => {
-              this.calendar?.fetchDirectsToDay(this.calendar?.selectedDate());
+              this.calendar?.fetchDirectsToDay(this.calendar?.selectedDate);
             },
           });
         }

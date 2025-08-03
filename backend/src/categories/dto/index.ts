@@ -1,1 +1,1 @@
-export * from './create-categories.dto'
+export * from './create-categories.dto';

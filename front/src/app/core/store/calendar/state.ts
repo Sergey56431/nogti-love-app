@@ -31,15 +31,14 @@ export class CalendarState {
   private _fetchInterval(ctx: StateContext<CalendarStateModel>, action: CalendarActions.FetchInterval) {
     const state = ctx.getState();
     if (state?.period[0] === action.interval[0] && state?.period[1] === action.interval[1]) {
-      console.log('returning', state?.calendar);
       return state?.calendar;
     }
 
-    this._calendarService?.fetchIntervalCalendar(action.interval).subscribe(calendare => {
-      if ((calendare as DefaultResponseType)?.error == null) {
+    this._calendarService?.fetchIntervalCalendar(action.interval, action.masterId).subscribe(calendar => {
+      if ((calendar as DefaultResponseType)?.error == null) {
         ctx.patchState({
           period: action.interval,
-          calendar: calendare as CalendarResponse[],
+          calendar: calendar as CalendarResponse[],
         });
       }
     });

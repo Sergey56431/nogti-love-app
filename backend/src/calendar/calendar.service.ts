@@ -441,6 +441,9 @@ export class CalendarService implements ICalendarService {
             where: {
               isBooked: false,
             },
+            orderBy: {
+              time: 'asc',
+            },
             select: { time: true },
           },
         },
@@ -488,6 +491,9 @@ export class CalendarService implements ICalendarService {
             where: {
               isBooked: false,
             },
+            orderBy: {
+              time: 'asc',
+            },
             select: { time: true },
           },
         },
@@ -517,6 +523,9 @@ export class CalendarService implements ICalendarService {
             where: {
               isBooked: false,
             },
+            orderBy: {
+              time: 'asc',
+            },
             select: { time: true },
           },
         },
@@ -539,7 +548,11 @@ export class CalendarService implements ICalendarService {
     }
   }
 
-  public async findInterval(startDate: string, endDate: string) {
+  public async findInterval(
+    startDate: string,
+    endDate: string,
+    userId: string,
+  ) {
     try {
       const start = new Date(startDate);
       const end = new Date(endDate);
@@ -550,6 +563,10 @@ export class CalendarService implements ICalendarService {
         );
         throw new HttpException('Некорректная дата', 400);
       }
+      if (!userId) {
+        this.logger.log(`Отсутствует Id пользователя`);
+        throw new HttpException('Нет Id пользователя', 400);
+      }
 
       return await this._prismaService.calendar.findMany({
         where: {
@@ -557,12 +574,16 @@ export class CalendarService implements ICalendarService {
             gte: start,
             lte: end,
           },
+          userId: userId,
         },
         include: {
           directs: true,
           freeSlots: {
             where: {
               isBooked: false,
+            },
+            orderBy: {
+              time: 'asc',
             },
             select: { time: true },
           },

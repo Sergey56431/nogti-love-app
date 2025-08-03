@@ -24,8 +24,6 @@ export class SignupDto {
     nullable: false,
     example: 'Vladislav2004',
   })
-
-
   @ApiProperty({
     description: 'Номер телефона пользвателя',
     nullable: false,

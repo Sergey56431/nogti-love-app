@@ -93,6 +93,13 @@ export const routes: Routes = [
       import('./views').then((c) => c.RegistrationPageComponent),
     title: 'Регистрация',
   },
+  {
+    path: 'reset-password',
+    canActivate: [AuthForvardGuard],
+    loadComponent: () =>
+      import('./views').then((c) => c.RemovePasswordPageComponent),
+    title: 'Восстановление пароля',
+  },
 
   { path: '**', component: NotFoundComponent },
 ];
