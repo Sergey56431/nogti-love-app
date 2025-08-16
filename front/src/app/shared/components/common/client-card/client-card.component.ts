@@ -29,9 +29,9 @@ import { NgClass } from '@angular/common';
 })
 export class ClientCardComponent implements OnInit{
 
-  modal = input<boolean>(false);
-  directInfo = input<DirectsClientType | undefined>(undefined);
-  close = output<boolean>();
+  public modal = input<boolean>(false);
+  public directInfo = input<DirectsClientType | undefined>(undefined);
+  public close = output<boolean>();
   protected _usersFavorsList = signal<string>('');
   protected _userInfo = signal<UserInfoType | undefined>(undefined);
 

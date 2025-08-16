@@ -101,6 +101,7 @@ export class TransactionListComponent implements OnInit {
     width: '500px',
     modal: true,
     contentStyle: {
+      overflow: 'visible',
       paddingTop: '15px',
     },
     closeOnEscape: true,

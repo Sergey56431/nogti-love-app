@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { Checkbox } from 'primeng/checkbox';
 import { Slider } from 'primeng/slider';
 import { FormsModule } from '@angular/forms';
@@ -16,7 +16,7 @@ import { FormsModule } from '@angular/forms';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FiltersComponent {
-  @Input() protected _service: unknown = '';
+  protected _service = input('');
   protected _rangeTime = [15, 75];
 
   protected _services = [
