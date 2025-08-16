@@ -1,10 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import {
+  AwardBonusesDto,
   ClientReferralInfo,
+  FindReferralsDto,
   IReferalService,
   LinkReferrerDto,
-  AwardBonusesDto,
-  FindReferralsDto,
 } from './interfaces';
 import { PrismaService } from '../prisma';
 import { Client } from '@prisma/client';
@@ -143,10 +143,10 @@ export class ReferalService implements IReferalService {
           findOptions.take = queryMaxLevels;
         }
 
-        const directReferrals =
+        /*const directReferrals =
           await this._prismaService.client.findMany(findOptions);
 
-        //return directReferrals.map((ref) => this.mapToClientReferralInfo(ref));
+        //return directReferrals.map((ref) => this.mapToClientReferralInfo(ref)); */
       }
     } catch (error) {
       if (error instanceof HttpException) {

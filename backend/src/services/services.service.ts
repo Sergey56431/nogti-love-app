@@ -9,7 +9,7 @@ import { PrismaService } from '../prisma';
 import { CreateServicesDto, UpdateServicesDto } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { IServicesService } from './interfaces';
-import {CustomLogger} from "../logger";
+import { CustomLogger } from '../logger';
 
 @Injectable()
 export class ServicesService implements IServicesService {

@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 // Функция для исключения полей из объекта
-function exclude<User, Key extends keyof User>(
+/*function exclude<User, Key extends keyof User>(
   user: User,
   keys: Key[],
 ): Omit<User, Key> {
@@ -14,7 +14,7 @@ function exclude<User, Key extends keyof User>(
     delete user[key];
   }
   return user;
-}
+} */
 
 @Injectable()
 export class ClientsService implements IClientsService {

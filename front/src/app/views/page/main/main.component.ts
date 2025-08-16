@@ -24,7 +24,7 @@ export class MainComponent implements OnInit {
 
   private _operations = select(OperationsState.getOperations);
   private _operationsList = computed(() =>{
-    return this._operations();
+    return this._operations() ?? [];
   });
 
   constructor() {

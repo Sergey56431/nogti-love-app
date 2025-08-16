@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DatePicker } from 'primeng/datepicker';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Status } from '@shared/utils';
@@ -8,14 +8,9 @@ import { createDispatchMap, select } from '@ngxs/store';
 import { CalendarActions, CalendarState } from '@core/store';
 import { ClientCardComponent, DirectItem, FiltersComponent } from '@shared/components';
 import { DatePipe } from '@angular/common';
-import { DirectsClientType } from '@shared/types';
-import {
-  DialogService,
-  DynamicDialogComponent,
-  DynamicDialogConfig,
-  DynamicDialogInjector, DynamicDialogModule,
-  DynamicDialogRef,
-} from 'primeng/dynamicdialog';
+import { DirectsClientType, UserInfoType } from '@shared/types';
+import { DynamicDialogModule } from 'primeng/dynamicdialog';
+import { AuthService } from '@core/auth';
 
 @Component({
   selector: 'app-schedule-page',
@@ -38,6 +33,10 @@ import {
 export class SchedulePageComponent implements OnInit {
   protected _title = 'Расписание';
 
+  private readonly _authService = inject(AuthService);
+
+  private _master: UserInfoType | null = null;
+
   protected _intervalCalendarData = select(CalendarState.getCalendar);
   protected _calendarData = computed(() => {
     return this._intervalCalendarData();
@@ -49,12 +48,11 @@ export class SchedulePageComponent implements OnInit {
   protected _choicePeriod = signal<string[]>([]);
 
   protected _showFilters = signal<boolean>(false);
+  protected _showSchedule = signal<boolean>(true);
 
   protected _showFiltersWindow() {
     this._showFilters.set(!this._showFilters());
   }
-
-  private _ref: DynamicDialogRef | undefined;
 
   private _actions = createDispatchMap({
     selectPeriodCalendar: CalendarActions.FetchInterval,
@@ -65,6 +63,7 @@ export class SchedulePageComponent implements OnInit {
   }
 
   public ngOnInit(): void {
+    this._master = this._authService.getUserInfo();
     this._initSchedule();
   }
 
@@ -89,7 +88,7 @@ export class SchedulePageComponent implements OnInit {
         }
 
         if (this._choicePeriod()?.length > 1) {
-          this._actions?.selectPeriodCalendar(this._choicePeriod());
+          this._actions?.selectPeriodCalendar(this._choicePeriod(), this._master?.userId ?? '');
         }
       });
     }

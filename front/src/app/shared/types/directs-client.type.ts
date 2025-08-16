@@ -9,4 +9,5 @@ export interface DirectsClientType {
   services?: ServicesType[]
   image?: string;
   comment?: string;
+  clientId: string;
 }

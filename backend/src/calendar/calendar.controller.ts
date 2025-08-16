@@ -1,13 +1,13 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
+  Controller,
   Delete,
-  Put,
-  UseGuards,
-  Query,
+  Get,
   Inject,
+  Post,
+  Put,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateCalendarDto, UpdateCalendarDto } from './dto';
 import { TokenGuard } from '../auth';
@@ -98,8 +98,8 @@ export class CalendarController {
       return this._calendarService.findOne(id);
     } else if (userId) {
       return this._calendarService.findByUser(userId);
-    } else if (startDate && endDate) {
-      return this._calendarService.findInterval(startDate, endDate);
+    } else if (startDate && endDate && userId) {
+      return this._calendarService.findInterval(startDate, endDate, userId);
     } else {
       return this._calendarService.findAll();
     }

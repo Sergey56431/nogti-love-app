@@ -13,7 +13,6 @@ import { createDispatchMap } from '@ngxs/store';
 import { UsersActions } from '@core/store';
 import { MessageService, PrimeIcons } from 'primeng/api';
 import { Menu } from 'primeng/menu';
-import { BadgeDirective } from 'primeng/badge';
 import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
 import { SnackStatusesUtil } from '@shared/utils';
@@ -23,7 +22,6 @@ import { SnackStatusesUtil } from '@shared/utils';
     imports: [
         RouterLink,
         Menu,
-        BadgeDirective,
         Button,
         Tooltip,
     ],
