@@ -47,7 +47,7 @@ export class ChartComponent implements OnInit {
       if (this._expanse()) {
         this._initChart();
       }
-    }, { allowSignalWrites: true });
+    });
   }
 
   public ngOnInit() {
@@ -57,7 +57,7 @@ export class ChartComponent implements OnInit {
 
   private _initChart() {
     this.data = {
-      labels: ['Даходы', 'Расходы'],
+      labels: ['Доходы', 'Расходы'],
       datasets: [
         {
           data: [this._income(), this._expanse()],

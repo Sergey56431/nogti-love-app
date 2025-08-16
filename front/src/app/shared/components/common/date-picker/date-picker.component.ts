@@ -2,9 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  EventEmitter,
-  OnInit,
-  Output,
+  OnInit, output,
   signal,
 } from '@angular/core';
 import { CalendarService, DirectsService } from '@shared/services';
@@ -45,9 +43,9 @@ export class DatePickerComponent implements OnInit {
   protected readonly _isStartMonth = computed(() => this._mountCount() > new Date().getMonth() + 1);
 
   // --- Outputs ---
-  @Output() public selectedDay = new EventEmitter<CalendarResponse>();
-  @Output() public emitDate = new EventEmitter<string>();
-  @Output() public startDate = new EventEmitter<string>();
+  public selectedDay = output<CalendarResponse>();
+  public emitDate = output<string>();
+  public startDate = output<string>();
 
   // --- Actions ---
   private readonly _actions = createDispatchMap({
@@ -55,17 +53,29 @@ export class DatePickerComponent implements OnInit {
   });
 
   // --- Публичные геттеры для доступа из других компонентов и шаблонов ---
-  public get day() { return this._day; }
-  public get month() { return this._month; }
-  public get selectedDate() { return this._selectedDate(); }
-  public get directs() { return this._directs(); }
+  public get day() {
+    return this._day;
+  }
+
+  public get month() {
+    return this._month;
+  }
+
+  public get selectedDate() {
+    return this._selectedDate();
+  }
+
+  public get directs() {
+    return this._directs();
+  }
 
   constructor(
     private readonly _toast: MessageService,
     private readonly _calendarService: CalendarService,
     private readonly _directService: DirectsService,
     private readonly _authService: AuthService,
-  ) {}
+  ) {
+  }
 
   /**
    * Инициализация компонента (стартовый месяц и запрос получения всех рабочих дней пользователя)
@@ -103,7 +113,6 @@ export class DatePickerComponent implements OnInit {
       this._calendarService.fetchCalendarByUser(user.userId).subscribe((calendar) => {
         if (!(calendar as DefaultResponseType).error) {
           this._calendar.set(calendar as CalendarResponse[]);
-          this._setStateOfDate(calendar as CalendarResponse[]);
           if (callback) callback();
         }
       });
@@ -143,13 +152,17 @@ export class DatePickerComponent implements OnInit {
     this._choiceDate.set(dateStr);
     this._day = `${day.toString().padStart(2, '0')} ${this._month}`;
     this.emitDate.emit(this._choiceDate());
-    const formattedDate = new Date(dateStr)
-      .toLocaleDateString('ru-RU', { year: 'numeric', month: '2-digit', day: '2-digit' })
+    const formattedDate = this._formattedDate(new Date(dateStr));
+    this._selectedDate.set(formattedDate);
+    this.fetchDirectsToDay(formattedDate);
+  }
+
+
+  private _formattedDate(date: Date): string {
+    return date.toLocaleDateString('ru-RU', { year: 'numeric', month: '2-digit', day: '2-digit' })
       .split('.')
       .reverse()
       .join('-');
-    this._selectedDate.set(formattedDate);
-    this.fetchDirectsToDay(formattedDate);
   }
 
   /**
@@ -185,16 +198,16 @@ export class DatePickerComponent implements OnInit {
         dayOfWeek: dayOfWeek,
       });
     }
+    this._setStateOfDate(this._calendar());
   }
 
   /**
    * Устанавливает состояние дня
    */
   private _setStateOfDate(calendar: CalendarResponse[]): void {
-    const options: Intl.DateTimeFormatOptions = { month: 'numeric', day: 'numeric', year: 'numeric' };
     for (const item of calendar) {
       if (item.date) {
-        const date = new Date(item.date).toLocaleDateString('ru-RU', options);
+        const date = this._formattedDate(new Date(item.date));
         this._date().find((i) => {
           if (i.date === date) {
             Object.assign(i, {

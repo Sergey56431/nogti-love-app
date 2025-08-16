@@ -23,15 +23,12 @@ export class MainComponent implements OnInit {
   private _userInfo?: UserInfoType;
 
   private _operations = select(OperationsState.getOperations);
-  private _operationsList = computed(() =>{
-    return this._operations() ?? [];
-  });
 
   constructor() {
     effect(() => {
       let incSum = 0;
       let expSum = 0;
-      this._operationsList()?.forEach(item => {
+      this._operations()?.forEach(item => {
         if (item.categoryOperations.type === 'income') {
           incSum += item.value;
           this._income.set(incSum);
@@ -42,11 +39,11 @@ export class MainComponent implements OnInit {
         }
 
       });
-      if (this._operationsList().length === 0) {
+      if (this._operations().length === 0) {
         this._income.set(0);
         this._expanse.set(0);
       }
-    }, {allowSignalWrites: true});
+    });
   }
 
   private readonly _authService = inject(AuthService);
